@@ -8,47 +8,59 @@ import {
   useReducer,
   type ReactNode,
 } from "react";
+import { cartLineUnitPrice } from "@/lib/cart-line";
 import type { Product } from "@/lib/data";
+import { cartLineKey, type VariantSelections } from "@/lib/product-variants";
 import type { CartItem } from "@/lib/types";
 
 type State = { items: CartItem[] };
 
 type Action =
-  | { type: "ADD"; product: Product }
-  | { type: "REMOVE"; id: string }
-  | { type: "SET_QTY"; id: string; qty: number }
+  | { type: "ADD"; product: Product; variantSelections?: VariantSelections }
+  | { type: "REMOVE"; lineKey: string }
+  | { type: "SET_QTY"; lineKey: string; qty: number }
   | { type: "CLEAR" };
 
 function reducer(state: State, action: Action): State {
   switch (action.type) {
     case "ADD": {
-      const existing = state.items.find(
-        (i) => i.product.id === action.product.id,
+      const lineKey = cartLineKey(
+        action.product.id,
+        action.variantSelections,
       );
+      const existing = state.items.find((i) => i.lineKey === lineKey);
       if (existing) {
         return {
           items: state.items.map((i) =>
-            i.product.id === action.product.id
-              ? { ...i, qty: i.qty + 1 }
-              : i,
+            i.lineKey === lineKey ? { ...i, qty: i.qty + 1 } : i,
           ),
         };
       }
-      return { items: [...state.items, { product: action.product, qty: 1 }] };
+      return {
+        items: [
+          ...state.items,
+          {
+            lineKey,
+            product: action.product,
+            qty: 1,
+            variantSelections: action.variantSelections,
+          },
+        ],
+      };
     }
     case "REMOVE":
       return {
-        items: state.items.filter((i) => i.product.id !== action.id),
+        items: state.items.filter((i) => i.lineKey !== action.lineKey),
       };
     case "SET_QTY":
       if (action.qty <= 0) {
         return {
-          items: state.items.filter((i) => i.product.id !== action.id),
+          items: state.items.filter((i) => i.lineKey !== action.lineKey),
         };
       }
       return {
         items: state.items.map((i) =>
-          i.product.id === action.id ? { ...i, qty: action.qty } : i,
+          i.lineKey === action.lineKey ? { ...i, qty: action.qty } : i,
         ),
       };
     case "CLEAR":
@@ -60,9 +72,9 @@ function reducer(state: State, action: Action): State {
 
 export type CartContextValue = {
   items: CartItem[];
-  add: (product: Product) => void;
-  remove: (id: string) => void;
-  setQty: (id: string, qty: number) => void;
+  add: (product: Product, variantSelections?: VariantSelections) => void;
+  remove: (lineKey: string) => void;
+  setQty: (lineKey: string, qty: number) => void;
   clear: () => void;
   total: number;
   count: number;
@@ -73,16 +85,19 @@ const CartContext = createContext<CartContextValue | null>(null);
 export function CartProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(reducer, { items: [] });
 
-  const add = useCallback((product: Product) => {
-    dispatch({ type: "ADD", product });
+  const add = useCallback(
+    (product: Product, variantSelections?: VariantSelections) => {
+      dispatch({ type: "ADD", product, variantSelections });
+    },
+    [],
+  );
+
+  const remove = useCallback((lineKey: string) => {
+    dispatch({ type: "REMOVE", lineKey });
   }, []);
 
-  const remove = useCallback((id: string) => {
-    dispatch({ type: "REMOVE", id });
-  }, []);
-
-  const setQty = useCallback((id: string, qty: number) => {
-    dispatch({ type: "SET_QTY", id, qty });
+  const setQty = useCallback((lineKey: string, qty: number) => {
+    dispatch({ type: "SET_QTY", lineKey, qty });
   }, []);
 
   const clear = useCallback(() => {
@@ -92,7 +107,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const total = useMemo(
     () =>
       state.items.reduce(
-        (s, i) => s + Math.max(0, i.product.price) * i.qty,
+        (s, i) => s + Math.max(0, cartLineUnitPrice(i)) * i.qty,
         0,
       ),
     [state.items],

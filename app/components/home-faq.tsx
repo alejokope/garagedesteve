@@ -1,21 +1,20 @@
-import { homeFaq } from "@/lib/home-content";
+import type { HomeFaqData } from "@/lib/home-types";
 
-export function HomeFaq() {
+export function HomeFaq({ data }: { data: HomeFaqData }) {
   return (
     <section id="faq" className="scroll-mt-24 border-b border-[var(--border)] bg-white py-16 sm:py-24">
       <div className="mx-auto max-w-3xl px-4 sm:px-8">
         <div className="text-center">
           <h2 className="font-display text-2xl font-semibold tracking-tight text-neutral-950 sm:text-3xl">
-            Preguntas frecuentes
+            {data.sectionTitle}
           </h2>
           <p className="mt-3 text-[15px] leading-relaxed text-neutral-500 sm:text-base">
-            Resolvemos las dudas más comunes sobre nuestros productos y
-            servicios
+            {data.sectionSubtitle}
           </p>
         </div>
 
         <div className="mt-10 divide-y divide-[var(--border)] rounded-2xl border border-[var(--border)] bg-[#fafafa] px-2 sm:px-4">
-          {homeFaq.map((item) => (
+          {data.items.map((item) => (
             <details
               key={item.q}
               className="group [&_summary::-webkit-details-marker]:hidden"

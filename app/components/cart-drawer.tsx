@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import { useCart } from "@/app/context/cart-context";
+import { cartLineDisplayName, cartLineUnitPrice } from "@/lib/cart-line";
 import { buildWhatsAppOrderMessage, whatsappUrl } from "@/lib/whatsapp";
 
 function formatMoney(n: number) {
@@ -100,7 +101,7 @@ export function CartDrawer({
             <ul className="space-y-4">
               {items.map((line) => (
                 <li
-                  key={line.product.id}
+                  key={line.lineKey}
                   className="flex gap-4 rounded-2xl border border-black/[0.06] bg-neutral-50/80 p-3"
                 >
                   <div className="relative h-[72px] w-[72px] shrink-0 overflow-hidden rounded-xl bg-neutral-100">
@@ -114,10 +115,10 @@ export function CartDrawer({
                   </div>
                   <div className="min-w-0 flex-1">
                     <p className="text-sm font-semibold text-neutral-950">
-                      {line.product.name}
+                      {cartLineDisplayName(line)}
                     </p>
                     <p className="mt-0.5 text-xs text-neutral-500">
-                      {formatMoney(line.product.price)} c/u
+                      {formatMoney(cartLineUnitPrice(line))} c/u
                     </p>
                     <div className="mt-3 flex items-center gap-3">
                       <div className="inline-flex items-center rounded-full border border-black/[0.08] bg-[var(--surface)] px-1 py-0.5">
@@ -125,7 +126,7 @@ export function CartDrawer({
                           type="button"
                           className="flex h-8 w-8 items-center justify-center rounded-full text-neutral-600 hover:bg-neutral-100"
                           onClick={() =>
-                            setQty(line.product.id, line.qty - 1)
+                            setQty(line.lineKey, line.qty - 1)
                           }
                           aria-label="Menos"
                         >
@@ -138,7 +139,7 @@ export function CartDrawer({
                           type="button"
                           className="flex h-8 w-8 items-center justify-center rounded-full text-neutral-600 hover:bg-neutral-100"
                           onClick={() =>
-                            setQty(line.product.id, line.qty + 1)
+                            setQty(line.lineKey, line.qty + 1)
                           }
                           aria-label="Más"
                         >
@@ -147,7 +148,7 @@ export function CartDrawer({
                       </div>
                       <button
                         type="button"
-                        onClick={() => remove(line.product.id)}
+                        onClick={() => remove(line.lineKey)}
                         className="text-xs font-medium text-neutral-500 hover:text-red-600"
                       >
                         Quitar

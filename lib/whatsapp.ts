@@ -1,3 +1,4 @@
+import { cartLineDisplayName, cartLineUnitPrice } from "@/lib/cart-line";
 import type { CartItem } from "@/lib/types";
 
 function formatMoney(n: number, locale = "es-AR") {
@@ -21,12 +22,12 @@ export function buildWhatsAppOrderMessage(
   ];
 
   items.forEach((line, i) => {
-    const sub = line.product.price * line.qty;
+    const unit = cartLineUnitPrice(line);
+    const sub = unit * line.qty;
+    const label = cartLineDisplayName(line);
     const pricePart =
-      line.product.price > 0
-        ? ` — ${formatMoney(sub)}`
-        : " — precio a confirmar";
-    lines.push(`${i + 1}. ${line.product.name} × ${line.qty}${pricePart}`);
+      unit > 0 ? ` — ${formatMoney(sub)}` : " — precio a confirmar";
+    lines.push(`${i + 1}. ${label} × ${line.qty}${pricePart}`);
   });
 
   lines.push("");

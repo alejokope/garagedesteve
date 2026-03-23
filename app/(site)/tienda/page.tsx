@@ -1,63 +1,40 @@
 import { Suspense } from "react";
-import { CategoryShowcase } from "@/app/components/category-showcase";
-import { ProductCatalog } from "@/app/components/product-catalog";
+import { CatalogView } from "@/app/components/catalog/catalog-view";
 import { SiteFooter } from "@/app/components/site-footer";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Tienda | El Garage de Steve",
+  title: "Catálogo de productos | The iPhone",
   description:
-    "Catálogo de MacBook, iPhone, iPad, Apple Watch, AirPods, iMac, servicio técnico y más. Pedidos por WhatsApp.",
+    "Descubrí nuestra selección premium de tecnología. iPhone, iPad, Mac, Apple Watch, AirPods y más.",
 };
 
-function CatalogFallback() {
+function CatalogSectionFallback() {
   return (
-    <section className="border-t border-black/[0.06] py-16">
-      <div className="mx-auto max-w-6xl animate-pulse px-5 sm:px-8">
-        <div className="h-8 w-48 rounded-full bg-neutral-200" />
-        <div className="mt-6 h-4 max-w-md rounded-full bg-neutral-100" />
-        <div className="mt-10 flex gap-2">
-          {Array.from({ length: 7 }).map((_, i) => (
-            <div key={i} className="h-9 w-20 rounded-full bg-neutral-100" />
-          ))}
-        </div>
-        <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {Array.from({ length: 6 }).map((_, i) => (
-            <div
-              key={i}
-              className="h-80 rounded-3xl bg-neutral-100"
-            />
-          ))}
-        </div>
+    <div className="min-h-[40vh] bg-[#f3f4f6] px-4 py-12 sm:px-8">
+      <div className="mx-auto max-w-6xl animate-pulse">
+        <div className="h-12 rounded-2xl bg-neutral-200" />
       </div>
-    </section>
+    </div>
   );
 }
 
-export default function TiendaPage() {
+/** Catálogo: los datos vienen de `CatalogProductsProvider` + GET /api/catalog/products (una sola carga). */
+export default function Page() {
   return (
     <main className="min-h-screen pt-[3.5rem] sm:pt-16">
-      <section className="relative overflow-hidden border-b border-black/[0.06] bg-[var(--surface)] py-16 sm:py-20">
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(120,113,108,0.08),transparent_55%)]"
-        />
-        <div className="relative mx-auto max-w-6xl px-5 sm:px-8">
-          <p className="text-sm font-medium uppercase tracking-[0.2em] text-neutral-400">
-            Tienda
-          </p>
-          <h1 className="font-display mt-4 max-w-3xl text-4xl font-semibold tracking-tight text-neutral-950 sm:text-5xl">
-            Catálogo
+      <section className="border-b border-[var(--border)] bg-white">
+        <div className="mx-auto max-w-6xl px-4 py-10 sm:px-8 sm:py-12">
+          <h1 className="font-display text-3xl font-bold tracking-tight text-neutral-900 sm:text-4xl">
+            Catálogo de Productos
           </h1>
-          <p className="mt-5 max-w-xl text-[17px] leading-relaxed text-neutral-600">
-            Explorá por categoría, agregá al carrito y enviá el pedido por
-            WhatsApp con el detalle armado.
+          <p className="mt-3 max-w-2xl text-[15px] leading-relaxed text-neutral-500 sm:text-base">
+            Descubre nuestra selección premium de tecnología
           </p>
         </div>
       </section>
-      <CategoryShowcase />
-      <Suspense fallback={<CatalogFallback />}>
-        <ProductCatalog basePath="/tienda" />
+      <Suspense fallback={<CatalogSectionFallback />}>
+        <CatalogView />
       </Suspense>
       <SiteFooter />
     </main>

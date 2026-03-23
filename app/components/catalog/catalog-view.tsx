@@ -1,0 +1,543 @@
+"use client";
+
+import Image from "next/image";
+import Link from "next/link";
+import { useSearchParams } from "next/navigation";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCart } from "@/app/context/cart-context";
+import {
+  PAGE_SIZE,
+  type CatalogEstado,
+  type EnrichedProduct,
+  type ShopBrand,
+  type ShopTipo,
+  type SortKey,
+  enrichProduct,
+  filterEnriched,
+  shopEstados,
+  shopMarcas,
+  shopTipos,
+  sortEnriched,
+} from "@/lib/catalog";
+import { useCatalogProducts } from "@/app/context/catalog-products-context";
+import { formatMoneyArs } from "@/lib/format";
+
+function parseList(s: string | null): string[] {
+  if (!s?.trim()) return [];
+  return s.split(",").map((x) => x.trim()).filter(Boolean);
+}
+
+function CatalogCard({ p }: { p: EnrichedProduct }) {
+  const { add } = useCart();
+
+  const showDiscount = p.discountPercent != null && p.compareAtPrice != null;
+  const badgeNuevo = p.estado === "nuevo" && !showDiscount;
+  const badgeMasVendido = p.estado === "mas-vendido" && !showDiscount;
+
+  return (
+    <article className="group flex flex-col overflow-hidden rounded-2xl border border-[var(--border)] bg-white shadow-[0_1px_3px_rgba(15,23,42,0.06)] transition hover:-translate-y-0.5 hover:shadow-[var(--glow)]">
+      <Link href={`/tienda/${p.id}`} className="relative block aspect-[4/3] bg-neutral-50">
+        <Image
+          src={p.image}
+          alt={p.imageAlt}
+          fill
+          sizes="(max-width: 768px) 100vw, 33vw"
+          className="object-contain p-4 transition duration-500 group-hover:scale-[1.02]"
+        />
+        <div className="absolute right-2 top-2 flex flex-col items-end gap-1.5">
+          {showDiscount ? (
+            <span className="rounded-md bg-red-500 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white shadow-sm">
+              -{p.discountPercent}%
+            </span>
+          ) : null}
+          {badgeNuevo ? (
+            <span className="rounded-md bg-emerald-500 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white shadow-sm">
+              Nuevo
+            </span>
+          ) : null}
+          {badgeMasVendido ? (
+            <span className="rounded-md bg-[var(--brand-from)] px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white shadow-sm">
+              Más vendido
+            </span>
+          ) : null}
+        </div>
+      </Link>
+      <div className="flex flex-1 flex-col p-4 sm:p-5">
+        <div className="flex items-start justify-between gap-2 text-[11px] font-semibold uppercase tracking-wide text-neutral-400">
+          <span>{p.categoryLabel}</span>
+          <span className="flex shrink-0 items-center gap-0.5 text-amber-500">
+            <svg className="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor" aria-hidden>
+              <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+            </svg>
+            {p.rating}
+          </span>
+        </div>
+        <Link href={`/tienda/${p.id}`}>
+          <h3 className="font-display mt-2 text-base font-semibold leading-snug text-neutral-900 group-hover:text-[var(--brand-from)]">
+            {p.name}
+          </h3>
+        </Link>
+        <p className="mt-1 line-clamp-2 text-sm text-neutral-500">{p.short}</p>
+        <div className="mt-4 flex flex-wrap items-end justify-between gap-3 border-t border-[var(--border)] pt-4">
+          <div>
+            {showDiscount ? (
+              <p className="text-xs text-neutral-400 line-through">
+                {formatMoneyArs(p.compareAtPrice!)}
+              </p>
+            ) : null}
+            <p className="font-display text-lg font-bold tabular-nums text-neutral-900">
+              {formatMoneyArs(p.price)}
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={() => add(p)}
+            className="shrink-0 rounded-xl bg-gradient-brand px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:opacity-[0.96] active:scale-[0.99]"
+          >
+            Agregar
+          </button>
+        </div>
+      </div>
+    </article>
+  );
+}
+
+function buildPageList(total: number, current: number): (number | "ellipsis")[] {
+  if (total <= 7) return Array.from({ length: total }, (_, i) => i + 1);
+  const out: (number | "ellipsis")[] = [];
+  const add = (n: number | "ellipsis") => {
+    if (out.length && out[out.length - 1] === n) return;
+    out.push(n);
+  };
+  add(1);
+  if (current > 3) add("ellipsis");
+  const lo = Math.max(2, current - 1);
+  const hi = Math.min(total - 1, current + 1);
+  for (let i = lo; i <= hi; i++) add(i);
+  if (current < total - 2) add("ellipsis");
+  add(total);
+  return out;
+}
+
+function PaginationNav({
+  totalPages,
+  currentPage,
+  setPage,
+}: {
+  totalPages: number;
+  currentPage: number;
+  setPage: (n: number) => void;
+}) {
+  const items = useMemo(
+    () => buildPageList(totalPages, currentPage),
+    [totalPages, currentPage],
+  );
+  return (
+    <nav
+      className="mt-12 flex flex-wrap items-center justify-center gap-2"
+      aria-label="Paginación"
+    >
+      <button
+        type="button"
+        disabled={currentPage <= 1}
+        onClick={() => setPage(Math.max(1, currentPage - 1))}
+        className="flex h-10 w-10 items-center justify-center rounded-full border border-neutral-200 bg-white text-neutral-600 transition hover:bg-neutral-50 disabled:opacity-40"
+        aria-label="Anterior"
+      >
+        ‹
+      </button>
+      {items.map((item, idx) =>
+        item === "ellipsis" ? (
+          <span key={`e-${idx}`} className="px-1 text-neutral-400">
+            …
+          </span>
+        ) : (
+          <button
+            key={item}
+            type="button"
+            onClick={() => setPage(item)}
+            className={`flex h-10 min-w-[2.5rem] items-center justify-center rounded-full px-3 text-sm font-semibold transition ${
+              item === currentPage
+                ? "bg-[var(--brand-from)] text-white shadow-sm"
+                : "border border-neutral-200 bg-white text-neutral-700 hover:bg-neutral-50"
+            }`}
+          >
+            {item}
+          </button>
+        ),
+      )}
+      <button
+        type="button"
+        disabled={currentPage >= totalPages}
+        onClick={() => setPage(Math.min(totalPages, currentPage + 1))}
+        className="flex h-10 w-10 items-center justify-center rounded-full border border-neutral-200 bg-white text-neutral-600 transition hover:bg-neutral-50 disabled:opacity-40"
+        aria-label="Siguiente"
+      >
+        ›
+      </button>
+    </nav>
+  );
+}
+
+function CatalogLoadingSkeleton() {
+  return (
+    <div className="min-h-[50vh] bg-[#f3f4f6] px-4 py-16 sm:px-8">
+      <div className="mx-auto max-w-6xl animate-pulse">
+        <div className="h-14 rounded-2xl bg-neutral-200" />
+        <div className="mt-8 flex gap-8">
+          <div className="hidden w-[280px] shrink-0 rounded-2xl bg-neutral-200 lg:block" />
+          <div className="flex-1 space-y-4">
+            <div className="h-4 w-40 rounded bg-neutral-200" />
+            <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+              {Array.from({ length: 6 }).map((_, i) => (
+                <div key={i} className="h-96 rounded-2xl bg-neutral-200" />
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export function CatalogView() {
+  const searchParams = useSearchParams();
+  const { products: catalogProducts, status, error, reload } = useCatalogProducts();
+
+  const enriched = useMemo(
+    () => catalogProducts.map(enrichProduct),
+    [catalogProducts],
+  );
+  const maxCatalogPrice = useMemo(
+    () => Math.max(...enriched.map((p) => p.price), 1),
+    [enriched],
+  );
+
+  /** Filtros solo en memoria: no usar router (evita navegaciones /tienda en cada tecla). */
+  const [q, setQ] = useState(() => searchParams.get("q") ?? "");
+  const [sort, setSort] = useState<SortKey>(
+    () => (searchParams.get("sort") ?? "relevancia") as SortKey,
+  );
+  const [page, setPage] = useState(() =>
+    Math.max(1, parseInt(searchParams.get("page") ?? "1", 10) || 1),
+  );
+  const [marcas, setMarcas] = useState<ShopBrand[]>(
+    () => parseList(searchParams.get("marcas")) as ShopBrand[],
+  );
+  const [tipos, setTipos] = useState<ShopTipo[]>(
+    () => parseList(searchParams.get("tipos")) as ShopTipo[],
+  );
+  const [estados, setEstados] = useState<CatalogEstado[]>(
+    () => parseList(searchParams.get("estados")) as CatalogEstado[],
+  );
+  const [precioMax, setPrecioMax] = useState<number | null>(null);
+
+  useEffect(() => {
+    if (status !== "ready" || precioMax !== null) return;
+    const raw = searchParams.get("max");
+    const parsed = raw ? parseInt(raw, 10) : NaN;
+    if (!Number.isNaN(parsed) && parsed > 0) {
+      setPrecioMax(Math.min(maxCatalogPrice, parsed));
+    } else {
+      setPrecioMax(maxCatalogPrice);
+    }
+  }, [status, maxCatalogPrice, precioMax, searchParams]);
+
+  const effectivePrecioMax = precioMax ?? maxCatalogPrice;
+
+  const filtered = useMemo(() => {
+    const f = filterEnriched(enriched, {
+      q,
+      marcas,
+      tipos,
+      estados,
+      precioMax: effectivePrecioMax,
+    });
+    return sortEnriched(f, sort);
+  }, [enriched, q, marcas, tipos, estados, effectivePrecioMax, sort]);
+
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  const currentPage = Math.min(page, totalPages);
+  const slice = filtered.slice(
+    (currentPage - 1) * PAGE_SIZE,
+    currentPage * PAGE_SIZE,
+  );
+
+  const toggleMarcas = (id: ShopBrand) => {
+    setMarcas((prev) => {
+      const set = new Set(prev);
+      if (set.has(id)) set.delete(id);
+      else set.add(id);
+      return [...set] as ShopBrand[];
+    });
+    setPage(1);
+  };
+
+  const toggleTipos = (id: ShopTipo) => {
+    setTipos((prev) => {
+      const set = new Set(prev);
+      if (set.has(id)) set.delete(id);
+      else set.add(id);
+      return [...set] as ShopTipo[];
+    });
+    setPage(1);
+  };
+
+  const toggleEstados = (id: CatalogEstado) => {
+    setEstados((prev) => {
+      const set = new Set(prev);
+      if (set.has(id)) set.delete(id);
+      else set.add(id);
+      return [...set] as CatalogEstado[];
+    });
+    setPage(1);
+  };
+
+  const clearFilters = useCallback(() => {
+    setQ("");
+    setSort("relevancia");
+    setPage(1);
+    setMarcas([]);
+    setTipos([]);
+    setEstados([]);
+    setPrecioMax(maxCatalogPrice);
+  }, [maxCatalogPrice]);
+
+  if (status === "loading" || status === "idle") {
+    return <CatalogLoadingSkeleton />;
+  }
+
+  if (status === "error") {
+    return (
+      <div id="catalogo" className="scroll-mt-24 bg-[#f3f4f6] px-4 py-16 sm:px-8">
+        <div className="mx-auto max-w-lg rounded-2xl border border-red-200/80 bg-white p-8 text-center shadow-sm">
+          <p className="text-sm text-red-800">{error}</p>
+          <button
+            type="button"
+            onClick={reload}
+            className="mt-4 rounded-xl bg-[var(--brand-from)] px-5 py-2.5 text-sm font-semibold text-white transition hover:opacity-95"
+          >
+            Reintentar
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div id="catalogo" className="scroll-mt-24 bg-[#f3f4f6] pb-16 pt-8 sm:pb-20 sm:pt-10">
+      <div className="mx-auto max-w-6xl px-4 sm:px-8">
+        {/* Barra búsqueda + orden */}
+        <div className="flex flex-col gap-4 rounded-2xl border border-[var(--border)] bg-white p-4 shadow-sm sm:flex-row sm:items-center sm:justify-between sm:p-5">
+          <div className="relative min-w-0 flex-1">
+            <svg
+              className="pointer-events-none absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-neutral-400"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={1.75}
+              stroke="currentColor"
+              aria-hidden
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+            </svg>
+            <input
+              type="search"
+              placeholder="Buscar productos..."
+              value={q}
+              onChange={(e) => {
+                setQ(e.target.value);
+                setPage(1);
+              }}
+              className="h-12 w-full rounded-xl border border-neutral-200 bg-neutral-50 pl-11 pr-4 text-sm text-neutral-900 placeholder:text-neutral-400 focus:border-[var(--brand-from)] focus:outline-none focus:ring-2 focus:ring-[var(--brand-from)]/20"
+            />
+          </div>
+          <div className="flex flex-wrap gap-2 sm:justify-end">
+            {(
+              [
+                ["relevancia", "Relevancia"],
+                ["precio-asc", "Precio: Menor a Mayor"],
+                ["novedad", "Novedad"],
+              ] as const
+            ).map(([key, label]) => {
+              const active =
+                key === "relevancia"
+                  ? sort === "relevancia"
+                  : sort === key;
+              return (
+                <button
+                  key={key}
+                  type="button"
+                  onClick={() => {
+                    setSort(key === "relevancia" ? "relevancia" : key);
+                    setPage(1);
+                  }}
+                  className={`rounded-xl px-4 py-2.5 text-xs font-semibold transition sm:text-sm ${
+                    active
+                      ? "bg-gradient-brand text-white shadow-sm"
+                      : "border border-neutral-200 bg-white text-neutral-600 hover:border-neutral-300"
+                  }`}
+                >
+                  {label}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        <div className="mt-8 flex flex-col gap-8 lg:flex-row lg:gap-10">
+          {/* Sidebar filtros */}
+          <aside className="w-full shrink-0 lg:w-[280px]">
+            <div className="rounded-2xl border border-[var(--border)] bg-white p-5 shadow-sm">
+              <div className="flex items-center justify-between border-b border-[var(--border)] pb-4">
+                <h2 className="font-display text-base font-semibold text-neutral-900">
+                  Filtros
+                </h2>
+                <button
+                  type="button"
+                  onClick={clearFilters}
+                  className="text-xs font-semibold text-[var(--brand-from)] hover:underline"
+                >
+                  Limpiar
+                </button>
+              </div>
+
+              <div className="mt-5">
+                <p className="text-[11px] font-bold uppercase tracking-wider text-neutral-500">
+                  Marca
+                </p>
+                <div className="mt-2 flex flex-wrap gap-2">
+                  {shopMarcas.map((m) => {
+                    const on = marcas.includes(m.id);
+                    return (
+                      <button
+                        key={m.id}
+                        type="button"
+                        onClick={() => toggleMarcas(m.id)}
+                        className={`rounded-lg border px-3 py-2 text-xs font-medium transition ${
+                          on
+                            ? "border-[var(--brand-from)] bg-[var(--brand-from)]/10 text-[var(--brand-from)]"
+                            : "border-neutral-200 bg-neutral-50 text-neutral-600 hover:border-neutral-300"
+                        }`}
+                      >
+                        {m.label}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              <div className="mt-6">
+                <p className="text-[11px] font-bold uppercase tracking-wider text-neutral-500">
+                  Tipo de producto
+                </p>
+                <div className="mt-2 flex flex-col gap-2">
+                  {shopTipos.map((t) => {
+                    const on = tipos.includes(t.id);
+                    return (
+                      <button
+                        key={t.id}
+                        type="button"
+                        onClick={() => toggleTipos(t.id)}
+                        className={`rounded-lg border px-3 py-2 text-left text-xs font-medium transition ${
+                          on
+                            ? "border-[var(--brand-from)] bg-[var(--brand-from)]/10 text-[var(--brand-from)]"
+                            : "border-neutral-200 bg-neutral-50 text-neutral-600 hover:border-neutral-300"
+                        }`}
+                      >
+                        {t.label}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              <div className="mt-6">
+                <p className="text-[11px] font-bold uppercase tracking-wider text-neutral-500">
+                  Rango de precio
+                </p>
+                <div className="mt-3">
+                  <input
+                    type="range"
+                    min={0}
+                    max={maxCatalogPrice}
+                    step={Math.max(1000, Math.round(maxCatalogPrice / 500))}
+                    value={effectivePrecioMax}
+                    onChange={(e) => {
+                      setPrecioMax(parseInt(e.target.value, 10));
+                      setPage(1);
+                    }}
+                    className="h-2 w-full cursor-pointer accent-[var(--brand-from)]"
+                  />
+                  <div className="mt-2 flex justify-between text-xs text-neutral-500">
+                    <span>{formatMoneyArs(0)}</span>
+                    <span className="font-semibold text-neutral-800">
+                      {formatMoneyArs(effectivePrecioMax)}
+                    </span>
+                    <span>{formatMoneyArs(maxCatalogPrice)}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-6">
+                <p className="text-[11px] font-bold uppercase tracking-wider text-neutral-500">
+                  Estado
+                </p>
+                <div className="mt-2 flex flex-wrap gap-2">
+                  {shopEstados.map((e) => {
+                    const on = estados.includes(e.id);
+                    return (
+                      <button
+                        key={e.id}
+                        type="button"
+                        onClick={() => toggleEstados(e.id)}
+                        className={`rounded-lg border px-3 py-2 text-xs font-medium transition ${
+                          on
+                            ? "border-[var(--brand-from)] bg-[var(--brand-from)]/10 text-[var(--brand-from)]"
+                            : "border-neutral-200 bg-neutral-50 text-neutral-600 hover:border-neutral-300"
+                        }`}
+                      >
+                        {e.label}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+          </aside>
+
+          {/* Grid */}
+          <div className="min-w-0 flex-1">
+            <p className="text-sm text-neutral-500">
+              Mostrando{" "}
+              <span className="font-semibold text-neutral-800">{filtered.length}</span>{" "}
+              productos
+            </p>
+
+            {slice.length === 0 ? (
+              <p className="mt-12 rounded-2xl border border-dashed border-neutral-300 bg-white py-16 text-center text-sm text-neutral-500">
+                No hay resultados con estos filtros.{" "}
+                <button type="button" onClick={clearFilters} className="font-semibold text-[var(--brand-from)] hover:underline">
+                  Limpiar filtros
+                </button>
+              </p>
+            ) : (
+              <div className="mt-6 grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+                {slice.map((p) => (
+                  <CatalogCard key={p.id} p={p} />
+                ))}
+              </div>
+            )}
+
+            {totalPages > 1 ? (
+              <PaginationNav
+                totalPages={totalPages}
+                currentPage={currentPage}
+                setPage={setPage}
+              />
+            ) : null}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}

@@ -1,10 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
-import {
-  homeServiceFeatures,
-  homeServiceIntro,
-  type HomeServiceFeature,
-} from "@/lib/home-content";
+
+import type { HomeServiceTechData } from "@/lib/home-types";
+import type { HomeServiceFeature } from "@/lib/home-content";
 
 function ServiceIcon({ icon }: { icon: HomeServiceFeature["icon"] }) {
   const common = "h-5 w-5";
@@ -38,7 +36,7 @@ function ServiceIcon({ icon }: { icon: HomeServiceFeature["icon"] }) {
   }
 }
 
-export function HomeServiceTech() {
+export function HomeServiceTech({ data }: { data: HomeServiceTechData }) {
   return (
     <section
       id="servicio-tecnico"
@@ -48,13 +46,13 @@ export function HomeServiceTech() {
         <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
           <div className="order-2 lg:order-1">
             <h2 className="font-display text-2xl font-semibold tracking-tight text-neutral-950 sm:text-3xl">
-              Servicio técnico especializado
+              {data.title}
             </h2>
             <p className="mt-4 text-[15px] leading-relaxed text-neutral-500 sm:text-base">
-              {homeServiceIntro}
+              {data.intro}
             </p>
             <ul className="mt-10 space-y-6">
-              {homeServiceFeatures.map((item) => (
+              {data.features.map((item) => (
                 <li key={item.title} className="flex gap-4">
                   <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[var(--brand-from)]/12 text-[var(--brand-from)]">
                     <ServiceIcon icon={item.icon} />
@@ -71,10 +69,10 @@ export function HomeServiceTech() {
               ))}
             </ul>
             <Link
-              href="/#servicio-tecnico"
+              href={data.ctaHref}
               className="mt-10 inline-flex h-12 items-center justify-center rounded-xl bg-gradient-brand px-8 text-sm font-semibold text-white shadow-[0_12px_40px_-12px_rgba(124,58,237,0.45)] transition hover:opacity-[0.97]"
             >
-              Saber más sobre el servicio
+              {data.ctaLabel}
             </Link>
           </div>
 
@@ -82,8 +80,8 @@ export function HomeServiceTech() {
             <div className="relative overflow-hidden rounded-2xl bg-neutral-200 shadow-[var(--glow-lg)] ring-1 ring-black/[0.04]">
               <div className="relative aspect-[5/4] sm:aspect-[4/3]">
                 <Image
-                  src="https://images.unsplash.com/photo-1581092160562-40aa08e78837?w=1200&q=88"
-                  alt="Técnico reparando un smartphone en banco de trabajo"
+                  src={data.imageUrl}
+                  alt={data.imageAlt}
                   fill
                   className="object-cover"
                   sizes="(max-width: 1024px) 100vw, 50vw"

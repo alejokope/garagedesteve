@@ -1,0 +1,174 @@
+import type { CategoryId, Product } from "@/lib/data";
+
+export type ShopBrand = "Apple" | "Samsung";
+export type ShopTipo =
+  | "smartphones"
+  | "accessories"
+  | "smartwatch"
+  | "audio"
+  | "mac"
+  | "tablet"
+  | "desktop"
+  | "servicio"
+  | "otro";
+
+export type CatalogEstado = "nuevo" | "oferta" | "mas-vendido";
+
+export type EnrichedProduct = Product & {
+  rating: number;
+  reviewCount: number;
+  brand: ShopBrand;
+  compareAtPrice: number | null;
+  discountPercent: number | null;
+  estado: CatalogEstado;
+  shopTipo: ShopTipo;
+  categoryLabel: string;
+};
+
+const categoryLabels: Record<CategoryId, string> = {
+  mac: "MAC",
+  ipad: "IPAD",
+  iphone: "IPHONE",
+  watch: "WATCH",
+  audio: "AUDIO",
+  desktop: "IMAC",
+  servicio: "SERVICIO",
+  otros: "ACCESORIOS",
+};
+
+function shopTipoFromCategory(c: CategoryId): ShopTipo {
+  switch (c) {
+    case "iphone":
+      return "smartphones";
+    case "watch":
+      return "smartwatch";
+    case "audio":
+      return "audio";
+    case "ipad":
+      return "tablet";
+    case "mac":
+      return "mac";
+    case "desktop":
+      return "desktop";
+    case "servicio":
+      return "servicio";
+    case "otros":
+      return "accessories";
+    default:
+      return "otro";
+  }
+}
+
+function brandFromProduct(p: Product): ShopBrand {
+  if (p.id === "otro-laptop-win") return "Samsung";
+  return "Apple";
+}
+
+function hashSeed(id: string) {
+  let h = 0;
+  for (let i = 0; i < id.length; i++) h = (h << 5) - h + id.charCodeAt(i);
+  return Math.abs(h);
+}
+
+/** Enriquece datos de catálogo (badges, rating, precio tachado) de forma determinista. */
+export function enrichProduct(p: Product): EnrichedProduct {
+  const seed = hashSeed(p.id);
+  const rating = 4.2 + (seed % 8) / 10;
+  const reviewCount = 20 + (seed % 180);
+  const brand = brandFromProduct(p);
+  const shopTipo = shopTipoFromCategory(p.category);
+  const categoryLabel = categoryLabels[p.category];
+
+  let compareAtPrice: number | null = null;
+  let discountPercent: number | null = null;
+  let estado: CatalogEstado;
+
+  const badgeLower = p.badge?.toLowerCase() ?? "";
+  const hasDiscount =
+    p.price > 0 && seed % 3 === 0 && p.category !== "servicio";
+
+  if (hasDiscount) {
+    discountPercent = 5 + (seed % 12);
+    compareAtPrice = Math.round(p.price / (1 - discountPercent / 100));
+    estado = "oferta";
+  } else if (badgeLower.includes("nuevo")) {
+    estado = "nuevo";
+  } else if (seed % 7 === 0 && p.category !== "servicio") {
+    estado = "mas-vendido";
+  } else {
+    estado = "nuevo";
+  }
+
+  return {
+    ...p,
+    rating: Math.round(rating * 10) / 10,
+    reviewCount,
+    brand,
+    compareAtPrice,
+    discountPercent,
+    estado,
+    shopTipo,
+    categoryLabel,
+  };
+}
+
+export const PAGE_SIZE = 9;
+
+export const shopMarcas: { id: ShopBrand; label: string }[] = [
+  { id: "Apple", label: "Apple" },
+  { id: "Samsung", label: "Samsung" },
+];
+
+export const shopTipos: { id: ShopTipo; label: string }[] = [
+  { id: "smartphones", label: "Smartphones" },
+  { id: "accessories", label: "Accesorios" },
+  { id: "smartwatch", label: "Smartwatch" },
+  { id: "audio", label: "Audio" },
+  { id: "mac", label: "Mac" },
+  { id: "tablet", label: "Tablet" },
+  { id: "desktop", label: "Escritorio" },
+  { id: "servicio", label: "Servicio" },
+  { id: "otro", label: "Otros" },
+];
+
+export const shopEstados: { id: CatalogEstado; label: string }[] = [
+  { id: "nuevo", label: "Nuevo" },
+  { id: "oferta", label: "Oferta" },
+  { id: "mas-vendido", label: "Más vendido" },
+];
+
+export type SortKey = "relevancia" | "precio-asc" | "novedad";
+
+export function filterEnriched(
+  list: EnrichedProduct[],
+  opts: {
+    q: string;
+    marcas: ShopBrand[];
+    tipos: ShopTipo[];
+    estados: CatalogEstado[];
+    precioMax: number;
+  },
+): EnrichedProduct[] {
+  const q = opts.q.trim().toLowerCase();
+  return list.filter((p) => {
+    if (q) {
+      const blob = `${p.name} ${p.short}`.toLowerCase();
+      if (!blob.includes(q)) return false;
+    }
+    if (opts.marcas.length && !opts.marcas.includes(p.brand)) return false;
+    if (opts.tipos.length && !opts.tipos.includes(p.shopTipo)) return false;
+    if (opts.estados.length && !opts.estados.includes(p.estado)) return false;
+    if (p.price > opts.precioMax) return false;
+    return true;
+  });
+}
+
+export function sortEnriched(list: EnrichedProduct[], sort: SortKey): EnrichedProduct[] {
+  const copy = [...list];
+  if (sort === "precio-asc") {
+    copy.sort((a, b) => a.price - b.price || a.name.localeCompare(b.name));
+  } else if (sort === "novedad") {
+    copy.reverse();
+  }
+  return copy;
+}

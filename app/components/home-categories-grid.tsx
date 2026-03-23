@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
-import { homeCategoryTiles } from "@/lib/home-categories";
+
+import type { HomeCategoriesData } from "@/lib/home-types";
 
 function ArrowLink() {
   return (
@@ -11,22 +12,21 @@ function ArrowLink() {
   );
 }
 
-export function HomeCategoriesGrid() {
+export function HomeCategoriesGrid({ data }: { data: HomeCategoriesData }) {
   return (
     <section className="border-b border-[var(--border)] bg-[#f8f9fa] py-16 sm:py-24">
       <div className="mx-auto max-w-6xl px-4 sm:px-8">
         <div className="mx-auto max-w-2xl text-center">
           <h2 className="font-display text-2xl font-semibold tracking-tight text-neutral-950 sm:text-3xl">
-            Nuestras categorías
+            {data.sectionTitle}
           </h2>
           <p className="mt-3 text-[15px] leading-relaxed text-neutral-500 sm:text-base">
-            Explorá nuestra amplia gama de productos Apple y servicios
-            especializados
+            {data.sectionSubtitle}
           </p>
         </div>
 
         <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3 lg:gap-6">
-          {homeCategoryTiles.map((tile) =>
+          {data.tiles.map((tile) =>
             tile.kind === "service" ? (
               <Link
                 key={tile.title}

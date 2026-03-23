@@ -1,5 +1,6 @@
 import Image from "next/image";
-import { homeTestimonials } from "@/lib/home-content";
+
+import type { HomeTestimonialsData } from "@/lib/home-types";
 
 function Stars() {
   return (
@@ -18,24 +19,23 @@ function Stars() {
   );
 }
 
-export function HomeTestimonials() {
+export function HomeTestimonials({ data }: { data: HomeTestimonialsData }) {
   return (
     <section className="border-b border-[var(--border)] bg-[#f8f9fa] py-16 sm:py-24">
       <div className="mx-auto max-w-6xl px-4 sm:px-8">
         <div className="mx-auto max-w-2xl text-center">
           <h2 className="font-display text-2xl font-semibold tracking-tight text-neutral-950 sm:text-3xl">
-            Lo que dicen nuestros clientes
+            {data.sectionTitle}
           </h2>
           <p className="mt-3 text-[15px] leading-relaxed text-neutral-500 sm:text-base">
-            Miles de clientes satisfechos confían en nosotros para sus
-            dispositivos Apple
+            {data.sectionSubtitle}
           </p>
         </div>
 
         <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3 lg:gap-6">
-          {homeTestimonials.map((t) => (
+          {data.items.map((t, i) => (
             <blockquote
-              key={t.name}
+              key={`${t.name}-${i}`}
               className="flex h-full flex-col rounded-2xl border border-[var(--border)] bg-white p-7 shadow-[0_1px_0_rgba(15,23,42,0.04)]"
             >
               <Stars />

@@ -1,8 +1,25 @@
 /** Textos y navegación alineados al diseño de la home; centralizá acá el rebranding. */
 export const siteConfig = {
   brandName: "The iPhone",
+  /** Enlace de ejemplo para “Detalle de producto” en la tienda */
+  shopExampleProductPath: "/tienda/iphone-16-pro",
   tagline:
     "Tecnología premium y soporte técnico con la confianza que buscás en cada compra.",
+  /** Navegación estilo catálogo (TechStore) */
+  shopNav: [
+    { href: "/tienda", label: "Catálogo de Productos", id: "catalog" },
+    { href: "/tienda/iphone-16-pro", label: "Detalle de Producto", id: "detail" },
+    { label: "Carrito", id: "cart", cart: true },
+    { href: "/#servicio-tecnico", label: "Servicio Técnico", id: "service" },
+    { href: "/tienda", label: "Seguimiento de Pedido", id: "track" },
+    { href: "/#faq", label: "Ayuda & FAQ", id: "help" },
+  ] as const,
+  contact: {
+    address: "Av. Corrientes 1234, CABA · Argentina",
+    phone: "+54 11 0000-0000",
+    email: "hola@theiphone.example",
+    hours: "Lun–Sáb 10:00–19:00",
+  },
   nav: [
     { href: "/tienda", label: "Comprar" },
     { href: "/#servicio-tecnico", label: "Servicio Técnico" },

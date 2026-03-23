@@ -7,21 +7,23 @@ import { HomeServiceTech } from "@/app/components/home-service-tech";
 import { HomeTestimonials } from "@/app/components/home-testimonials";
 import { HomeWhyChoose } from "@/app/components/home-why-choose";
 import { SiteFooter } from "@/app/components/site-footer";
-import { getFeaturedProducts } from "@/lib/data";
+import { getHomePageData } from "@/lib/home-content-server";
 
-export default function HomePage() {
-  const featured = getFeaturedProducts();
+export const revalidate = 60;
+
+export default async function HomePage() {
+  const home = await getHomePageData();
 
   return (
     <main className="min-h-screen pt-[3.5rem] sm:pt-16">
-      <HomeHero />
-      <HomeCategoriesGrid />
-      <HomeFeaturedGrid products={featured} />
-      <HomeServiceTech />
-      <HomeWhyChoose />
-      <HomeTestimonials />
-      <HomeFaq />
-      <HomeCtaFinal />
+      <HomeHero data={home.hero} />
+      <HomeCategoriesGrid data={home.categories} />
+      <HomeFeaturedGrid products={home.featured} />
+      <HomeServiceTech data={home.serviceTech} />
+      <HomeWhyChoose data={home.whyChoose} />
+      <HomeTestimonials data={home.testimonials} />
+      <HomeFaq data={home.faq} />
+      <HomeCtaFinal data={home.ctaFinal} />
       <SiteFooter />
     </main>
   );

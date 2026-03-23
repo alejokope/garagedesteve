@@ -37,8 +37,8 @@ export function SiteFooter() {
   return (
     <footer className="bg-[#0f0f0f] text-neutral-300">
       <div className="mx-auto max-w-6xl px-4 py-14 sm:px-8 sm:py-16">
-        <div className="grid gap-12 sm:grid-cols-2 lg:grid-cols-5 lg:gap-8 xl:gap-10">
-          <div>
+        <div className="grid gap-12 sm:grid-cols-2 lg:grid-cols-6 lg:gap-8 xl:gap-10">
+          <div className="sm:col-span-2 lg:col-span-2">
             <p className="font-display text-lg font-bold text-white">{siteConfig.brandName}</p>
             <p className="mt-4 text-sm leading-relaxed text-neutral-400">
               {siteConfig.footer.blurb}
@@ -71,7 +71,7 @@ export function SiteFooter() {
             </div>
           </div>
 
-          {siteConfig.footer.columns.map((col) => (
+          {siteConfig.footer.columns.slice(0, 2).map((col) => (
             <div key={col.title}>
               <h3 className="text-sm font-semibold text-white">{col.title}</h3>
               <ul className="mt-5 space-y-3 text-sm">
@@ -88,13 +88,78 @@ export function SiteFooter() {
               </ul>
             </div>
           ))}
+          <div>
+            <h3 className="text-sm font-semibold text-white">Soporte</h3>
+            <ul className="mt-5 space-y-3 text-sm">
+              {siteConfig.footer.columns[2]?.links.map((link) => (
+                <li key={link.label}>
+                  <Link
+                    href={link.href}
+                    className="text-neutral-400 transition hover:text-white"
+                  >
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
+              {siteConfig.footer.columns[3]?.links.map((link) => (
+                <li key={link.label}>
+                  <Link
+                    href={link.href}
+                    className="text-neutral-400 transition hover:text-white"
+                  >
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div>
+            <h3 className="text-sm font-semibold text-white">Contacto</h3>
+            <ul className="mt-5 space-y-4 text-sm text-neutral-400">
+              <li className="flex gap-2">
+                <span className="shrink-0 text-neutral-500" aria-hidden>
+                  📍
+                </span>
+                <span>{siteConfig.contact.address}</span>
+              </li>
+              <li className="flex gap-2">
+                <span className="shrink-0 text-neutral-500" aria-hidden>
+                  📞
+                </span>
+                <a href={`tel:${siteConfig.contact.phone.replace(/\s/g, "")}`} className="transition hover:text-white">
+                  {siteConfig.contact.phone}
+                </a>
+              </li>
+              <li className="flex gap-2">
+                <span className="shrink-0 text-neutral-500" aria-hidden>
+                  ✉️
+                </span>
+                <a href={`mailto:${siteConfig.contact.email}`} className="transition hover:text-white">
+                  {siteConfig.contact.email}
+                </a>
+              </li>
+              <li className="flex gap-2">
+                <span className="shrink-0 text-neutral-500" aria-hidden>
+                  🕐
+                </span>
+                <span>{siteConfig.contact.hours}</span>
+              </li>
+            </ul>
+          </div>
         </div>
 
-        <div className="mt-14 flex flex-col gap-2 border-t border-white/10 pt-8 text-xs text-neutral-500 sm:flex-row sm:items-center sm:justify-between">
+        <div className="mt-14 flex flex-col gap-3 border-t border-white/10 pt-8 text-xs text-neutral-500 sm:flex-row sm:items-center sm:justify-between">
           <p>
             © {new Date().getFullYear()} {siteConfig.brandName}. Todos los derechos reservados.
           </p>
-          <p className="text-neutral-600">Diseño de sistema e-commerce — Next.js</p>
+          <div className="flex flex-wrap gap-4">
+            <Link href="/#faq" className="transition hover:text-white">
+              Privacidad
+            </Link>
+            <Link href="/#faq" className="transition hover:text-white">
+              Términos
+            </Link>
+          </div>
         </div>
       </div>
     </footer>

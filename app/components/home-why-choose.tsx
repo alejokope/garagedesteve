@@ -1,4 +1,4 @@
-import { whyChooseItems } from "@/lib/home-content";
+import type { HomeWhyChooseData } from "@/lib/home-types";
 
 function CardIcon({ highlight }: { highlight?: boolean }) {
   return (
@@ -16,22 +16,21 @@ function CardIcon({ highlight }: { highlight?: boolean }) {
   );
 }
 
-export function HomeWhyChoose() {
+export function HomeWhyChoose({ data }: { data: HomeWhyChooseData }) {
   return (
     <section className="border-b border-[var(--border)] bg-white py-16 sm:py-24">
       <div className="mx-auto max-w-6xl px-4 sm:px-8">
         <div className="mx-auto max-w-2xl text-center">
           <h2 className="font-display text-2xl font-semibold tracking-tight text-neutral-950 sm:text-3xl">
-            Por qué elegirnos
+            {data.sectionTitle}
           </h2>
           <p className="mt-3 text-[15px] leading-relaxed text-neutral-500 sm:text-base">
-            Somos tu mejor opción para productos Apple y servicio técnico de
-            calidad
+            {data.sectionSubtitle}
           </p>
         </div>
 
         <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3 lg:gap-6">
-          {whyChooseItems.map((item) => (
+          {data.items.map((item) => (
             <div
               key={item.title}
               className={`rounded-2xl border p-7 transition ${
