@@ -16,15 +16,16 @@ function mobileNavItemKey(
   return "nav";
 }
 
-export function SiteHeader({ onOpenCart }: { onOpenCart: () => void }) {
+export function SiteHeader() {
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
   const [favOn, setFavOn] = useState(false);
   const { count } = useCart();
 
-  const isShop = pathname.startsWith("/tienda");
+  const isShop = pathname.startsWith("/tienda") || pathname === "/carrito";
   const catalogActive = pathname === "/tienda";
   const detailActive = pathname.startsWith("/tienda/") && pathname !== "/tienda";
+  const cartActive = pathname === "/carrito";
 
   useEffect(() => {
     if (menuOpen) {
@@ -79,13 +80,9 @@ export function SiteHeader({ onOpenCart }: { onOpenCart: () => void }) {
               >
                 Detalle de Producto
               </Link>
-              <button
-                type="button"
-                onClick={onOpenCart}
-                className={navLinkClass(false)}
-              >
+              <Link href="/carrito" className={navLinkClass(cartActive)}>
                 Carrito
-              </button>
+              </Link>
               <Link href="/#servicio-tecnico" className={navLinkClass(false)}>
                 Servicio Técnico
               </Link>
@@ -134,9 +131,8 @@ export function SiteHeader({ onOpenCart }: { onOpenCart: () => void }) {
                     />
                   </svg>
                 </button>
-                <button
-                  type="button"
-                  onClick={onOpenCart}
+                <Link
+                  href="/carrito"
                   className="relative flex h-11 w-11 items-center justify-center rounded-xl text-neutral-800 transition-colors hover:bg-neutral-100"
                   aria-label={`Carrito${count ? `, ${count} productos` : ""}`}
                 >
@@ -148,7 +144,7 @@ export function SiteHeader({ onOpenCart }: { onOpenCart: () => void }) {
                       {count > 99 ? "99+" : count}
                     </span>
                   ) : null}
-                </button>
+                </Link>
               </>
             ) : (
               <>
@@ -161,9 +157,8 @@ export function SiteHeader({ onOpenCart }: { onOpenCart: () => void }) {
                     <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
                   </svg>
                 </button>
-                <button
-                  type="button"
-                  onClick={onOpenCart}
+                <Link
+                  href="/carrito"
                   className="relative flex h-11 w-11 items-center justify-center rounded-xl text-neutral-800 transition-colors hover:bg-neutral-100"
                   aria-label={`Carrito${count ? `, ${count} productos` : ""}`}
                 >
@@ -175,7 +170,7 @@ export function SiteHeader({ onOpenCart }: { onOpenCart: () => void }) {
                       {count > 99 ? "99+" : count}
                     </span>
                   ) : null}
-                </button>
+                </Link>
               </>
             )}
             <button
@@ -229,30 +224,16 @@ export function SiteHeader({ onOpenCart }: { onOpenCart: () => void }) {
             <p className="mb-4 text-[11px] font-semibold uppercase tracking-[0.2em] text-neutral-400">
               Menú
             </p>
-            {(isShop ? siteConfig.shopNav : siteConfig.nav).map((item) =>
-              "cart" in item && item.cart ? (
-                <button
-                  key={item.id}
-                  type="button"
-                  className="rounded-xl px-4 py-4 text-left text-lg font-medium text-neutral-900 transition-colors hover:bg-neutral-50 active:bg-neutral-100"
-                  onClick={() => {
-                    setMenuOpen(false);
-                    onOpenCart();
-                  }}
-                >
-                  {item.label}
-                </button>
-              ) : (
-                <Link
-                  key={mobileNavItemKey(item)}
-                  href={"href" in item ? item.href : "/"}
-                  className="rounded-xl px-4 py-4 text-lg font-medium text-neutral-900 transition-colors hover:bg-neutral-50 active:bg-neutral-100"
-                  onClick={() => setMenuOpen(false)}
-                >
-                  {item.label}
-                </Link>
-              ),
-            )}
+            {(isShop ? siteConfig.shopNav : siteConfig.nav).map((item) => (
+              <Link
+                key={mobileNavItemKey(item)}
+                href={"href" in item ? item.href : "/"}
+                className="rounded-xl px-4 py-4 text-lg font-medium text-neutral-900 transition-colors hover:bg-neutral-50 active:bg-neutral-100"
+                onClick={() => setMenuOpen(false)}
+              >
+                {item.label}
+              </Link>
+            ))}
           </div>
         </nav>
       </div>

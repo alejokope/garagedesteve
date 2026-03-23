@@ -9,7 +9,7 @@ export const siteConfig = {
   shopNav: [
     { href: "/tienda", label: "Catálogo de Productos", id: "catalog" },
     { href: "/tienda/iphone-16-pro", label: "Detalle de Producto", id: "detail" },
-    { label: "Carrito", id: "cart", cart: true },
+    { href: "/carrito", label: "Carrito", id: "cart" },
     { href: "/#servicio-tecnico", label: "Servicio Técnico", id: "service" },
     { href: "/tienda", label: "Seguimiento de Pedido", id: "track" },
     { href: "/#faq", label: "Ayuda & FAQ", id: "help" },
