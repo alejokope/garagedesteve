@@ -15,6 +15,20 @@ const cards = [
     href: "/backoffice/productos",
     tag: "Catálogo",
   },
+  {
+    title: "Servicio técnico — Precios",
+    description:
+      "Tablas de precios, filtros por dispositivo, moneda ARS/USD global o por fila, acordeón y banner a WhatsApp.",
+    href: "/backoffice/servicio-tecnico/precios",
+    tag: "Reparaciones",
+  },
+  {
+    title: "Servicio técnico — Solicitud",
+    description:
+      "Formulario público: tipos de servicio con precios en pesos o dólares, marcas, modelos, prioridad, entrega y textos.",
+    href: "/backoffice/servicio-tecnico/solicitud",
+    tag: "Formulario",
+  },
 ] as const;
 
 export default function BackofficeHomePage() {
@@ -31,7 +45,7 @@ export default function BackofficeHomePage() {
         </p>
       </header>
 
-      <ul className="grid gap-4 sm:grid-cols-2">
+      <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-2">
         {cards.map((c) => (
           <li key={c.href}>
             <Link

@@ -22,10 +22,15 @@ export function SiteHeader() {
   const [favOn, setFavOn] = useState(false);
   const { count } = useCart();
 
-  const isShop = pathname.startsWith("/tienda") || pathname === "/carrito";
+  const isShop =
+    pathname.startsWith("/tienda") ||
+    pathname === "/carrito" ||
+    pathname.startsWith("/servicio-tecnico");
   const catalogActive = pathname === "/tienda";
   const detailActive = pathname.startsWith("/tienda/") && pathname !== "/tienda";
   const cartActive = pathname === "/carrito";
+  const servicePreciosActive = pathname === "/servicio-tecnico/precios";
+  const serviceSolicitudActive = pathname === "/servicio-tecnico/solicitud";
 
   useEffect(() => {
     if (menuOpen) {
@@ -83,8 +88,17 @@ export function SiteHeader() {
               <Link href="/carrito" className={navLinkClass(cartActive)}>
                 Carrito
               </Link>
-              <Link href="/#servicio-tecnico" className={navLinkClass(false)}>
-                Servicio Técnico
+              <Link
+                href="/servicio-tecnico/precios"
+                className={navLinkClass(servicePreciosActive)}
+              >
+                Precios reparaciones
+              </Link>
+              <Link
+                href="/servicio-tecnico/solicitud"
+                className={navLinkClass(serviceSolicitudActive)}
+              >
+                Solicitar reparación
               </Link>
               <Link href="/tienda" className={navLinkClass(false)}>
                 Seguimiento de Pedido

@@ -10,7 +10,8 @@ export const siteConfig = {
     { href: "/tienda", label: "Catálogo de Productos", id: "catalog" },
     { href: "/tienda/iphone-16-pro", label: "Detalle de Producto", id: "detail" },
     { href: "/carrito", label: "Carrito", id: "cart" },
-    { href: "/#servicio-tecnico", label: "Servicio Técnico", id: "service" },
+    { href: "/servicio-tecnico/precios", label: "Precios reparaciones", id: "service-prices" },
+    { href: "/servicio-tecnico/solicitud", label: "Solicitar reparación", id: "service-form" },
     { href: "/tienda", label: "Seguimiento de Pedido", id: "track" },
     { href: "/#faq", label: "Ayuda & FAQ", id: "help" },
   ] as const,
@@ -22,7 +23,7 @@ export const siteConfig = {
   },
   nav: [
     { href: "/tienda", label: "Comprar" },
-    { href: "/#servicio-tecnico", label: "Servicio Técnico" },
+    { href: "/servicio-tecnico/precios", label: "Servicio técnico" },
     { href: "/#sedes", label: "Nuestras Sedes" },
     { href: "/#vende", label: "Vende tu equipo" },
     { href: "/#faq", label: "FAQ" },
@@ -51,8 +52,8 @@ export const siteConfig = {
       {
         title: "Servicio",
         links: [
-          { href: "/#servicio-tecnico", label: "Reparaciones" },
-          { href: "/#servicio-tecnico", label: "Garantía" },
+          { href: "/servicio-tecnico/precios", label: "Reparaciones" },
+          { href: "/servicio-tecnico/solicitud", label: "Solicitar turno" },
           { href: "/#faq", label: "Consultas" },
         ],
       },

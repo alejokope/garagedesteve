@@ -72,6 +72,6 @@ export const homeCategoryTiles: HomeCategoryTile[] = [
     kind: "service",
     title: "Servicio Técnico",
     description: "Resolvemos cualquier problema con tu dispositivo.",
-    href: "/#servicio-tecnico",
+    href: "/servicio-tecnico/precios",
   },
 ];

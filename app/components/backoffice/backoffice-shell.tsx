@@ -6,10 +6,26 @@ import { type ReactNode, useState } from "react";
 
 import { LogoutButton } from "@/app/components/backoffice/logout-button";
 
+function WrenchIcon({ className }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" aria-hidden>
+      <path
+        d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"
+        stroke="currentColor"
+        strokeWidth="1.75"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
 const nav = [
   { href: "/backoffice", label: "Inicio", icon: HomeIcon },
   { href: "/backoffice/contenido", label: "Contenido", icon: ContentIcon },
   { href: "/backoffice/productos", label: "Productos", icon: BoxIcon },
+  { href: "/backoffice/servicio-tecnico/precios", label: "Servicio — Precios", icon: WrenchIcon },
+  { href: "/backoffice/servicio-tecnico/solicitud", label: "Servicio — Solicitud", icon: WrenchIcon },
   { href: "/backoffice/listas/categorias", label: "Listas", icon: ListIcon },
 ] as const;
 
