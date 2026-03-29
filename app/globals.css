@@ -65,6 +65,12 @@ body {
     opacity: 1 !important;
     transform: none !important;
   }
+
+  .scroll-reveal-target {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
 }
 
 @keyframes fade-up {
