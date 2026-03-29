@@ -14,24 +14,24 @@ function ArrowLink() {
 
 export function HomeCategoriesGrid({ data }: { data: HomeCategoriesData }) {
   return (
-    <section className="border-b border-[var(--border)] bg-[#fafafa] py-16 sm:py-24">
-      <div className="mx-auto max-w-6xl px-4 sm:px-8">
-        <div className="mx-auto max-w-2xl text-center">
-          <h2 className="font-display text-2xl font-semibold tracking-tight text-neutral-950 sm:text-3xl">
+    <section className="border-b border-[var(--border)] bg-[#fafafa] py-12 sm:py-20 lg:py-24">
+      <div className="mx-auto max-w-6xl px-5 sm:px-8">
+        <div className="mx-auto max-w-2xl text-left sm:text-center">
+          <h2 className="font-display text-[1.375rem] font-semibold leading-snug tracking-tight text-neutral-950 sm:text-3xl">
             {data.sectionTitle}
           </h2>
-          <p className="mt-3 text-[15px] leading-relaxed text-neutral-500 sm:text-base">
+          <p className="mt-2.5 text-[15px] leading-relaxed text-neutral-500 sm:mt-3 sm:text-base">
             {data.sectionSubtitle}
           </p>
         </div>
 
-        <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3 lg:gap-6">
+        <div className="mt-8 grid gap-4 sm:mt-12 sm:grid-cols-2 sm:gap-5 lg:grid-cols-3 lg:gap-6">
           {data.tiles.map((tile) =>
             tile.kind === "service" ? (
               <Link
                 key={tile.title}
                 href={tile.href}
-                className="group relative flex min-h-[17rem] flex-col items-start justify-between overflow-hidden rounded-2xl border border-neutral-900 bg-neutral-950 p-8 text-left shadow-[var(--glow-lg)] transition hover:bg-neutral-900 sm:min-h-[18rem]"
+                className="group relative flex min-h-0 flex-col items-start justify-between gap-6 overflow-hidden rounded-2xl border border-neutral-900 bg-neutral-950 p-6 text-left shadow-[var(--glow-lg)] transition hover:bg-neutral-900 sm:min-h-[18rem] sm:gap-0 sm:p-8"
               >
                 <div className="flex h-14 w-14 items-center justify-center rounded-full border border-white/25 bg-white/10">
                   <svg
@@ -82,11 +82,11 @@ export function HomeCategoriesGrid({ data }: { data: HomeCategoriesData }) {
                     className="object-cover transition duration-500 group-hover:scale-[1.03]"
                   />
                 </div>
-                <div className="flex flex-1 flex-col p-6">
-                  <h3 className="font-display text-lg font-semibold text-neutral-950">
+                <div className="flex flex-1 flex-col p-5 sm:p-6">
+                  <h3 className="font-display text-base font-semibold text-neutral-950 sm:text-lg">
                     {tile.title}
                   </h3>
-                  <p className="mt-2 flex-1 text-sm leading-relaxed text-neutral-500">
+                  <p className="mt-1.5 flex-1 text-sm leading-relaxed text-neutral-500 sm:mt-2">
                     {tile.description}
                   </p>
                   <ArrowLink />

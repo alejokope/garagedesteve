@@ -19,13 +19,17 @@ export function FeaturedProductCard({ product }: { product: Product }) {
   const badge = productBadgeLabel(product.badge);
 
   return (
-    <article className="group flex h-full flex-col overflow-hidden rounded-2xl border border-[var(--border)] bg-white shadow-[0_1px_0_rgba(15,23,42,0.04)] transition hover:-translate-y-0.5 hover:shadow-[var(--glow)]">
-      <Link href={`/tienda/${product.id}`} className="relative block aspect-square bg-neutral-50">
+    <article
+      suppressHydrationWarning
+      data-featured-product-card
+      className="group flex h-full w-full min-h-0 min-w-0 flex-col overflow-hidden rounded-2xl border border-[var(--border)] bg-white shadow-[0_1px_0_rgba(15,23,42,0.04)] transition hover:-translate-y-0.5 hover:shadow-[var(--glow)]"
+    >
+      <Link href={`/tienda/${product.id}`} className="relative block aspect-[5/4] bg-neutral-50 sm:aspect-square">
         <Image
           src={product.image}
           alt={product.imageAlt}
           fill
-          sizes="(max-width: 640px) 50vw, 25vw"
+          sizes="(max-width: 640px) 100vw, 25vw"
           className="object-contain p-4 transition duration-500 group-hover:scale-[1.02]"
         />
         {badge ? (
@@ -34,23 +38,25 @@ export function FeaturedProductCard({ product }: { product: Product }) {
           </span>
         ) : null}
       </Link>
-      <div className="flex flex-1 flex-col p-5 pt-4">
+      <div className="flex min-h-0 flex-1 flex-col p-4 pt-3 sm:p-5 sm:pt-4">
         <Link href={`/tienda/${product.id}`}>
-          <h3 className="font-display text-base font-semibold leading-snug text-neutral-950 transition hover:text-[var(--brand-from)]">
+          <h3 className="font-display text-[15px] font-semibold leading-snug text-neutral-950 transition hover:text-[var(--brand-from)] sm:text-base">
             {product.name}
           </h3>
         </Link>
-        <p className="mt-1.5 line-clamp-2 text-sm text-neutral-500">{product.short}</p>
-        <p className="font-display mt-4 text-lg font-bold tabular-nums text-neutral-950">
+        <p className="mt-1 line-clamp-2 text-sm text-neutral-500 sm:mt-1.5">{product.short}</p>
+        <p className="font-display mt-3 text-lg font-bold tabular-nums text-neutral-950 sm:mt-4">
           {formatMoneyArs(product.price)}
         </p>
-        <button
-          type="button"
-          onClick={() => add(product)}
-          className="mt-4 flex h-11 w-full items-center justify-center rounded-xl bg-neutral-950 text-sm font-semibold text-white transition hover:bg-neutral-800 active:scale-[0.99]"
-        >
-          Agregar al carrito
-        </button>
+        <div className="mt-auto w-full pt-3 sm:pt-4">
+          <button
+            type="button"
+            onClick={() => add(product)}
+            className="flex h-11 w-full items-center justify-center rounded-xl bg-neutral-950 text-center text-sm font-semibold leading-none text-white transition hover:bg-neutral-800 active:scale-[0.99]"
+          >
+            Agregar al carrito
+          </button>
+        </div>
       </div>
     </article>
   );

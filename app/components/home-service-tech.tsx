@@ -40,18 +40,18 @@ export function HomeServiceTech({ data }: { data: HomeServiceTechData }) {
   return (
     <section
       id="servicio-tecnico"
-      className="scroll-mt-24 border-b border-[var(--border)] bg-[#fafafa] py-16 sm:py-24"
+      className="scroll-mt-24 border-b border-[var(--border)] bg-[#fafafa] py-12 sm:py-20 lg:py-24"
     >
-      <div className="mx-auto max-w-6xl px-4 sm:px-8">
-        <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
+      <div className="mx-auto max-w-6xl px-5 sm:px-8">
+        <div className="grid items-center gap-8 lg:grid-cols-2 lg:gap-16">
           <div className="order-2 lg:order-1">
-            <h2 className="font-display text-2xl font-semibold tracking-tight text-neutral-950 sm:text-3xl">
+            <h2 className="font-display text-[1.375rem] font-semibold leading-snug tracking-tight text-neutral-950 sm:text-3xl">
               {data.title}
             </h2>
-            <p className="mt-4 text-[15px] leading-relaxed text-neutral-500 sm:text-base">
+            <p className="mt-3 max-w-prose text-[15px] leading-relaxed text-neutral-500 sm:mt-4 sm:text-base">
               {data.intro}
             </p>
-            <ul className="mt-10 space-y-6">
+            <ul className="mt-8 space-y-5 sm:mt-10 sm:space-y-6">
               {data.features.map((item) => (
                 <li key={item.title} className="flex gap-4">
                   <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[var(--brand-from)]/12 text-[var(--brand-from)]">
@@ -70,15 +70,15 @@ export function HomeServiceTech({ data }: { data: HomeServiceTechData }) {
             </ul>
             <Link
               href={data.ctaHref}
-              className="mt-10 inline-flex h-12 items-center justify-center rounded-lg bg-neutral-950 px-8 text-sm font-semibold text-white shadow-[0_12px_40px_-16px_rgba(0,0,0,0.2)] transition hover:bg-neutral-800"
+              className="mt-8 inline-flex h-12 w-full items-center justify-center rounded-xl bg-neutral-950 px-8 text-sm font-semibold text-white shadow-[0_12px_40px_-16px_rgba(0,0,0,0.2)] transition hover:bg-neutral-800 sm:mt-10 sm:w-auto sm:rounded-lg"
             >
               {data.ctaLabel}
             </Link>
           </div>
 
           <div className="order-1 lg:order-2">
-            <div className="relative overflow-hidden rounded-2xl bg-neutral-200 shadow-[var(--glow-lg)] ring-1 ring-black/[0.04]">
-              <div className="relative aspect-[5/4] sm:aspect-[4/3]">
+            <div className="relative overflow-hidden rounded-xl bg-neutral-200 shadow-[var(--glow-lg)] ring-1 ring-black/[0.04] sm:rounded-2xl">
+              <div className="relative aspect-[16/11] sm:aspect-[4/3] lg:aspect-[5/4]">
                 <Image
                   src={data.imageUrl}
                   alt={data.imageAlt}

@@ -16,12 +16,12 @@ export default async function HomePage() {
   const home = await getHomePageData();
 
   return (
-    <main className="min-h-screen pt-[3.5rem] sm:pt-16">
+    <main className="min-h-screen pt-[calc(3.25rem+env(safe-area-inset-top))] sm:pt-16">
       <HomeHero data={home.hero} />
       <ScrollReveal>
         <HomeCategoriesGrid data={home.categories} />
       </ScrollReveal>
-      <ScrollReveal delayMs={40}>
+      <ScrollReveal delayMs={40} className="w-full min-w-0">
         <HomeFeaturedGrid products={home.featured} />
       </ScrollReveal>
       <ScrollReveal delayMs={20}>
