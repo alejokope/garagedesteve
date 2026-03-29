@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -16,21 +17,54 @@ function mobileNavItemKey(
   return "nav";
 }
 
+function shopNavItemActive(id: string, pathname: string): boolean {
+  switch (id) {
+    case "catalog":
+      return pathname === "/tienda";
+    case "cart":
+      return pathname === "/carrito";
+    case "service-prices":
+      return pathname === "/servicio-tecnico/precios";
+    case "service-form":
+      return pathname === "/servicio-tecnico/solicitud";
+    default:
+      return false;
+  }
+}
+
+function desktopNavLinkClass(active: boolean) {
+  return [
+    "relative inline-block whitespace-nowrap px-1 pb-1.5 text-[13px] font-medium leading-none tracking-tight text-neutral-500 transition-colors duration-200 hover:text-neutral-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-400 focus-visible:ring-offset-2 focus-visible:rounded-sm",
+    active
+      ? "text-neutral-900 after:pointer-events-none after:absolute after:inset-x-1 after:bottom-0 after:h-px after:rounded-full after:bg-neutral-900"
+      : "",
+  ].join(" ");
+}
+
+function homeNavLinkActive(href: string, pathname: string): boolean {
+  if (href.startsWith("/#")) return false;
+  if (href === "/tienda") return pathname === "/tienda" || pathname.startsWith("/tienda/");
+  if (href.startsWith("/servicio-tecnico"))
+    return pathname.startsWith("/servicio-tecnico");
+  return pathname === href;
+}
+
 export function SiteHeader() {
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
   const [favOn, setFavOn] = useState(false);
   const { count } = useCart();
+  /** Evita mismatch de hidratación si el HTML del servidor quedó cacheado (Turbopack/HMR) distinto al bundle del cliente. */
+  const [desktopNavReady, setDesktopNavReady] = useState(false);
 
   const isShop =
     pathname.startsWith("/tienda") ||
     pathname === "/carrito" ||
     pathname.startsWith("/servicio-tecnico");
-  const catalogActive = pathname === "/tienda";
-  const detailActive = pathname.startsWith("/tienda/") && pathname !== "/tienda";
-  const cartActive = pathname === "/carrito";
-  const servicePreciosActive = pathname === "/servicio-tecnico/precios";
-  const serviceSolicitudActive = pathname === "/servicio-tecnico/solicitud";
+
+  useEffect(() => {
+    setDesktopNavReady(true);
+  }, []);
 
   useEffect(() => {
     if (menuOpen) {
@@ -43,81 +77,74 @@ export function SiteHeader() {
     };
   }, [menuOpen]);
 
-  const navLinkClass = (active: boolean) =>
-    `relative pb-0.5 text-sm font-medium transition-colors ${
-      active
-        ? "text-[var(--brand-from)] after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:rounded-full after:bg-[var(--brand-from)]"
-        : "text-neutral-600 hover:text-[var(--brand-from)]"
-    }`;
-
   return (
     <>
-      <header className="sticky top-0 z-[60] border-b border-[var(--border)] bg-white/90 backdrop-blur-md supports-[backdrop-filter]:bg-white/80">
-        <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-3.5 pt-[max(0.75rem,env(safe-area-inset-top))] sm:px-8">
+      <header className="sticky top-0 z-[60] border-b border-[var(--border)] bg-white/95 backdrop-blur-md supports-[backdrop-filter]:bg-white/90">
+        <div className="mx-auto flex max-w-6xl items-center justify-between gap-2 px-4 py-1.5 pt-[max(0.5rem,env(safe-area-inset-top))] sm:gap-4 sm:px-8 sm:py-2">
           <Link
             href="/"
-            className="group flex min-w-0 shrink-0 items-center gap-2"
+            className="group flex h-[40px] min-h-[40px] max-h-[40px] min-w-0 shrink-0 items-center"
             onClick={() => setMenuOpen(false)}
           >
-            {isShop ? (
-              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-gradient-brand text-white shadow-sm">
-                <svg className="h-5 w-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
-                  <path d="M13 2L3 14h8l-1 8 10-12h-8l1-8z" />
-                </svg>
-              </span>
-            ) : null}
-            <span className="font-display text-lg font-bold tracking-tight text-[#4c1d95] transition-opacity group-hover:opacity-90 sm:text-xl">
-              {siteConfig.brandName}
-            </span>
+            {/* Altura fija 40px en todas las vistas (ratio del PNG 1080×1350). */}
+            <Image
+              src="/brand/garage-logo.png"
+              alt={siteConfig.brandName}
+              width={864}
+              height={1080}
+              className="h-[40px] max-h-[40px] w-auto min-h-0 object-contain object-left"
+              priority
+              unoptimized
+            />
+            <span className="sr-only">{siteConfig.brandName}</span>
           </Link>
 
           {isShop ? (
-            <nav className="hidden items-center justify-center gap-4 text-sm lg:flex xl:gap-6">
-              <Link
-                href="/tienda"
-                className={navLinkClass(catalogActive)}
-              >
-                Catálogo de Productos
-              </Link>
-              <Link
-                href={siteConfig.shopExampleProductPath}
-                className={navLinkClass(detailActive)}
-              >
-                Detalle de Producto
-              </Link>
-              <Link href="/carrito" className={navLinkClass(cartActive)}>
-                Carrito
-              </Link>
-              <Link
-                href="/servicio-tecnico/precios"
-                className={navLinkClass(servicePreciosActive)}
-              >
-                Precios reparaciones
-              </Link>
-              <Link
-                href="/servicio-tecnico/solicitud"
-                className={navLinkClass(serviceSolicitudActive)}
-              >
-                Solicitar reparación
-              </Link>
-              <Link href="/tienda" className={navLinkClass(false)}>
-                Seguimiento de Pedido
-              </Link>
-              <Link href="/#faq" className={navLinkClass(false)}>
-                Ayuda &amp; FAQ
-              </Link>
+            <nav
+              className="hidden min-w-0 flex-1 justify-center lg:flex"
+              aria-label="Tienda"
+            >
+              {desktopNavReady ? (
+                <ul className="flex max-w-full flex-wrap items-center justify-center gap-x-3 gap-y-2 sm:gap-x-4 lg:gap-x-5">
+                  {siteConfig.shopNav.map((item) => {
+                    const active = shopNavItemActive(item.id, pathname);
+                    return (
+                      <li key={item.id}>
+                        <Link href={item.href} className={desktopNavLinkClass(active)}>
+                          {item.shortLabel}
+                        </Link>
+                      </li>
+                    );
+                  })}
+                </ul>
+              ) : (
+                <div
+                  className="mx-auto min-h-[2.25rem] w-full max-w-3xl"
+                  aria-hidden
+                />
+              )}
             </nav>
           ) : (
-            <nav className="hidden items-center justify-center gap-7 text-sm font-medium text-neutral-600 lg:flex xl:gap-9">
-              {siteConfig.nav.map((item) => (
-                <Link
-                  key={`${item.href}::${item.label}`}
-                  href={item.href}
-                  className="transition-colors hover:text-[var(--brand-from)]"
-                >
-                  {item.label}
-                </Link>
-              ))}
+            <nav className="hidden min-w-0 flex-1 items-center justify-center lg:flex">
+              {desktopNavReady ? (
+                <ul className="flex max-w-full flex-wrap items-center justify-center gap-x-3 gap-y-2 sm:gap-x-5 lg:gap-x-6">
+                  {siteConfig.nav.map((item) => (
+                    <li key={`${item.href}::${item.label}`}>
+                      <Link
+                        href={item.href}
+                        className={desktopNavLinkClass(homeNavLinkActive(item.href, pathname))}
+                      >
+                        {item.label}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <div
+                  className="mx-auto min-h-[2.25rem] w-full max-w-3xl"
+                  aria-hidden
+                />
+              )}
             </nav>
           )}
 
@@ -211,7 +238,7 @@ export function SiteHeader() {
 
       <div
         id="mobile-nav"
-        className={`fixed inset-0 z-50 lg:hidden ${
+        className={`fixed inset-0 z-[80] lg:hidden ${
           menuOpen ? "pointer-events-auto" : "pointer-events-none"
         }`}
         aria-hidden={!menuOpen}
@@ -226,15 +253,26 @@ export function SiteHeader() {
           onClick={() => setMenuOpen(false)}
         />
         <nav
-          className={`absolute right-0 top-0 flex h-full w-[min(100%,20rem)] flex-col bg-white shadow-2xl transition-transform duration-300 ease-out ${
+          className={`absolute inset-0 flex min-h-0 flex-col bg-white transition-transform duration-300 ease-out ${
             menuOpen ? "translate-x-0" : "translate-x-full"
           }`}
           style={{
-            paddingTop: "max(1rem, env(safe-area-inset-top))",
             paddingBottom: "max(1rem, env(safe-area-inset-bottom))",
           }}
         >
-          <div className="flex flex-1 flex-col gap-1 px-6 pt-4">
+          <div className="flex shrink-0 items-center justify-end border-b border-neutral-100 px-2 pt-[max(0.5rem,env(safe-area-inset-top))] pb-2 sm:px-4">
+            <button
+              type="button"
+              className="flex h-11 w-11 items-center justify-center rounded-xl text-neutral-800 transition-colors hover:bg-neutral-100"
+              aria-label="Cerrar menú"
+              onClick={() => setMenuOpen(false)}
+            >
+              <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" strokeWidth={1.75} stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+          <div className="flex min-h-0 flex-1 flex-col gap-1 overflow-y-auto overscroll-contain px-6 pt-4">
             <p className="mb-4 text-[11px] font-semibold uppercase tracking-[0.2em] text-neutral-400">
               Menú
             </p>

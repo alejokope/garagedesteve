@@ -340,7 +340,7 @@ export function RepairFormView({ config }: { config: RepairFormPayload }) {
           </div>
 
           <aside className="w-full shrink-0 space-y-6 lg:sticky lg:top-24 lg:max-w-sm">
-            <div className="rounded-2xl bg-gradient-brand p-6 text-white shadow-lg">
+            <div className="rounded-2xl border border-neutral-800 bg-neutral-950 p-6 text-white shadow-lg">
               <h2 className="font-display text-lg font-bold">{config.sidebarDiagnosis.title}</h2>
               <ul className="mt-3 space-y-2 text-sm text-white/90">
                 {config.sidebarDiagnosis.bullets.map((b, i) => (

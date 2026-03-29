@@ -92,7 +92,7 @@ function CatalogCard({ p }: { p: EnrichedProduct }) {
           <button
             type="button"
             onClick={() => add(p)}
-            className="shrink-0 rounded-xl bg-gradient-brand px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:opacity-[0.96] active:scale-[0.99]"
+            className="shrink-0 rounded-lg bg-neutral-950 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-neutral-800 active:scale-[0.99]"
           >
             Agregar
           </button>
@@ -373,7 +373,7 @@ export function CatalogView() {
                   }}
                   className={`rounded-xl px-4 py-2.5 text-xs font-semibold transition sm:text-sm ${
                     active
-                      ? "bg-gradient-brand text-white shadow-sm"
+                      ? "bg-neutral-950 text-white shadow-sm"
                       : "border border-neutral-200 bg-white text-neutral-600 hover:border-neutral-300"
                   }`}
                 >

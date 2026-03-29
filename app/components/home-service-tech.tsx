@@ -40,7 +40,7 @@ export function HomeServiceTech({ data }: { data: HomeServiceTechData }) {
   return (
     <section
       id="servicio-tecnico"
-      className="scroll-mt-24 border-b border-[var(--border)] bg-[#f8f9fa] py-16 sm:py-24"
+      className="scroll-mt-24 border-b border-[var(--border)] bg-[#fafafa] py-16 sm:py-24"
     >
       <div className="mx-auto max-w-6xl px-4 sm:px-8">
         <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
@@ -70,7 +70,7 @@ export function HomeServiceTech({ data }: { data: HomeServiceTechData }) {
             </ul>
             <Link
               href={data.ctaHref}
-              className="mt-10 inline-flex h-12 items-center justify-center rounded-xl bg-gradient-brand px-8 text-sm font-semibold text-white shadow-[0_12px_40px_-12px_rgba(124,58,237,0.45)] transition hover:opacity-[0.97]"
+              className="mt-10 inline-flex h-12 items-center justify-center rounded-lg bg-neutral-950 px-8 text-sm font-semibold text-white shadow-[0_12px_40px_-16px_rgba(0,0,0,0.2)] transition hover:bg-neutral-800"
             >
               {data.ctaLabel}
             </Link>

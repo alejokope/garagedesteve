@@ -14,7 +14,7 @@ function ArrowLink() {
 
 export function HomeCategoriesGrid({ data }: { data: HomeCategoriesData }) {
   return (
-    <section className="border-b border-[var(--border)] bg-[#f8f9fa] py-16 sm:py-24">
+    <section className="border-b border-[var(--border)] bg-[#fafafa] py-16 sm:py-24">
       <div className="mx-auto max-w-6xl px-4 sm:px-8">
         <div className="mx-auto max-w-2xl text-center">
           <h2 className="font-display text-2xl font-semibold tracking-tight text-neutral-950 sm:text-3xl">
@@ -31,9 +31,9 @@ export function HomeCategoriesGrid({ data }: { data: HomeCategoriesData }) {
               <Link
                 key={tile.title}
                 href={tile.href}
-                className="group relative flex min-h-[17rem] flex-col items-start justify-between overflow-hidden rounded-2xl bg-gradient-brand p-8 text-left shadow-[0_20px_50px_-20px_rgba(99,102,241,0.55)] transition hover:opacity-[0.98] sm:min-h-[18rem]"
+                className="group relative flex min-h-[17rem] flex-col items-start justify-between overflow-hidden rounded-2xl border border-neutral-900 bg-neutral-950 p-8 text-left shadow-[var(--glow-lg)] transition hover:bg-neutral-900 sm:min-h-[18rem]"
               >
-                <div className="flex h-14 w-14 items-center justify-center rounded-full bg-white/20 ring-2 ring-white/30">
+                <div className="flex h-14 w-14 items-center justify-center rounded-full border border-white/25 bg-white/10">
                   <svg
                     className="h-8 w-8 text-white"
                     fill="none"
@@ -71,7 +71,7 @@ export function HomeCategoriesGrid({ data }: { data: HomeCategoriesData }) {
               <Link
                 key={tile.title}
                 href={tile.href}
-                className="group flex flex-col overflow-hidden rounded-2xl border border-[var(--border)] bg-white shadow-[0_1px_0_rgba(15,23,42,0.04)] transition hover:-translate-y-0.5 hover:shadow-[var(--glow)]"
+                className="group flex flex-col overflow-hidden rounded-2xl border border-[var(--border)] bg-white shadow-[0_1px_0_rgba(0,0,0,0.04)] transition hover:-translate-y-0.5 hover:shadow-[var(--glow)]"
               >
                 <div className="relative aspect-[4/3] bg-neutral-100">
                   <Image

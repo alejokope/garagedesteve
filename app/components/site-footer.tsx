@@ -35,23 +35,25 @@ function SocialIcon({ icon }: { icon: string }) {
 
 export function SiteFooter() {
   return (
-    <footer className="bg-[#0f0f0f] text-neutral-300">
+    <footer className="border-t border-[var(--border)] bg-[var(--footer-bg)] text-neutral-600">
       <div className="mx-auto max-w-6xl px-4 py-14 sm:px-8 sm:py-16">
         <div className="grid gap-12 sm:grid-cols-2 lg:grid-cols-6 lg:gap-8 xl:gap-10">
           <div className="sm:col-span-2 lg:col-span-2">
-            <p className="font-display text-lg font-bold text-white">{siteConfig.brandName}</p>
-            <p className="mt-4 text-sm leading-relaxed text-neutral-400">
+            <p className="font-display text-lg font-semibold tracking-tight text-neutral-950">
+              {siteConfig.brandName}
+            </p>
+            <p className="mt-4 text-sm leading-relaxed text-neutral-600">
               {siteConfig.footer.blurb}
             </p>
             <div id="sedes" className="mt-8 scroll-mt-28">
-              <h3 className="text-sm font-semibold text-white">Nuestras sedes</h3>
-              <p className="mt-2 text-sm text-neutral-400">
+              <h3 className="text-sm font-semibold text-neutral-950">Nuestras sedes</h3>
+              <p className="mt-2 text-sm text-neutral-600">
                 Coordinamos retiro y envíos. Consultá horarios y disponibilidad por WhatsApp.
               </p>
             </div>
             <div id="vende" className="mt-8 scroll-mt-28">
-              <h3 className="text-sm font-semibold text-white">Vende tu equipo</h3>
-              <p className="mt-2 text-sm text-neutral-400">
+              <h3 className="text-sm font-semibold text-neutral-950">Vende tu equipo</h3>
+              <p className="mt-2 text-sm text-neutral-600">
                 Evaluamos tu dispositivo y te damos una propuesta clara, sin vueltas.
               </p>
             </div>
@@ -62,7 +64,7 @@ export function SiteFooter() {
                   href={s.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/5 text-neutral-300 transition hover:bg-white/10 hover:text-white"
+                  className="flex h-10 w-10 items-center justify-center rounded-full border border-[var(--border)] bg-white text-neutral-700 transition hover:border-neutral-400 hover:text-neutral-950"
                   aria-label={s.label}
                 >
                   <SocialIcon icon={s.icon} />
@@ -73,13 +75,13 @@ export function SiteFooter() {
 
           {siteConfig.footer.columns.slice(0, 2).map((col) => (
             <div key={col.title}>
-              <h3 className="text-sm font-semibold text-white">{col.title}</h3>
+              <h3 className="text-sm font-semibold text-neutral-950">{col.title}</h3>
               <ul className="mt-5 space-y-3 text-sm">
                 {col.links.map((link) => (
                   <li key={link.label}>
                     <Link
                       href={link.href}
-                      className="text-neutral-400 transition hover:text-white"
+                      className="text-neutral-600 transition hover:text-neutral-950"
                     >
                       {link.label}
                     </Link>
@@ -89,13 +91,13 @@ export function SiteFooter() {
             </div>
           ))}
           <div>
-            <h3 className="text-sm font-semibold text-white">Soporte</h3>
+            <h3 className="text-sm font-semibold text-neutral-950">Soporte</h3>
             <ul className="mt-5 space-y-3 text-sm">
               {siteConfig.footer.columns[2]?.links.map((link) => (
                 <li key={link.label}>
                   <Link
                     href={link.href}
-                    className="text-neutral-400 transition hover:text-white"
+                    className="text-neutral-600 transition hover:text-neutral-950"
                   >
                     {link.label}
                   </Link>
@@ -105,7 +107,7 @@ export function SiteFooter() {
                 <li key={link.label}>
                   <Link
                     href={link.href}
-                    className="text-neutral-400 transition hover:text-white"
+                    className="text-neutral-600 transition hover:text-neutral-950"
                   >
                     {link.label}
                   </Link>
@@ -114,32 +116,35 @@ export function SiteFooter() {
             </ul>
           </div>
           <div>
-            <h3 className="text-sm font-semibold text-white">Contacto</h3>
-            <ul className="mt-5 space-y-4 text-sm text-neutral-400">
+            <h3 className="text-sm font-semibold text-neutral-950">Contacto</h3>
+            <ul className="mt-5 space-y-4 text-sm text-neutral-600">
               <li className="flex gap-2">
-                <span className="shrink-0 text-neutral-500" aria-hidden>
+                <span className="shrink-0 text-neutral-400" aria-hidden>
                   📍
                 </span>
                 <span>{siteConfig.contact.address}</span>
               </li>
               <li className="flex gap-2">
-                <span className="shrink-0 text-neutral-500" aria-hidden>
+                <span className="shrink-0 text-neutral-400" aria-hidden>
                   📞
                 </span>
-                <a href={`tel:${siteConfig.contact.phone.replace(/\s/g, "")}`} className="transition hover:text-white">
+                <a
+                  href={`tel:${siteConfig.contact.phone.replace(/\s/g, "")}`}
+                  className="transition hover:text-neutral-950"
+                >
                   {siteConfig.contact.phone}
                 </a>
               </li>
               <li className="flex gap-2">
-                <span className="shrink-0 text-neutral-500" aria-hidden>
+                <span className="shrink-0 text-neutral-400" aria-hidden>
                   ✉️
                 </span>
-                <a href={`mailto:${siteConfig.contact.email}`} className="transition hover:text-white">
+                <a href={`mailto:${siteConfig.contact.email}`} className="transition hover:text-neutral-950">
                   {siteConfig.contact.email}
                 </a>
               </li>
               <li className="flex gap-2">
-                <span className="shrink-0 text-neutral-500" aria-hidden>
+                <span className="shrink-0 text-neutral-400" aria-hidden>
                   🕐
                 </span>
                 <span>{siteConfig.contact.hours}</span>
@@ -148,15 +153,15 @@ export function SiteFooter() {
           </div>
         </div>
 
-        <div className="mt-14 flex flex-col gap-3 border-t border-white/10 pt-8 text-xs text-neutral-500 sm:flex-row sm:items-center sm:justify-between">
+        <div className="mt-14 flex flex-col gap-3 border-t border-[var(--border)] pt-8 text-xs text-neutral-500 sm:flex-row sm:items-center sm:justify-between">
           <p>
             © {new Date().getFullYear()} {siteConfig.brandName}. Todos los derechos reservados.
           </p>
           <div className="flex flex-wrap gap-4">
-            <Link href="/#faq" className="transition hover:text-white">
+            <Link href="/#faq" className="transition hover:text-neutral-950">
               Privacidad
             </Link>
-            <Link href="/#faq" className="transition hover:text-white">
+            <Link href="/#faq" className="transition hover:text-neutral-950">
               Términos
             </Link>
           </div>

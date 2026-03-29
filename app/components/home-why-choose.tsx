@@ -35,8 +35,8 @@ export function HomeWhyChoose({ data }: { data: HomeWhyChooseData }) {
               key={item.title}
               className={`rounded-2xl border p-7 transition ${
                 item.highlight
-                  ? "border-transparent bg-gradient-brand text-white shadow-[0_20px_50px_-20px_rgba(99,102,241,0.5)]"
-                  : "border-[var(--border)] bg-white shadow-[0_1px_0_rgba(15,23,42,0.04)] hover:shadow-[var(--glow)]"
+                  ? "border-neutral-900 bg-neutral-950 text-white shadow-[var(--glow-lg)]"
+                  : "border-[var(--border)] bg-white shadow-[0_1px_0_rgba(0,0,0,0.04)] hover:shadow-[var(--glow)]"
               }`}
             >
               <CardIcon highlight={item.highlight} />

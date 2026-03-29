@@ -1,19 +1,26 @@
 /** Textos y navegación alineados al diseño de la home; centralizá acá el rebranding. */
 export const siteConfig = {
-  brandName: "The iPhone",
-  /** Enlace de ejemplo para “Detalle de producto” en la tienda */
-  shopExampleProductPath: "/tienda/iphone-16-pro",
+  brandName: "El Garage de Steve",
   tagline:
     "Tecnología premium y soporte técnico con la confianza que buscás en cada compra.",
-  /** Navegación estilo catálogo (TechStore) */
+  /** Navegación tienda: `label` en menú móvil; `shortLabel` en barra desktop (compacta). */
   shopNav: [
-    { href: "/tienda", label: "Catálogo de Productos", id: "catalog" },
-    { href: "/tienda/iphone-16-pro", label: "Detalle de Producto", id: "detail" },
-    { href: "/carrito", label: "Carrito", id: "cart" },
-    { href: "/servicio-tecnico/precios", label: "Precios reparaciones", id: "service-prices" },
-    { href: "/servicio-tecnico/solicitud", label: "Solicitar reparación", id: "service-form" },
-    { href: "/tienda", label: "Seguimiento de Pedido", id: "track" },
-    { href: "/#faq", label: "Ayuda & FAQ", id: "help" },
+    { href: "/tienda", label: "Catálogo de Productos", shortLabel: "Catálogo", id: "catalog" },
+    { href: "/carrito", label: "Carrito", shortLabel: "Carrito", id: "cart" },
+    {
+      href: "/servicio-tecnico/precios",
+      label: "Precios reparaciones",
+      shortLabel: "Reparaciones",
+      id: "service-prices",
+    },
+    {
+      href: "/servicio-tecnico/solicitud",
+      label: "Solicitar reparación",
+      shortLabel: "Servicio",
+      id: "service-form",
+    },
+    { href: "/tienda", label: "Seguimiento de Pedido", shortLabel: "Pedidos", id: "track" },
+    { href: "/#faq", label: "Ayuda & FAQ", shortLabel: "Ayuda", id: "help" },
   ] as const,
   contact: {
     address: "Av. Corrientes 1234, CABA · Argentina",

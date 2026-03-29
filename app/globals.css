@@ -1,19 +1,20 @@
 @import "tailwindcss";
 
 :root {
-  --bg: #f8f9fa;
+  /* Identidad alineada al logo: blanco, negro, grises finos (estilo premium / editorial). */
+  --bg: #ffffff;
   --surface: #ffffff;
-  --text: #111827;
-  --muted: #6b7280;
-  --border: rgba(17, 24, 39, 0.08);
-  --accent: #111827;
-  --accent-soft: rgba(17, 24, 39, 0.06);
-  --brand-from: #7c3aed;
-  --brand-to: #6366f1;
-  --gradient-brand: linear-gradient(90deg, var(--brand-from) 0%, var(--brand-to) 100%);
-  --footer-bg: #0f172a;
-  --glow: 0 24px 64px -12px rgba(15, 23, 42, 0.12);
-  --glow-lg: 0 32px 80px -16px rgba(15, 23, 42, 0.14);
+  --text: #0a0a0a;
+  --muted: #525252;
+  --border: rgba(0, 0, 0, 0.1);
+  --accent: #000000;
+  --accent-soft: rgba(0, 0, 0, 0.06);
+  --brand-from: #000000;
+  --brand-to: #262626;
+  --gradient-brand: linear-gradient(180deg, #000000 0%, #1a1a1a 100%);
+  --footer-bg: #fafafa;
+  --glow: 0 1px 0 rgba(0, 0, 0, 0.06), 0 24px 48px -24px rgba(0, 0, 0, 0.08);
+  --glow-lg: 0 1px 0 rgba(0, 0, 0, 0.06), 0 32px 64px -28px rgba(0, 0, 0, 0.1);
 }
 
 @theme inline {
@@ -45,15 +46,17 @@ body {
   background-image: var(--gradient-brand);
 }
 
-/* Carruseles horizontales: scroll más natural en iOS */
-@supports (-webkit-overflow-scrolling: touch) {
-  .touch-scroll-x {
-    -webkit-overflow-scrolling: touch;
-  }
+/* Botón / superficie marca sólida (sin gradiente). */
+.bg-brand-solid {
+  background-color: var(--brand-from);
+}
+
+.touch-scroll-x {
+  -webkit-overflow-scrolling: touch;
 }
 
 ::selection {
-  background: rgba(124, 58, 237, 0.15);
+  background: rgba(0, 0, 0, 0.12);
 }
 
 @media (prefers-reduced-motion: reduce) {

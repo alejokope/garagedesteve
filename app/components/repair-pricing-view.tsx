@@ -12,15 +12,16 @@ import {
   repairWhatsAppHref,
 } from "@/lib/repair-whatsapp";
 
+/** Cabeceras de categoría: variaciones solo en escala de grises (marca monocroma). */
 const headerToneClass: Record<
   RepairPricingPayload["categories"][number]["headerTone"],
   string
 > = {
-  blue: "bg-gradient-to-r from-blue-600 to-indigo-600",
-  green: "bg-gradient-to-r from-emerald-600 to-teal-600",
-  purple: "bg-gradient-to-r from-violet-600 to-purple-600",
-  orange: "bg-gradient-to-r from-orange-500 to-amber-600",
-  red: "bg-gradient-to-r from-red-600 to-rose-600",
+  blue: "bg-neutral-950",
+  green: "bg-neutral-900",
+  purple: "bg-zinc-900",
+  orange: "bg-neutral-800",
+  red: "bg-black",
 };
 
 function rowCurrency(
@@ -98,7 +99,7 @@ export function RepairPricingView({ config }: { config: RepairPricingPayload }) 
               onClick={() => setFilterId("all")}
               className={`rounded-full px-4 py-2 text-sm font-semibold transition ${
                 filterId === "all"
-                  ? "bg-gradient-brand text-white shadow-md"
+                  ? "bg-neutral-950 text-white shadow-sm"
                   : "bg-white text-neutral-700 ring-1 ring-neutral-200 hover:bg-neutral-50"
               }`}
             >
@@ -111,7 +112,7 @@ export function RepairPricingView({ config }: { config: RepairPricingPayload }) 
                 onClick={() => setFilterId(f.id)}
                 className={`rounded-full px-4 py-2 text-sm font-semibold transition ${
                   filterId === f.id
-                    ? "bg-gradient-brand text-white shadow-md"
+                    ? "bg-neutral-950 text-white shadow-sm"
                     : "bg-white text-neutral-700 ring-1 ring-neutral-200 hover:bg-neutral-50"
                 }`}
               >
@@ -250,7 +251,7 @@ export function RepairPricingView({ config }: { config: RepairPricingPayload }) 
           </div>
 
           <aside className="w-full shrink-0 space-y-6 lg:sticky lg:top-24 lg:max-w-sm">
-            <div className="rounded-2xl bg-gradient-brand p-6 text-white shadow-lg">
+            <div className="rounded-2xl border border-neutral-800 bg-neutral-950 p-6 text-white shadow-lg">
               <div className="flex items-start gap-3">
                 <span className="text-3xl" aria-hidden>
                   🛡️
@@ -300,7 +301,7 @@ export function RepairPricingView({ config }: { config: RepairPricingPayload }) 
           </aside>
         </div>
 
-        <section className="mt-14 overflow-hidden rounded-2xl bg-gradient-brand p-8 text-center text-white shadow-xl sm:p-10">
+        <section className="mt-14 overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-950 p-8 text-center text-white shadow-xl sm:p-10">
           <div className="mx-auto max-w-2xl">
             <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-white/15 text-3xl">
               💬
@@ -312,7 +313,7 @@ export function RepairPricingView({ config }: { config: RepairPricingPayload }) 
                 href={waCta}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="mt-6 inline-flex min-h-[48px] w-full max-w-md items-center justify-center rounded-xl bg-white px-6 text-sm font-semibold text-[var(--brand-from)] shadow-lg transition hover:bg-white/95 sm:text-base"
+                className="mt-6 inline-flex min-h-[48px] w-full max-w-md items-center justify-center rounded-lg bg-white px-6 text-sm font-semibold text-neutral-950 shadow-lg transition hover:bg-neutral-100 sm:text-base"
               >
                 {config.ctaBanner.buttonLabel}
               </a>

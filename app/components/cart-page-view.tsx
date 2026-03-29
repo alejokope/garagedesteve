@@ -113,7 +113,7 @@ export function CartPageView() {
             </p>
             <Link
               href="/tienda"
-              className="mt-8 inline-flex h-12 items-center justify-center rounded-xl bg-gradient-brand px-8 text-sm font-semibold text-white shadow-[0_12px_40px_-12px_rgba(124,58,237,0.45)] transition hover:opacity-[0.97]"
+              className="mt-8 inline-flex h-12 items-center justify-center rounded-lg bg-neutral-950 px-8 text-sm font-semibold text-white shadow-[0_12px_40px_-16px_rgba(0,0,0,0.2)] transition hover:bg-neutral-800"
             >
               Ir al catálogo
             </Link>
