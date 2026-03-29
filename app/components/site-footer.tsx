@@ -52,9 +52,17 @@ export function SiteFooter() {
               </p>
             </div>
             <div id="vende" className="mt-8 scroll-mt-28">
-              <h3 className="text-sm font-semibold text-neutral-950">Vende tu equipo</h3>
+              <h3 className="text-sm font-semibold text-neutral-950">Vendé tu equipo</h3>
               <p className="mt-2 text-sm text-neutral-600">
-                Evaluamos tu dispositivo y te damos una propuesta clara, sin vueltas.
+                Cotización por WhatsApp según modelo, capacidad y estado. Sin vueltas.
+              </p>
+              <p className="mt-3">
+                <Link
+                  href="/vende-tu-equipo"
+                  className="text-sm font-semibold text-neutral-950 underline decoration-neutral-300 underline-offset-4 transition hover:decoration-neutral-950"
+                >
+                  Ver cómo funciona
+                </Link>
               </p>
             </div>
             <div className="mt-8 flex flex-wrap gap-3">

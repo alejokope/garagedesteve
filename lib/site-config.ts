@@ -32,7 +32,7 @@ export const siteConfig = {
     { href: "/tienda", label: "Comprar" },
     { href: "/servicio-tecnico/precios", label: "Servicio técnico" },
     { href: "/#sedes", label: "Nuestras Sedes" },
-    { href: "/#vende", label: "Vende tu equipo" },
+    { href: "/vende-tu-equipo", label: "Vende tu equipo" },
     { href: "/#faq", label: "FAQ" },
   ] as const,
   footer: {
@@ -44,7 +44,7 @@ export const siteConfig = {
         links: [
           { href: "/#sedes", label: "Sobre nosotros" },
           { href: "/#sedes", label: "Nuestras sedes" },
-          { href: "/#vende", label: "Vende tu equipo" },
+          { href: "/vende-tu-equipo", label: "Vende tu equipo" },
         ],
       },
       {
