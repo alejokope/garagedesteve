@@ -158,7 +158,7 @@ export function BackofficeShell({ children }: { children: ReactNode }) {
       </aside>
 
       {/* Mobile header */}
-      <div className="flex min-h-screen flex-1 flex-col lg:min-h-0">
+      <div className="flex min-h-screen min-w-0 flex-1 flex-col lg:min-h-0">
         <header className="sticky top-0 z-30 flex items-center justify-between gap-3 border-b border-white/[0.06] bg-[#0c0e14]/95 px-4 py-3 backdrop-blur lg:hidden">
           <div>
             <p className="font-display text-base font-semibold text-white">Backoffice</p>
@@ -227,7 +227,7 @@ export function BackofficeShell({ children }: { children: ReactNode }) {
           </div>
         ) : null}
 
-        <main className="relative flex-1">{children}</main>
+        <main className="relative min-w-0 flex-1 overflow-x-clip">{children}</main>
       </div>
     </div>
   );

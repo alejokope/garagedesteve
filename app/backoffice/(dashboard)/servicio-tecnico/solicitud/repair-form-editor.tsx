@@ -2,6 +2,11 @@
 
 import { useMemo, useState, useTransition } from "react";
 
+import {
+  boEditorH2,
+  boEditorSection,
+  boEditorToolbar,
+} from "@/app/components/backoffice/bo-editor-styles";
 import { saveRepairFormAction } from "@/app/backoffice/(dashboard)/servicio-tecnico/actions";
 import {
   defaultRepairFormPayload,
@@ -31,15 +36,15 @@ export function RepairFormEditor({ initial }: { initial: RepairFormPayload }) {
   }
 
   return (
-    <div className="space-y-8">
+    <div className="min-w-0 space-y-6 pb-28 sm:space-y-8 sm:pb-10 lg:pb-8">
       {err ? (
         <div className="rounded-xl border border-red-500/35 bg-red-500/10 px-4 py-3 text-sm text-red-100/95">
           {err}
         </div>
       ) : null}
 
-      <section className="rounded-2xl border border-white/[0.08] bg-white/[0.03] p-6">
-        <h2 className="font-display text-lg font-semibold text-white">Hero</h2>
+      <section className={boEditorSection}>
+        <h2 className={boEditorH2}>Hero</h2>
         <div className="mt-4 space-y-3">
           <input
             value={data.heroTitle}
@@ -68,9 +73,9 @@ export function RepairFormEditor({ initial }: { initial: RepairFormPayload }) {
         </div>
       </section>
 
-      <section className="rounded-2xl border border-white/[0.08] bg-white/[0.03] p-6">
-        <div className="flex justify-between">
-          <h2 className="font-display text-lg font-semibold text-white">Tipos de servicio (tarjetas)</h2>
+      <section className={boEditorSection}>
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <h2 className={boEditorH2}>Tipos de servicio (tarjetas)</h2>
           <button
             type="button"
             className="text-xs text-violet-300"
@@ -194,9 +199,9 @@ export function RepairFormEditor({ initial }: { initial: RepairFormPayload }) {
         </div>
       </section>
 
-      <section className="rounded-2xl border border-white/[0.08] bg-white/[0.03] p-6">
+      <section className={boEditorSection}>
         <div className="flex flex-wrap justify-between gap-2">
-          <h2 className="font-display text-lg font-semibold text-white">Marcas</h2>
+          <h2 className={boEditorH2}>Marcas</h2>
           <button
             type="button"
             className="text-xs text-violet-300"
@@ -242,9 +247,9 @@ export function RepairFormEditor({ initial }: { initial: RepairFormPayload }) {
         </div>
       </section>
 
-      <section className="rounded-2xl border border-white/[0.08] bg-white/[0.03] p-6">
-        <div className="flex justify-between">
-          <h2 className="font-display text-lg font-semibold text-white">Modelos (marca = brandId)</h2>
+      <section className={boEditorSection}>
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <h2 className={boEditorH2}>Modelos (marca = brandId)</h2>
           <button
             type="button"
             className="text-xs text-violet-300"
@@ -327,8 +332,8 @@ export function RepairFormEditor({ initial }: { initial: RepairFormPayload }) {
         </div>
       </section>
 
-      <section className="rounded-2xl border border-white/[0.08] bg-white/[0.03] p-6">
-        <h2 className="font-display text-lg font-semibold text-white">Problema y contacto</h2>
+      <section className={boEditorSection}>
+        <h2 className={boEditorH2}>Problema y contacto</h2>
         <div className="mt-4 grid gap-3">
           <input
             value={data.problemLabel}
@@ -385,9 +390,9 @@ export function RepairFormEditor({ initial }: { initial: RepairFormPayload }) {
         </div>
       </section>
 
-      <section className="rounded-2xl border border-white/[0.08] bg-white/[0.03] p-6">
-        <div className="flex justify-between">
-          <h2 className="font-display text-lg font-semibold text-white">Prioridades</h2>
+      <section className={boEditorSection}>
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <h2 className={boEditorH2}>Prioridades</h2>
           <button
             type="button"
             className="text-xs text-violet-300"
@@ -466,9 +471,9 @@ export function RepairFormEditor({ initial }: { initial: RepairFormPayload }) {
         </div>
       </section>
 
-      <section className="rounded-2xl border border-white/[0.08] bg-white/[0.03] p-6">
-        <div className="flex justify-between">
-          <h2 className="font-display text-lg font-semibold text-white">Entrega</h2>
+      <section className={boEditorSection}>
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <h2 className={boEditorH2}>Entrega</h2>
           <button
             type="button"
             className="text-xs text-violet-300"
@@ -543,8 +548,8 @@ export function RepairFormEditor({ initial }: { initial: RepairFormPayload }) {
         </div>
       </section>
 
-      <section className="rounded-2xl border border-white/[0.08] bg-white/[0.03] p-6">
-        <h2 className="font-display text-lg font-semibold text-white">Sidebar</h2>
+      <section className={boEditorSection}>
+        <h2 className={boEditorH2}>Sidebar</h2>
         <div className="mt-4 space-y-4">
           <input
             value={data.sidebarDiagnosis.title}
@@ -641,8 +646,8 @@ export function RepairFormEditor({ initial }: { initial: RepairFormPayload }) {
         </div>
       </section>
 
-      <section className="rounded-2xl border border-white/[0.08] bg-white/[0.03] p-6">
-        <h2 className="font-display text-lg font-semibold text-white">Bloque “Tu dispositivo…”</h2>
+      <section className={boEditorSection}>
+        <h2 className={boEditorH2}>Bloque “Tu dispositivo…”</h2>
         <input
           value={data.featuresSection.title}
           onChange={(e) =>
@@ -698,8 +703,8 @@ export function RepairFormEditor({ initial }: { initial: RepairFormPayload }) {
         </div>
       </section>
 
-      <section className="rounded-2xl border border-white/[0.08] bg-white/[0.03] p-6">
-        <h2 className="font-display text-lg font-semibold text-white">Cómo funciona</h2>
+      <section className={boEditorSection}>
+        <h2 className={boEditorH2}>Cómo funciona</h2>
         <input
           value={data.howItWorks.title}
           onChange={(e) =>
@@ -743,8 +748,8 @@ export function RepairFormEditor({ initial }: { initial: RepairFormPayload }) {
         </div>
       </section>
 
-      <section className="rounded-2xl border border-white/[0.08] bg-white/[0.03] p-6">
-        <h2 className="font-display text-lg font-semibold text-white">Testimonios</h2>
+      <section className={boEditorSection}>
+        <h2 className={boEditorH2}>Testimonios</h2>
         <input
           value={data.testimonials.sectionTitle}
           onChange={(e) =>
@@ -831,29 +836,31 @@ export function RepairFormEditor({ initial }: { initial: RepairFormPayload }) {
         </div>
       </section>
 
-      <section className="rounded-2xl border border-white/[0.08] bg-white/[0.03] p-6">
-        <h2 className="font-display text-lg font-semibold text-white">JSON (solo lectura)</h2>
-        <pre className="mt-3 max-h-64 overflow-auto rounded-xl bg-black/50 p-4 text-[11px] text-slate-400">
+      <section className={boEditorSection}>
+        <h2 className={boEditorH2}>JSON (solo lectura)</h2>
+        <pre className="mt-3 max-h-48 overflow-x-auto overflow-y-auto rounded-xl border border-white/[0.06] bg-black/55 p-3 text-[10px] leading-relaxed text-slate-400 sm:max-h-64 sm:p-4 sm:text-[11px]">
           {jsonPreview}
         </pre>
       </section>
 
-      <div className="flex flex-wrap gap-3">
-        <button
-          type="button"
-          disabled={pending}
-          onClick={save}
-          className="rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 px-6 py-3 text-sm font-semibold text-white shadow-lg disabled:opacity-60"
-        >
-          {pending ? "Guardando…" : "Guardar formulario"}
-        </button>
-        <button
-          type="button"
-          className="rounded-xl border border-white/[0.12] px-6 py-3 text-sm text-slate-300 hover:bg-white/[0.05]"
-          onClick={() => setData(defaultRepairFormPayload())}
-        >
-          Restaurar valores por defecto (local)
-        </button>
+      <div className={boEditorToolbar}>
+        <div className="mx-auto flex w-full max-w-6xl flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-stretch sm:gap-3">
+          <button
+            type="button"
+            disabled={pending}
+            onClick={save}
+            className="inline-flex min-h-12 flex-1 items-center justify-center rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 px-5 text-sm font-semibold text-white shadow-lg shadow-violet-900/25 disabled:opacity-60 sm:flex-none sm:min-w-[10rem] sm:px-8"
+          >
+            {pending ? "Guardando…" : "Guardar formulario"}
+          </button>
+          <button
+            type="button"
+            className="inline-flex min-h-12 flex-1 items-center justify-center rounded-xl border border-white/[0.14] bg-white/[0.06] px-4 text-sm font-medium text-slate-200 hover:bg-white/[0.1] sm:flex-none"
+            onClick={() => setData(defaultRepairFormPayload())}
+          >
+            Valores por defecto
+          </button>
+        </div>
       </div>
     </div>
   );

@@ -12,7 +12,9 @@ export default function BackofficeDashboardLayout({
   return (
     <BackofficeShell>
       <BackofficeEnvBanner />
-      <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8 lg:py-10">{children}</div>
+      <div className="mx-auto w-full min-w-0 max-w-6xl px-4 py-8 sm:px-6 lg:px-8 lg:py-10">
+        {children}
+      </div>
     </BackofficeShell>
   );
 }
