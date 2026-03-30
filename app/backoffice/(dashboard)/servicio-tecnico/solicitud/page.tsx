@@ -31,12 +31,12 @@ export default async function BackofficeRepairSolicitudPage() {
         </div>
         <div className="flex flex-wrap gap-3">
           <Link
-            href="/servicio-tecnico/solicitud"
+            href="/servicio-tecnico#seguimiento"
             target="_blank"
             rel="noopener noreferrer"
             className="text-sm font-medium text-violet-300/90 hover:text-violet-200"
           >
-            Ver página pública ↗
+            Ver servicio técnico (web) ↗
           </Link>
           <Link href="/backoffice" className="text-sm font-medium text-slate-400 hover:text-slate-200">
             ← Panel

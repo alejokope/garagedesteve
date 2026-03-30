@@ -32,7 +32,14 @@ function rowCurrency(
   return defaultC;
 }
 
-export function RepairPricingView({ config }: { config: RepairPricingPayload }) {
+export function RepairPricingView({
+  config,
+  variant = "page",
+}: {
+  config: RepairPricingPayload;
+  variant?: "page" | "section";
+}) {
+  const isSection = variant === "section";
   const [filterId, setFilterId] = useState<string | "all">(
     config.deviceFilters[0]?.id ?? "all",
   );
@@ -55,37 +62,49 @@ export function RepairPricingView({ config }: { config: RepairPricingPayload }) 
   );
 
   return (
-    <div className="min-h-screen bg-[#f9fafb] pb-16 pt-[3.5rem] sm:pt-16">
-      <div className="mx-auto max-w-6xl px-4 py-8 sm:px-8 sm:py-10">
-        <nav className="text-sm text-neutral-500" aria-label="Migas de pan">
-          <Link href="/" className="hover:text-[var(--brand-from)]">
-            Inicio
-          </Link>
-          <span className="mx-2 text-neutral-300">/</span>
-          <Link href="/servicio-tecnico/solicitud" className="hover:text-[var(--brand-from)]">
-            Servicio técnico
-          </Link>
-          <span className="mx-2 text-neutral-300">/</span>
-          <span className="font-medium text-neutral-700">Precios</span>
-        </nav>
+    <div
+      className={
+        isSection ? "w-full" : "min-h-screen bg-[#f9fafb] pb-16 pt-[3.5rem] sm:pt-16"
+      }
+    >
+      <div
+        className={
+          isSection ? "w-full" : "mx-auto max-w-6xl px-4 py-8 sm:px-8 sm:py-10"
+        }
+      >
+        {!isSection ? (
+          <nav className="text-sm text-neutral-500" aria-label="Migas de pan">
+            <Link href="/" className="hover:text-[var(--brand-from)]">
+              Inicio
+            </Link>
+            <span className="mx-2 text-neutral-300">/</span>
+            <Link href="/servicio-tecnico" className="hover:text-[var(--brand-from)]">
+              Servicio técnico
+            </Link>
+            <span className="mx-2 text-neutral-300">/</span>
+            <span className="font-medium text-neutral-700">Precios</span>
+          </nav>
+        ) : null}
 
-        <div className="mt-6 max-w-3xl">
+        <div className={isSection ? "max-w-3xl" : "mt-6 max-w-3xl"}>
           <span className="inline-flex rounded-full bg-[var(--brand-from)]/10 px-3 py-1 text-xs font-semibold text-[var(--brand-from)]">
             {config.badge}
           </span>
-          <h1 className="mt-4 font-display text-3xl font-bold tracking-tight text-neutral-900 sm:text-4xl">
+          <h1
+            className={`font-display text-3xl font-bold tracking-tight text-neutral-900 sm:text-4xl ${isSection ? "mt-2" : "mt-4"}`}
+          >
             {config.title}
           </h1>
           <p className="mt-3 text-[15px] leading-relaxed text-neutral-600 sm:text-base">
             {config.subtitle}
           </p>
           <div className="mt-5 flex flex-wrap gap-3">
-            <Link
-              href="/servicio-tecnico/solicitud"
+            <a
+              href="/servicio-tecnico#seguimiento"
               className="inline-flex h-11 items-center justify-center rounded-xl bg-[#25D366] px-5 text-sm font-semibold text-white shadow-md transition hover:bg-[#20bd5a]"
             >
-              Solicitar reparación
-            </Link>
+              Coordinar por WhatsApp
+            </a>
             <span className="self-center text-xs text-neutral-500">
               Cotización final por WhatsApp · sin pago en la web
             </span>

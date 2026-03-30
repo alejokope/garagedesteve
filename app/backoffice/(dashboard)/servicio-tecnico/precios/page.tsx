@@ -34,7 +34,7 @@ export default async function BackofficeRepairPreciosPage() {
         </div>
         <div className="flex flex-wrap gap-3">
           <Link
-            href="/servicio-tecnico/precios"
+            href="/servicio-tecnico#precios"
             target="_blank"
             rel="noopener noreferrer"
             className="text-sm font-medium text-violet-300/90 hover:text-violet-200"

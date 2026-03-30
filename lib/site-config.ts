@@ -3,24 +3,22 @@ export const siteConfig = {
   brandName: "El Garage de Steve",
   tagline:
     "Tecnología premium y soporte técnico con la confianza que buscás en cada compra.",
-  /** Navegación tienda: `label` en menú móvil; `shortLabel` en barra desktop (compacta). */
-  shopNav: [
-    { href: "/tienda", label: "Catálogo de Productos", shortLabel: "Catálogo", id: "catalog" },
-    { href: "/carrito", label: "Carrito", shortLabel: "Carrito", id: "cart" },
+  /**
+   * Navegación principal: misma en todas las páginas.
+   * `shortLabel` en barra desktop; `label` en menú móvil.
+   */
+  mainNav: [
+    { id: "shop", href: "/tienda", label: "Comprar", shortLabel: "Comprar" },
+    { id: "cart", href: "/carrito", label: "Carrito", shortLabel: "Carrito" },
     {
-      href: "/servicio-tecnico/precios",
-      label: "Precios reparaciones",
-      shortLabel: "Reparaciones",
-      id: "service-prices",
-    },
-    {
-      href: "/servicio-tecnico/solicitud",
-      label: "Solicitar reparación",
+      id: "service",
+      href: "/servicio-tecnico",
+      label: "Servicio técnico",
       shortLabel: "Servicio",
-      id: "service-form",
     },
-    { href: "/tienda", label: "Seguimiento de Pedido", shortLabel: "Pedidos", id: "track" },
-    { href: "/#faq", label: "Ayuda & FAQ", shortLabel: "Ayuda", id: "help" },
+    { id: "sedes", href: "/#sedes", label: "Nuestras sedes", shortLabel: "Sedes" },
+    { id: "sell", href: "/vende-tu-equipo", label: "Vende tu equipo", shortLabel: "Vendé" },
+    { id: "faq", href: "/#faq", label: "FAQ", shortLabel: "FAQ" },
   ] as const,
   contact: {
     address: "Av. Corrientes 1234, CABA · Argentina",
@@ -28,13 +26,6 @@ export const siteConfig = {
     email: "hola@theiphone.example",
     hours: "Lun–Sáb 10:00–19:00",
   },
-  nav: [
-    { href: "/tienda", label: "Comprar" },
-    { href: "/servicio-tecnico/precios", label: "Servicio técnico" },
-    { href: "/#sedes", label: "Nuestras Sedes" },
-    { href: "/vende-tu-equipo", label: "Vende tu equipo" },
-    { href: "/#faq", label: "FAQ" },
-  ] as const,
   footer: {
     blurb:
       "Equipos originales, asesoramiento honesto y servicio técnico especializado para que compres con tranquilidad.",
@@ -59,8 +50,7 @@ export const siteConfig = {
       {
         title: "Servicio",
         links: [
-          { href: "/servicio-tecnico/precios", label: "Reparaciones" },
-          { href: "/servicio-tecnico/solicitud", label: "Solicitar turno" },
+          { href: "/servicio-tecnico", label: "Servicio técnico" },
           { href: "/#faq", label: "Consultas" },
         ],
       },

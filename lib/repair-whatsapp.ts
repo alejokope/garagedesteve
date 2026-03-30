@@ -67,3 +67,16 @@ export function repairWhatsAppHref(text: string): string | null {
   if (!phone) return null;
   return whatsappUrl(phone, text);
 }
+
+/** Mensaje para coordinar una reparación por WhatsApp (página de seguimiento / trámite). */
+export function buildRepairsFlowWhatsAppMessage(): string {
+  const name =
+    process.env.NEXT_PUBLIC_WHATSAPP_BUSINESS_NAME ?? siteConfig.brandName;
+  return [
+    `Hola ${name},`,
+    "",
+    "Quiero coordinar o seguir el trámite de una reparación (envío, presupuesto o consulta).",
+    "",
+    "Gracias.",
+  ].join("\n");
+}

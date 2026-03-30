@@ -68,7 +68,7 @@ const DEFAULT_SERVICE: HomeServiceTechData = {
   imageAlt: "Técnico reparando un smartphone en banco de trabajo",
   features: homeServiceFeatures,
   ctaLabel: "Saber más sobre el servicio",
-  ctaHref: "/servicio-tecnico/precios",
+  ctaHref: "/servicio-tecnico",
 };
 
 const DEFAULT_WHY: HomeWhyChooseData = {
@@ -97,7 +97,7 @@ const DEFAULT_CTA: HomeCtaFinalData = {
   subtitle:
     "Unite a miles de clientes satisfechos que ya confían en nosotros para sus dispositivos Apple",
   primaryCta: { label: "Ver catálogo", href: "/tienda" },
-  secondaryCta: { label: "Ver servicio técnico", href: "/servicio-tecnico/precios" },
+  secondaryCta: { label: "Ver servicio técnico", href: "/servicio-tecnico" },
 };
 
 function hasSupabaseEnv(): boolean {

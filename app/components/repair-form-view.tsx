@@ -11,7 +11,14 @@ import {
   repairWhatsAppHref,
 } from "@/lib/repair-whatsapp";
 
-export function RepairFormView({ config }: { config: RepairFormPayload }) {
+export function RepairFormView({
+  config,
+  variant = "page",
+}: {
+  config: RepairFormPayload;
+  variant?: "page" | "section";
+}) {
+  const isSection = variant === "section";
   const [serviceId, setServiceId] = useState(
     () => config.serviceTypes[0]?.id ?? "",
   );
@@ -86,33 +93,43 @@ export function RepairFormView({ config }: { config: RepairFormPayload }) {
   }
 
   return (
-    <div className="min-h-screen bg-[#f9fafb] pb-20 pt-[3.5rem] sm:pt-16">
-      <div className="mx-auto max-w-6xl px-4 py-8 sm:px-8 sm:py-10">
-        <nav className="text-sm text-neutral-500" aria-label="Migas de pan">
-          <Link href="/" className="hover:text-[var(--brand-from)]">
-            Inicio
-          </Link>
-          <span className="mx-2 text-neutral-300">/</span>
-          <Link href="/servicio-tecnico/precios" className="hover:text-[var(--brand-from)]">
-            Precios
-          </Link>
-          <span className="mx-2 text-neutral-300">/</span>
-          <span className="font-medium text-neutral-700">Solicitud</span>
-        </nav>
+    <div
+      className={
+        isSection ? "w-full" : "min-h-screen bg-[#f9fafb] pb-20 pt-[3.5rem] sm:pt-16"
+      }
+    >
+      <div
+        className={
+          isSection ? "w-full" : "mx-auto max-w-6xl px-4 py-8 sm:px-8 sm:py-10"
+        }
+      >
+        {!isSection ? (
+          <nav className="text-sm text-neutral-500" aria-label="Migas de pan">
+            <Link href="/" className="hover:text-[var(--brand-from)]">
+              Inicio
+            </Link>
+            <span className="mx-2 text-neutral-300">/</span>
+            <Link href="/servicio-tecnico" className="hover:text-[var(--brand-from)]">
+              Servicio técnico
+            </Link>
+            <span className="mx-2 text-neutral-300">/</span>
+            <span className="font-medium text-neutral-700">Solicitud</span>
+          </nav>
+        ) : null}
 
-        <div className="mt-6 flex flex-col gap-10 lg:flex-row lg:items-start lg:gap-12">
+        <div className={isSection ? "flex flex-col gap-10 lg:flex-row lg:items-start lg:gap-12" : "mt-6 flex flex-col gap-10 lg:flex-row lg:items-start lg:gap-12"}>
           <div className="min-w-0 flex-1">
             <h1 className="font-display text-2xl font-bold tracking-tight text-neutral-900 sm:text-3xl">
               {config.heroTitle}
             </h1>
             <p className="mt-2 text-sm text-neutral-600 sm:text-base">{config.heroSubtitle}</p>
             <p className="mt-3 text-sm">
-              <Link
-                href="/servicio-tecnico/precios"
+              <a
+                href="/servicio-tecnico#precios"
                 className="font-medium text-[var(--brand-from)] underline-offset-4 hover:underline"
               >
                 Ver lista de precios orientativos
-              </Link>
+              </a>
             </p>
 
             <section className="mt-8">

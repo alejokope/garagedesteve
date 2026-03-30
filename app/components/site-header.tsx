@@ -7,26 +7,25 @@ import { useEffect, useState } from "react";
 import { useCart } from "@/app/context/cart-context";
 import { siteConfig } from "@/lib/site-config";
 
-function mobileNavItemKey(
-  item:
-    | (typeof siteConfig.shopNav)[number]
-    | (typeof siteConfig.nav)[number],
-): string {
-  if ("id" in item && item.id) return item.id;
-  if ("href" in item) return `${item.href}::${item.label}`;
-  return "nav";
+function mobileNavItemKey(item: (typeof siteConfig.mainNav)[number]): string {
+  return item.id;
 }
 
-function shopNavItemActive(id: string, pathname: string): boolean {
+function mainNavItemActive(id: string, pathname: string): boolean {
   switch (id) {
-    case "catalog":
-      return pathname === "/tienda";
+    case "shop":
+      return pathname === "/tienda" || pathname.startsWith("/tienda/");
     case "cart":
       return pathname === "/carrito";
-    case "service-prices":
-      return pathname === "/servicio-tecnico/precios";
-    case "service-form":
-      return pathname === "/servicio-tecnico/solicitud";
+    case "service":
+      return (
+        pathname === "/servicio-tecnico" || pathname.startsWith("/servicio-tecnico/")
+      );
+    case "sell":
+      return pathname === "/vende-tu-equipo" || pathname.startsWith("/vende-tu-equipo/");
+    case "sedes":
+    case "faq":
+      return false;
     default:
       return false;
   }
@@ -41,14 +40,6 @@ function desktopNavLinkClass(active: boolean) {
   ].join(" ");
 }
 
-function homeNavLinkActive(href: string, pathname: string): boolean {
-  if (href.startsWith("/#")) return false;
-  if (href === "/tienda") return pathname === "/tienda" || pathname.startsWith("/tienda/");
-  if (href.startsWith("/servicio-tecnico"))
-    return pathname.startsWith("/servicio-tecnico");
-  return pathname === href;
-}
-
 export function SiteHeader() {
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
@@ -56,11 +47,6 @@ export function SiteHeader() {
   const { count } = useCart();
   /** Evita mismatch de hidratación si el HTML del servidor quedó cacheado (Turbopack/HMR) distinto al bundle del cliente. */
   const [desktopNavReady, setDesktopNavReady] = useState(false);
-
-  const isShop =
-    pathname.startsWith("/tienda") ||
-    pathname === "/carrito" ||
-    pathname.startsWith("/servicio-tecnico");
 
   useEffect(() => {
     setDesktopNavReady(true);
@@ -86,7 +72,6 @@ export function SiteHeader() {
             className="group flex h-[40px] min-h-[40px] max-h-[40px] min-w-0 shrink-0 items-center"
             onClick={() => setMenuOpen(false)}
           >
-            {/* Altura fija 40px en todas las vistas (ratio del PNG 1080×1350). */}
             <Image
               src="/brand/garage-logo.png"
               alt={siteConfig.brandName}
@@ -99,121 +84,67 @@ export function SiteHeader() {
             <span className="sr-only">{siteConfig.brandName}</span>
           </Link>
 
-          {isShop ? (
-            <nav
-              className="hidden min-w-0 flex-1 justify-center lg:flex"
-              aria-label="Tienda"
-            >
-              {desktopNavReady ? (
-                <ul className="flex max-w-full flex-wrap items-center justify-center gap-x-3 gap-y-2 sm:gap-x-4 lg:gap-x-5">
-                  {siteConfig.shopNav.map((item) => {
-                    const active = shopNavItemActive(item.id, pathname);
-                    return (
-                      <li key={item.id}>
-                        <Link href={item.href} className={desktopNavLinkClass(active)}>
-                          {item.shortLabel}
-                        </Link>
-                      </li>
-                    );
-                  })}
-                </ul>
-              ) : (
-                <div
-                  className="mx-auto min-h-[2.25rem] w-full max-w-3xl"
-                  aria-hidden
-                />
-              )}
-            </nav>
-          ) : (
-            <nav className="hidden min-w-0 flex-1 items-center justify-center lg:flex">
-              {desktopNavReady ? (
-                <ul className="flex max-w-full flex-wrap items-center justify-center gap-x-3 gap-y-2 sm:gap-x-5 lg:gap-x-6">
-                  {siteConfig.nav.map((item) => (
-                    <li key={`${item.href}::${item.label}`}>
-                      <Link
-                        href={item.href}
-                        className={desktopNavLinkClass(homeNavLinkActive(item.href, pathname))}
-                      >
-                        {item.label}
+          <nav
+            className="hidden min-w-0 flex-1 justify-center lg:flex"
+            aria-label="Principal"
+          >
+            {desktopNavReady ? (
+              <ul className="flex max-w-full flex-wrap items-center justify-center gap-x-3 gap-y-2 sm:gap-x-4 lg:gap-x-5">
+                {siteConfig.mainNav.map((item) => {
+                  const active = mainNavItemActive(item.id, pathname);
+                  return (
+                    <li key={item.id}>
+                      <Link href={item.href} className={desktopNavLinkClass(active)}>
+                        {item.shortLabel}
                       </Link>
                     </li>
-                  ))}
-                </ul>
-              ) : (
-                <div
-                  className="mx-auto min-h-[2.25rem] w-full max-w-3xl"
-                  aria-hidden
-                />
-              )}
-            </nav>
-          )}
+                  );
+                })}
+              </ul>
+            ) : (
+              <div
+                className="mx-auto min-h-[2.25rem] w-full max-w-3xl"
+                aria-hidden
+              />
+            )}
+          </nav>
 
           <div className="flex shrink-0 items-center gap-0.5 sm:gap-1">
-            {isShop ? (
-              <>
-                <button
-                  type="button"
-                  onClick={() => setFavOn((v) => !v)}
-                  className="hidden h-11 w-11 items-center justify-center rounded-xl text-neutral-700 transition-colors hover:bg-neutral-100 sm:flex"
-                  aria-label={favOn ? "Quitar de favoritos" : "Favoritos"}
-                  aria-pressed={favOn}
-                >
-                  <svg
-                    className={`h-[22px] w-[22px] ${favOn ? "fill-red-500 text-red-500" : ""}`}
-                    fill={favOn ? "currentColor" : "none"}
-                    viewBox="0 0 24 24"
-                    strokeWidth={1.5}
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z"
-                    />
-                  </svg>
-                </button>
-                <Link
-                  href="/carrito"
-                  className="relative flex h-11 w-11 items-center justify-center rounded-xl text-neutral-800 transition-colors hover:bg-neutral-100"
-                  aria-label={`Carrito${count ? `, ${count} productos` : ""}`}
-                >
-                  <svg className="h-[22px] w-[22px]" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007z" />
-                  </svg>
-                  {count > 0 ? (
-                    <span className="absolute -right-0.5 -top-0.5 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-[var(--brand-from)] px-1 text-[10px] font-bold text-white shadow-sm">
-                      {count > 99 ? "99+" : count}
-                    </span>
-                  ) : null}
-                </Link>
-              </>
-            ) : (
-              <>
-                <button
-                  type="button"
-                  className="flex h-11 w-11 items-center justify-center rounded-xl text-neutral-700 transition-colors hover:bg-neutral-100"
-                  aria-label="Cuenta"
-                >
-                  <svg className="h-[22px] w-[22px]" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
-                  </svg>
-                </button>
-                <Link
-                  href="/carrito"
-                  className="relative flex h-11 w-11 items-center justify-center rounded-xl text-neutral-800 transition-colors hover:bg-neutral-100"
-                  aria-label={`Carrito${count ? `, ${count} productos` : ""}`}
-                >
-                  <svg className="h-[22px] w-[22px]" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007z" />
-                  </svg>
-                  {count > 0 ? (
-                    <span className="absolute -right-0.5 -top-0.5 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-neutral-950 px-1 text-[10px] font-bold text-white">
-                      {count > 99 ? "99+" : count}
-                    </span>
-                  ) : null}
-                </Link>
-              </>
-            )}
+            <button
+              type="button"
+              onClick={() => setFavOn((v) => !v)}
+              className="hidden h-11 w-11 items-center justify-center rounded-xl text-neutral-700 transition-colors hover:bg-neutral-100 sm:flex"
+              aria-label={favOn ? "Quitar de favoritos" : "Favoritos"}
+              aria-pressed={favOn}
+            >
+              <svg
+                className={`h-[22px] w-[22px] ${favOn ? "fill-red-500 text-red-500" : ""}`}
+                fill={favOn ? "currentColor" : "none"}
+                viewBox="0 0 24 24"
+                strokeWidth={1.5}
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z"
+                />
+              </svg>
+            </button>
+            <Link
+              href="/carrito"
+              className="relative flex h-11 w-11 items-center justify-center rounded-xl text-neutral-800 transition-colors hover:bg-neutral-100"
+              aria-label={`Carrito${count ? `, ${count} productos` : ""}`}
+            >
+              <svg className="h-[22px] w-[22px]" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007z" />
+              </svg>
+              {count > 0 ? (
+                <span className="absolute -right-0.5 -top-0.5 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-[var(--brand-from)] px-1 text-[10px] font-bold text-white shadow-sm">
+                  {count > 99 ? "99+" : count}
+                </span>
+              ) : null}
+            </Link>
             <button
               type="button"
               className="flex h-11 w-11 items-center justify-center rounded-xl text-neutral-800 transition-colors hover:bg-neutral-100 lg:hidden"
@@ -276,10 +207,10 @@ export function SiteHeader() {
             <p className="mb-4 text-[11px] font-semibold uppercase tracking-[0.2em] text-neutral-400">
               Menú
             </p>
-            {(isShop ? siteConfig.shopNav : siteConfig.nav).map((item) => (
+            {siteConfig.mainNav.map((item) => (
               <Link
                 key={mobileNavItemKey(item)}
-                href={"href" in item ? item.href : "/"}
+                href={item.href}
                 className="rounded-xl px-4 py-4 text-lg font-medium text-neutral-900 transition-colors hover:bg-neutral-50 active:bg-neutral-100"
                 onClick={() => setMenuOpen(false)}
               >

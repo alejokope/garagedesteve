@@ -21,6 +21,7 @@ export async function saveRepairPricingAction(payload: unknown) {
     label: "Servicio técnico — Precios",
     payload: parsed,
   });
+  revalidatePath("/servicio-tecnico");
   revalidatePath("/servicio-tecnico/precios");
   revalidatePath("/backoffice/servicio-tecnico/precios");
 }
@@ -33,6 +34,7 @@ export async function saveRepairFormAction(payload: unknown) {
     label: "Servicio técnico — Formulario solicitud",
     payload: parsed,
   });
+  revalidatePath("/servicio-tecnico");
   revalidatePath("/servicio-tecnico/solicitud");
   revalidatePath("/backoffice/servicio-tecnico/solicitud");
 }
