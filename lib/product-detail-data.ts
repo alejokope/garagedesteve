@@ -10,7 +10,12 @@ export type ProductSpec = {
 
 export type ProductDetailBlock = {
   images: string[];
+  /** Texto corrido; si hay `descriptionItems`, la tienda prioriza la lista. */
   longDescription: string;
+  /** Párrafos o ítems mostrados como lista en la ficha. */
+  descriptionItems?: string[];
+  /** Garantía destacada en la ficha (backoffice: campo propio). */
+  warranty?: string;
   specs: ProductSpec[];
   relatedIds: string[];
   accessoryIds: string[];
@@ -111,6 +116,7 @@ export function buildFallbackDetail(p: Product): ProductDetailBlock {
   return {
     images: [p.image],
     longDescription: p.short,
+    descriptionItems: p.short.trim() ? [p.short.trim()] : [],
     specs: [
       {
         key: "info",

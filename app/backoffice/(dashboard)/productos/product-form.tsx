@@ -262,6 +262,7 @@ export function ProductForm({
       </section>
 
       <ProductDetailEditor
+        key={initial?.id ?? "product-detail-new"}
         productId={productIdForUploads}
         initialDetail={initial?.detail}
         catalogProductOptions={catalogProductOptions}

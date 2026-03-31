@@ -17,7 +17,9 @@ import {
 function isProductDetailBlock(v: unknown): v is ProductDetailBlock {
   if (!v || typeof v !== "object") return false;
   const o = v as Record<string, unknown>;
-  return Array.isArray(o.images) && typeof o.longDescription === "string";
+  if (!Array.isArray(o.images)) return false;
+  if (typeof o.longDescription !== "string") return false;
+  return true;
 }
 
 function resolveProductDetail(product: Product): ProductDetailBlock {
@@ -251,7 +253,34 @@ export function ProductDetailView({
             <h1 className="font-display mt-4 text-3xl font-bold tracking-tight text-neutral-900 sm:text-4xl">
               {product.name}
             </h1>
-            <p className="mt-4 text-[15px] leading-relaxed text-neutral-600">{detail.longDescription}</p>
+            {detail.warranty?.trim() ? (
+              <div className="mt-5 rounded-2xl border-2 border-emerald-300/90 bg-gradient-to-br from-emerald-50 to-teal-50/80 px-5 py-4 shadow-sm ring-1 ring-emerald-200/60">
+                <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-emerald-800">
+                  Garantía
+                </p>
+                <p className="mt-2 text-[15px] font-medium leading-relaxed text-emerald-950">
+                  {detail.warranty.trim()}
+                </p>
+              </div>
+            ) : null}
+            {detail.descriptionItems && detail.descriptionItems.length > 0 ? (
+              <ul className="mt-5 space-y-3">
+                {detail.descriptionItems.map((line, i) => (
+                  <li
+                    key={i}
+                    className="flex gap-3 text-[15px] leading-relaxed text-neutral-600"
+                  >
+                    <span
+                      className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--brand-from)]"
+                      aria-hidden
+                    />
+                    <span>{line}</span>
+                  </li>
+                ))}
+              </ul>
+            ) : detail.longDescription.trim() ? (
+              <p className="mt-5 text-[15px] leading-relaxed text-neutral-600">{detail.longDescription}</p>
+            ) : null}
 
             <div className="mt-6 flex flex-wrap items-end gap-3">
               <span className="font-display text-3xl font-bold tabular-nums text-neutral-950">
@@ -358,7 +387,11 @@ export function ProductDetailView({
                 <span className="text-[var(--brand-from)]">🛡</span>
                 <div>
                   <p className="text-sm font-semibold text-neutral-900">Garantía</p>
-                  <p className="text-xs text-neutral-600">12 meses oficial</p>
+                  <p className="text-xs text-neutral-600">
+                    {detail.warranty?.trim()
+                      ? "Cobertura detallada en el recuadro superior."
+                      : "12 meses oficial · consultá condiciones"}
+                  </p>
                 </div>
               </div>
             </div>

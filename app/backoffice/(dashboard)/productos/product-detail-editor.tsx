@@ -30,6 +30,8 @@ function parseDetail(raw: unknown): ProductDetailBlock {
     return {
       images: [],
       longDescription: "",
+      descriptionItems: [""],
+      warranty: "",
       specs: [],
       relatedIds: [],
       accessoryIds: [],
@@ -37,9 +39,22 @@ function parseDetail(raw: unknown): ProductDetailBlock {
     };
   }
   const r = raw as Record<string, unknown>;
+  const longDescription = String(r.longDescription ?? "");
+  let descriptionItems: string[];
+  if (Array.isArray(r.descriptionItems) && r.descriptionItems.length > 0) {
+    descriptionItems = (r.descriptionItems as unknown[])
+      .filter((x): x is string => typeof x === "string")
+      .map((s) => s.replace(/\r\n/g, "\n").trimEnd());
+  } else if (longDescription.trim()) {
+    descriptionItems = [longDescription.trim()];
+  } else {
+    descriptionItems = [""];
+  }
   return {
     images: Array.isArray(r.images) ? (r.images as string[]).filter(Boolean) : [],
-    longDescription: String(r.longDescription ?? ""),
+    longDescription,
+    descriptionItems,
+    warranty: typeof r.warranty === "string" ? r.warranty : "",
     specs: Array.isArray(r.specs) ? (r.specs as ProductSpec[]) : [],
     relatedIds: Array.isArray(r.relatedIds) ? (r.relatedIds as string[]) : [],
     accessoryIds: Array.isArray(r.accessoryIds) ? (r.accessoryIds as string[]) : [],
@@ -140,7 +155,8 @@ export function ProductDetailEditor({
 }) {
   const base = useMemo(() => parseDetail(initialDetail), [initialDetail]);
 
-  const [longDescription, setLongDescription] = useState(base.longDescription);
+  const [descriptionItems, setDescriptionItems] = useState<string[]>(base.descriptionItems ?? [""]);
+  const [warranty, setWarranty] = useState(base.warranty ?? "");
   const [gallery, setGallery] = useState<string[]>(base.images);
   const [specs, setSpecs] = useState<ProductSpec[]>(base.specs.length ? base.specs : []);
   const [relatedIds, setRelatedIds] = useState<string[]>(base.relatedIds);
@@ -149,16 +165,20 @@ export function ProductDetailEditor({
   const [pending, startTransition] = useTransition();
 
   const detailJson = useMemo(() => {
+    const trimmed = descriptionItems.map((s) => s.trim()).filter(Boolean);
     const block: ProductDetailBlock = {
       images: gallery,
-      longDescription,
+      longDescription: trimmed.join("\n\n"),
       specs,
       relatedIds,
       accessoryIds,
       reviews: [],
     };
+    if (trimmed.length > 0) block.descriptionItems = trimmed;
+    const w = warranty.trim();
+    if (w) block.warranty = w;
     return JSON.stringify(block);
-  }, [gallery, longDescription, specs, relatedIds, accessoryIds]);
+  }, [gallery, descriptionItems, warranty, specs, relatedIds, accessoryIds]);
 
   function addGalleryFromFile(file: File) {
     setGalleryError(null);
@@ -186,18 +206,72 @@ export function ProductDetailEditor({
     <div className="space-y-6">
       <input type="hidden" name="detail" value={detailJson} readOnly />
 
-      <section className="rounded-2xl border border-white/[0.08] bg-white/[0.03] p-6">
-        <h2 className="font-display text-lg font-semibold text-white">Descripción ampliada</h2>
-        <p className="mt-1 text-sm text-slate-500">
-          Texto largo para la ficha del producto. Podés usar varios párrafos.
+      <section className="rounded-2xl border-2 border-emerald-500/25 bg-gradient-to-br from-emerald-950/40 to-black/20 p-6 shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]">
+        <h2 className="font-display text-lg font-semibold text-emerald-100">Garantía</h2>
+        <p className="mt-1 text-sm text-emerald-200/70">
+          Se muestra en la ficha pública en un recuadro destacado (verde). Dejalo vacío si no aplica.
         </p>
         <textarea
-          value={longDescription}
-          onChange={(e) => setLongDescription(e.target.value)}
-          rows={6}
-          className="mt-4 w-full resize-y rounded-xl border border-white/[0.1] bg-black/30 px-3 py-2.5 text-sm leading-relaxed text-white outline-none focus:ring-2 focus:ring-violet-500/40"
-          placeholder="Características, condición, qué incluye la caja, etc."
+          value={warranty}
+          onChange={(e) => setWarranty(e.target.value)}
+          rows={3}
+          className="mt-4 w-full resize-y rounded-xl border border-emerald-500/30 bg-black/40 px-3 py-2.5 text-sm leading-relaxed text-white outline-none placeholder:text-slate-500 focus:ring-2 focus:ring-emerald-500/40"
+          placeholder="Ej. Oficial 12 meses · factura y caja sellada"
         />
+      </section>
+
+      <section className="rounded-2xl border border-white/[0.08] bg-white/[0.03] p-6">
+        <div className="flex flex-wrap items-start justify-between gap-3">
+          <div>
+            <h2 className="font-display text-lg font-semibold text-white">Descripción</h2>
+            <p className="mt-1 text-sm text-slate-500">
+              Un ítem por fila: en la tienda se listan con viñetas, más ordenado que un solo bloque de texto.
+            </p>
+          </div>
+          <button
+            type="button"
+            className="shrink-0 rounded-lg bg-white/[0.08] px-3 py-2 text-xs font-medium text-white hover:bg-white/[0.12]"
+            onClick={() => setDescriptionItems((rows) => [...rows, ""])}
+          >
+            + Agregar ítem
+          </button>
+        </div>
+        <div className="mt-4 space-y-3">
+          {descriptionItems.map((line, i) => (
+            <div key={i} className="flex gap-2">
+              <span className="mt-3 flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-violet-500/20 text-xs font-bold text-violet-200">
+                {i + 1}
+              </span>
+              <textarea
+                value={line}
+                onChange={(e) => {
+                  const v = e.target.value;
+                  setDescriptionItems((rows) => {
+                    const next = [...rows];
+                    next[i] = v;
+                    return next;
+                  });
+                }}
+                rows={2}
+                className="min-h-[3.25rem] flex-1 resize-y rounded-xl border border-white/[0.1] bg-black/30 px-3 py-2.5 text-sm leading-relaxed text-white outline-none focus:ring-2 focus:ring-violet-500/40"
+                placeholder="Ej. Incluye cable USB-C y documentación original."
+              />
+              <button
+                type="button"
+                className="mt-1 shrink-0 self-start rounded-lg border border-white/[0.1] px-2 py-2 text-xs text-slate-400 hover:border-red-500/40 hover:text-red-300"
+                onClick={() =>
+                  setDescriptionItems((rows) => {
+                    if (rows.length <= 1) return [""];
+                    return rows.filter((_, j) => j !== i);
+                  })
+                }
+                aria-label="Quitar ítem"
+              >
+                Quitar
+              </button>
+            </div>
+          ))}
+        </div>
       </section>
 
       <section className="rounded-2xl border border-white/[0.08] bg-white/[0.03] p-6">
