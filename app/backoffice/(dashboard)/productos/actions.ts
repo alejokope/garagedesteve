@@ -63,6 +63,10 @@ export async function saveProduct(
     return { error: "Precio inválido" };
   }
 
+  const stockRaw = String(formData.get("stock_condition") ?? "").trim();
+  const stock_condition =
+    stockRaw === "new" || stockRaw === "used" ? stockRaw : null;
+
   const badgeRaw = String(formData.get("badge") ?? "").trim();
   const compareRaw = String(formData.get("compare_at_price") ?? "").trim();
   const discountRaw = String(formData.get("discount_percent") ?? "").trim();
@@ -106,6 +110,7 @@ export async function saveProduct(
       short,
       category: categoryRaw,
       price,
+      stock_condition,
       badge: badgeRaw || null,
       image,
       image_alt,

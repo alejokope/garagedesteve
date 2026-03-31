@@ -1,0 +1,162 @@
+[
+  {
+    "id": "acn-adaptador-carga-normal-0",
+    "producto": "Adaptador",
+    "tipoCarga": "Carga normal",
+    "wats": "5W",
+    "calidad": "Réplica exacta",
+    "precio": "ARS:15000",
+    "modelo": "-",
+    "garantia": "-"
+  },
+  {
+    "id": "acn-adaptador-carga-rapida-1",
+    "producto": "Adaptador",
+    "tipoCarga": "Carga rápida",
+    "wats": "20W",
+    "calidad": "Réplica exacta",
+    "precio": "USD:20",
+    "modelo": "-",
+    "garantia": "-"
+  },
+  {
+    "id": "acn-adaptador-carga-rapida-2",
+    "producto": "Adaptador",
+    "tipoCarga": "Carga rápida",
+    "wats": "20W",
+    "calidad": "Original",
+    "precio": "USD:30",
+    "modelo": "-",
+    "garantia": "-"
+  },
+  {
+    "id": "acn-cable-carga-normal-l-a-l-3",
+    "producto": "Cable",
+    "tipoCarga": "Carga normal L a L",
+    "wats": "-",
+    "calidad": "Réplica exacta",
+    "precio": "ARS:20000",
+    "modelo": "-",
+    "garantia": "-"
+  },
+  {
+    "id": "acn-cable-carga-rapida-c-a-l-4",
+    "producto": "Cable",
+    "tipoCarga": "Carga rápida C a L",
+    "wats": "-",
+    "calidad": "Réplica exacta",
+    "precio": "ARS:20000",
+    "modelo": "-",
+    "garantia": "-"
+  },
+  {
+    "id": "acn-cable-carga-rapida-c-a-c-5",
+    "producto": "Cable",
+    "tipoCarga": "Carga rápida C a C",
+    "wats": "-",
+    "calidad": "Réplica exacta",
+    "precio": "ARS:20000",
+    "modelo": "-",
+    "garantia": "-"
+  },
+  {
+    "id": "acn-cable-carga-rapida-c-a-l-6",
+    "producto": "Cable",
+    "tipoCarga": "Carga rápida C a L",
+    "wats": "-",
+    "calidad": "Original",
+    "precio": "USD:20",
+    "modelo": "-",
+    "garantia": "-"
+  },
+  {
+    "id": "acn-cable-carga-rapida-c-a-c-7",
+    "producto": "Cable",
+    "tipoCarga": "Carga rápida C a C",
+    "wats": "-",
+    "calidad": "Original",
+    "precio": "USD:20",
+    "modelo": "-",
+    "garantia": "-"
+  },
+  {
+    "id": "acn-pencil-apple-pencil-usb-c-8",
+    "producto": "Pencil",
+    "tipoCarga": "-",
+    "wats": "-",
+    "calidad": "-",
+    "precio": "USD:150",
+    "modelo": "Apple Pencil USB-C",
+    "garantia": "Oficial 12 meses"
+  },
+  {
+    "id": "acn-pencil-apple-pencil-pro-9",
+    "producto": "Pencil",
+    "tipoCarga": "-",
+    "wats": "-",
+    "calidad": "-",
+    "precio": "USD:190",
+    "modelo": "Apple Pencil Pro",
+    "garantia": "Oficial 12 meses"
+  },
+  {
+    "id": "acn-teclado-magic-keyboard-air-11-m3-10",
+    "producto": "Teclado",
+    "tipoCarga": "-",
+    "wats": "-",
+    "calidad": "-",
+    "precio": "USD:390",
+    "modelo": "Magic Keyboard Air 11″ M3",
+    "garantia": "Oficial 12 meses"
+  },
+  {
+    "id": "acn-teclado-magic-keyboard-air-13-m3-11",
+    "producto": "Teclado",
+    "tipoCarga": "-",
+    "wats": "-",
+    "calidad": "-",
+    "precio": "USD:480",
+    "modelo": "Magic Keyboard Air 13″ M3",
+    "garantia": "Oficial 12 meses"
+  },
+  {
+    "id": "acn-teclado-magic-keyboard-pro-11-m4-m5-12",
+    "producto": "Teclado",
+    "tipoCarga": "-",
+    "wats": "-",
+    "calidad": "-",
+    "precio": "USD:390",
+    "modelo": "Magic Keyboard Pro 11″ M4/M5",
+    "garantia": "Oficial 12 meses"
+  },
+  {
+    "id": "acn-teclado-magic-keyboard-pro-13-m4-m5-13",
+    "producto": "Teclado",
+    "tipoCarga": "-",
+    "wats": "-",
+    "calidad": "-",
+    "precio": "USD:480",
+    "modelo": "Magic Keyboard Pro 13″ M4/M5",
+    "garantia": "Oficial 12 meses"
+  },
+  {
+    "id": "acn-airtag-airtag-pack-x4-14",
+    "producto": "AirTag",
+    "tipoCarga": "-",
+    "wats": "-",
+    "calidad": "-",
+    "precio": "USD:160",
+    "modelo": "AirTag pack x4",
+    "garantia": "Oficial 12 meses"
+  },
+  {
+    "id": "acn-airtag-airtag-pack-x4-2-gen-15",
+    "producto": "AirTag",
+    "tipoCarga": "-",
+    "wats": "-",
+    "calidad": "-",
+    "precio": "USD:190",
+    "modelo": "AirTag pack x4 2.ª gen.",
+    "garantia": "Oficial 12 meses"
+  }
+]

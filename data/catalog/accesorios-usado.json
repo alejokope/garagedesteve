@@ -1,0 +1,32 @@
+[
+  {
+    "id": "acu-funda-silicona-tpu-iphone-13-14-0",
+    "producto": "Funda",
+    "tipoCarga": "Silicona / TPU",
+    "wats": "-",
+    "calidad": "Buen estado · sin roturas",
+    "precio": "ARS:4500",
+    "modelo": "iPhone 13 / 14",
+    "garantia": "Consultar en tienda"
+  },
+  {
+    "id": "acu-cable-lightning-1",
+    "producto": "Cable",
+    "tipoCarga": "Lightning",
+    "wats": "-",
+    "calidad": "Funcional · desgaste visible",
+    "precio": "ARS:3000",
+    "modelo": "-",
+    "garantia": "Sin garantía"
+  },
+  {
+    "id": "acu-cargador-20w-usb-c-apple-20w-usb-c-2",
+    "producto": "Cargador",
+    "tipoCarga": "20W USB-C",
+    "wats": "-",
+    "calidad": "Apple original · uso visible",
+    "precio": "USD:18",
+    "modelo": "Apple 20W USB-C",
+    "garantia": "7 días"
+  }
+]

@@ -1,0 +1,767 @@
+[
+  {
+    "id": "an-iphone-13-128gb-560-a-confirmar",
+    "producto": "IPHONE",
+    "modelo": "13",
+    "capacidad": "128GB",
+    "color": "A confirmar según stock",
+    "precioUsd": 560,
+    "garantia": "Oficial 12 meses"
+  },
+  {
+    "id": "an-iphone-14-128gb-600-a-confirmar",
+    "producto": "IPHONE",
+    "modelo": "14",
+    "capacidad": "128GB",
+    "color": "A confirmar según stock",
+    "precioUsd": 600,
+    "garantia": "Oficial 12 meses"
+  },
+  {
+    "id": "an-iphone-14-512gb-710-a-confirmar",
+    "producto": "IPHONE",
+    "modelo": "14",
+    "capacidad": "512GB",
+    "color": "A confirmar según stock",
+    "precioUsd": 710,
+    "garantia": "Oficial 12 meses"
+  },
+  {
+    "id": "an-iphone-15-128gb-700-a-confirmar",
+    "producto": "IPHONE",
+    "modelo": "15",
+    "capacidad": "128GB",
+    "color": "A confirmar según stock",
+    "precioUsd": 700,
+    "garantia": "Oficial 12 meses"
+  },
+  {
+    "id": "an-iphone-15-256gb-770-a-confirmar",
+    "producto": "IPHONE",
+    "modelo": "15",
+    "capacidad": "256GB",
+    "color": "A confirmar según stock",
+    "precioUsd": 770,
+    "garantia": "Oficial 12 meses"
+  },
+  {
+    "id": "an-iphone-15-plus-128gb-790-a-confirmar",
+    "producto": "IPHONE",
+    "modelo": "15 PLUS",
+    "capacidad": "128GB",
+    "color": "A confirmar según stock",
+    "precioUsd": 790,
+    "garantia": "Oficial 12 meses"
+  },
+  {
+    "id": "an-iphone-15-plus-512gb-880-a-confirmar",
+    "producto": "IPHONE",
+    "modelo": "15 PLUS",
+    "capacidad": "512GB",
+    "color": "A confirmar según stock",
+    "precioUsd": 880,
+    "garantia": "Oficial 12 meses"
+  },
+  {
+    "id": "an-iphone-16-128gb-780-a-confirmar",
+    "producto": "IPHONE",
+    "modelo": "16",
+    "capacidad": "128GB",
+    "color": "A confirmar según stock",
+    "precioUsd": 780,
+    "garantia": "Oficial 12 meses"
+  },
+  {
+    "id": "an-iphone-16-plus-128gb-920-a-confirmar",
+    "producto": "IPHONE",
+    "modelo": "16 PLUS",
+    "capacidad": "128GB",
+    "color": "A confirmar según stock",
+    "precioUsd": 920,
+    "garantia": "Oficial 12 meses"
+  },
+  {
+    "id": "an-iphone-16-pro-128gb-1110-a-confirmar",
+    "producto": "IPHONE",
+    "modelo": "16 PRO",
+    "capacidad": "128GB",
+    "color": "A confirmar según stock",
+    "precioUsd": 1110,
+    "garantia": "Oficial 12 meses"
+  },
+  {
+    "id": "an-iphone-16-pro-max-256gb-1290-a-confirmar",
+    "producto": "IPHONE",
+    "modelo": "16 PRO MAX",
+    "capacidad": "256GB",
+    "color": "A confirmar según stock",
+    "precioUsd": 1290,
+    "garantia": "Oficial 12 meses"
+  },
+  {
+    "id": "an-iphone-17-256gb-930-a-confirmar",
+    "producto": "IPHONE",
+    "modelo": "17",
+    "capacidad": "256GB",
+    "color": "A confirmar según stock",
+    "precioUsd": 930,
+    "garantia": "Oficial 12 meses"
+  },
+  {
+    "id": "an-iphone-17-pro-256gb-1340-a-confirmar",
+    "producto": "IPHONE",
+    "modelo": "17 PRO",
+    "capacidad": "256GB",
+    "color": "A confirmar según stock",
+    "precioUsd": 1340,
+    "garantia": "Oficial 12 meses"
+  },
+  {
+    "id": "an-iphone-17-pro-512gb-1540-a-confirmar",
+    "producto": "IPHONE",
+    "modelo": "17 PRO",
+    "capacidad": "512GB",
+    "color": "A confirmar según stock",
+    "precioUsd": 1540,
+    "garantia": "Oficial 12 meses"
+  },
+  {
+    "id": "an-iphone-17-pro-1tb-1720-a-confirmar",
+    "producto": "IPHONE",
+    "modelo": "17 PRO",
+    "capacidad": "1TB",
+    "color": "A confirmar según stock",
+    "precioUsd": 1720,
+    "garantia": "Oficial 12 meses"
+  },
+  {
+    "id": "an-iphone-17-pro-max-256gb-1490-a-confirmar",
+    "producto": "IPHONE",
+    "modelo": "17 PRO MAX",
+    "capacidad": "256GB",
+    "color": "A confirmar según stock",
+    "precioUsd": 1490,
+    "garantia": "Oficial 12 meses"
+  },
+  {
+    "id": "an-iphone-17-pro-max-512gb-1720-a-confirmar",
+    "producto": "IPHONE",
+    "modelo": "17 PRO MAX",
+    "capacidad": "512GB",
+    "color": "A confirmar según stock",
+    "precioUsd": 1720,
+    "garantia": "Oficial 12 meses"
+  },
+  {
+    "id": "an-iphone-17-pro-max-1tb-1920-a-confirmar",
+    "producto": "IPHONE",
+    "modelo": "17 PRO MAX",
+    "capacidad": "1TB",
+    "color": "A confirmar según stock",
+    "precioUsd": 1920,
+    "garantia": "Oficial 12 meses"
+  },
+  {
+    "id": "an-iphone-17-pro-max-2tb-2300-a-confirmar",
+    "producto": "IPHONE",
+    "modelo": "17 PRO MAX",
+    "capacidad": "2TB",
+    "color": "A confirmar según stock",
+    "precioUsd": 2300,
+    "garantia": "Oficial 12 meses"
+  },
+  {
+    "id": "an-macbook-neo-256gb-ssd-870-a-confirmar",
+    "producto": "MACBOOK",
+    "modelo": "NEO",
+    "capacidad": "256GB SSD",
+    "color": "A confirmar según stock",
+    "precioUsd": 870,
+    "garantia": "Oficial 12 meses"
+  },
+  {
+    "id": "an-macbook-neo-512gb-ssd-980-a-confirmar",
+    "producto": "MACBOOK",
+    "modelo": "NEO",
+    "capacidad": "512GB SSD",
+    "color": "A confirmar según stock",
+    "precioUsd": 980,
+    "garantia": "Oficial 12 meses"
+  },
+  {
+    "id": "an-macbook-air-256gb-ssd-1180-a-confirmar",
+    "producto": "MACBOOK",
+    "modelo": "AIR",
+    "capacidad": "256GB SSD",
+    "color": "A confirmar según stock",
+    "precioUsd": 1180,
+    "garantia": "Oficial 12 meses"
+  },
+  {
+    "id": "an-macbook-air-512gb-ssd-1450-a-confirmar",
+    "producto": "MACBOOK",
+    "modelo": "AIR",
+    "capacidad": "512GB SSD",
+    "color": "A confirmar según stock",
+    "precioUsd": 1450,
+    "garantia": "Oficial 12 meses"
+  },
+  {
+    "id": "an-macbook-air-256gb-ssd-1370-a-confirmar",
+    "producto": "MACBOOK",
+    "modelo": "AIR",
+    "capacidad": "256GB SSD",
+    "color": "A confirmar según stock",
+    "precioUsd": 1370,
+    "garantia": "Oficial 12 meses"
+  },
+  {
+    "id": "an-macbook-air-512gb-ssd-1580-a-confirmar",
+    "producto": "MACBOOK",
+    "modelo": "AIR",
+    "capacidad": "512GB SSD",
+    "color": "A confirmar según stock",
+    "precioUsd": 1580,
+    "garantia": "Oficial 12 meses"
+  },
+  {
+    "id": "an-macbook-air-512gb-ssd-1420-a-confirmar",
+    "producto": "MACBOOK",
+    "modelo": "AIR",
+    "capacidad": "512GB SSD",
+    "color": "A confirmar según stock",
+    "precioUsd": 1420,
+    "garantia": "Oficial 12 meses"
+  },
+  {
+    "id": "an-macbook-air-1tb-ssd-1630-a-confirmar",
+    "producto": "MACBOOK",
+    "modelo": "AIR",
+    "capacidad": "1TB SSD",
+    "color": "A confirmar según stock",
+    "precioUsd": 1630,
+    "garantia": "Oficial 12 meses"
+  },
+  {
+    "id": "an-macbook-air-1tb-ssd-1850-a-confirmar",
+    "producto": "MACBOOK",
+    "modelo": "AIR",
+    "capacidad": "1TB SSD",
+    "color": "A confirmar según stock",
+    "precioUsd": 1850,
+    "garantia": "Oficial 12 meses"
+  },
+  {
+    "id": "an-macbook-air-512gb-ssd-1650-a-confirmar",
+    "producto": "MACBOOK",
+    "modelo": "AIR",
+    "capacidad": "512GB SSD",
+    "color": "A confirmar según stock",
+    "precioUsd": 1650,
+    "garantia": "Oficial 12 meses"
+  },
+  {
+    "id": "an-macbook-air-1tb-ssd-1870-a-confirmar",
+    "producto": "MACBOOK",
+    "modelo": "AIR",
+    "capacidad": "1TB SSD",
+    "color": "A confirmar según stock",
+    "precioUsd": 1870,
+    "garantia": "Oficial 12 meses"
+  },
+  {
+    "id": "an-macbook-air-1tb-ssd-2000-a-confirmar",
+    "producto": "MACBOOK",
+    "modelo": "AIR",
+    "capacidad": "1TB SSD",
+    "color": "A confirmar según stock",
+    "precioUsd": 2000,
+    "garantia": "Oficial 12 meses"
+  },
+  {
+    "id": "an-macbook-pro-512gb-ssd-1820-a-confirmar",
+    "producto": "MACBOOK",
+    "modelo": "PRO",
+    "capacidad": "512GB SSD",
+    "color": "A confirmar según stock",
+    "precioUsd": 1820,
+    "garantia": "Oficial 12 meses"
+  },
+  {
+    "id": "an-macbook-pro-512gb-ssd-2250-a-confirmar",
+    "producto": "MACBOOK",
+    "modelo": "PRO",
+    "capacidad": "512GB SSD",
+    "color": "A confirmar según stock",
+    "precioUsd": 2250,
+    "garantia": "Oficial 12 meses"
+  },
+  {
+    "id": "an-macbook-pro-512gb-ssd-2850-a-confirmar",
+    "producto": "MACBOOK",
+    "modelo": "PRO",
+    "capacidad": "512GB SSD",
+    "color": "A confirmar según stock",
+    "precioUsd": 2850,
+    "garantia": "Oficial 12 meses"
+  },
+  {
+    "id": "an-macbook-pro-512gb-ssd-3290-a-confirmar",
+    "producto": "MACBOOK",
+    "modelo": "PRO",
+    "capacidad": "512GB SSD",
+    "color": "A confirmar según stock",
+    "precioUsd": 3290,
+    "garantia": "Oficial 12 meses"
+  },
+  {
+    "id": "an-macbook-pro-512gb-ssd-1830-a-confirmar",
+    "producto": "MACBOOK",
+    "modelo": "PRO",
+    "capacidad": "512GB SSD",
+    "color": "A confirmar según stock",
+    "precioUsd": 1830,
+    "garantia": "Oficial 12 meses"
+  },
+  {
+    "id": "an-macbook-pro-1tb-ssd-2050-a-confirmar",
+    "producto": "MACBOOK",
+    "modelo": "PRO",
+    "capacidad": "1TB SSD",
+    "color": "A confirmar según stock",
+    "precioUsd": 2050,
+    "garantia": "Oficial 12 meses"
+  },
+  {
+    "id": "an-macbook-pro-1tb-ssd-2300-a-confirmar",
+    "producto": "MACBOOK",
+    "modelo": "PRO",
+    "capacidad": "1TB SSD",
+    "color": "A confirmar según stock",
+    "precioUsd": 2300,
+    "garantia": "Oficial 12 meses"
+  },
+  {
+    "id": "an-macbook-pro-1tb-ssd-2670-a-confirmar",
+    "producto": "MACBOOK",
+    "modelo": "PRO",
+    "capacidad": "1TB SSD",
+    "color": "A confirmar según stock",
+    "precioUsd": 2670,
+    "garantia": "Oficial 12 meses"
+  },
+  {
+    "id": "an-macbook-pro-2tb-ssd-3390-a-confirmar",
+    "producto": "MACBOOK",
+    "modelo": "PRO",
+    "capacidad": "2TB SSD",
+    "color": "A confirmar según stock",
+    "precioUsd": 3390,
+    "garantia": "Oficial 12 meses"
+  },
+  {
+    "id": "an-macbook-pro-1tb-ssd-4800-a-confirmar",
+    "producto": "MACBOOK",
+    "modelo": "PRO",
+    "capacidad": "1TB SSD",
+    "color": "A confirmar según stock",
+    "precioUsd": 4800,
+    "garantia": "Oficial 12 meses"
+  },
+  {
+    "id": "an-macbook-pro-1tb-ssd-5400-a-confirmar",
+    "producto": "MACBOOK",
+    "modelo": "PRO",
+    "capacidad": "1TB SSD",
+    "color": "A confirmar según stock",
+    "precioUsd": 5400,
+    "garantia": "Oficial 12 meses"
+  },
+  {
+    "id": "an-ipad-mini-7ma-gen-128gb-620-a-confirmar",
+    "producto": "IPAD",
+    "modelo": "MINI 7MA GEN",
+    "capacidad": "128GB",
+    "color": "A confirmar según stock",
+    "precioUsd": 620,
+    "garantia": "Oficial 12 meses"
+  },
+  {
+    "id": "an-ipad-mini-7ma-gen-256gb-720-a-confirmar",
+    "producto": "IPAD",
+    "modelo": "MINI 7MA GEN",
+    "capacidad": "256GB",
+    "color": "A confirmar según stock",
+    "precioUsd": 720,
+    "garantia": "Oficial 12 meses"
+  },
+  {
+    "id": "an-ipad-a16-128gb-510-a-confirmar",
+    "producto": "IPAD",
+    "modelo": "A16",
+    "capacidad": "128GB",
+    "color": "A confirmar según stock",
+    "precioUsd": 510,
+    "garantia": "Oficial 12 meses"
+  },
+  {
+    "id": "an-ipad-a16-256gb-620-a-confirmar",
+    "producto": "IPAD",
+    "modelo": "A16",
+    "capacidad": "256GB",
+    "color": "A confirmar según stock",
+    "precioUsd": 620,
+    "garantia": "Oficial 12 meses"
+  },
+  {
+    "id": "an-ipad-air-128gb-700-a-confirmar",
+    "producto": "IPAD",
+    "modelo": "AIR",
+    "capacidad": "128GB",
+    "color": "A confirmar según stock",
+    "precioUsd": 700,
+    "garantia": "Oficial 12 meses"
+  },
+  {
+    "id": "an-ipad-air-256gb-850-a-confirmar",
+    "producto": "IPAD",
+    "modelo": "AIR",
+    "capacidad": "256GB",
+    "color": "A confirmar según stock",
+    "precioUsd": 850,
+    "garantia": "Oficial 12 meses"
+  },
+  {
+    "id": "an-ipad-air-128gb-920-a-confirmar",
+    "producto": "IPAD",
+    "modelo": "AIR",
+    "capacidad": "128GB",
+    "color": "A confirmar según stock",
+    "precioUsd": 920,
+    "garantia": "Oficial 12 meses"
+  },
+  {
+    "id": "an-ipad-air-256gb-1060-a-confirmar",
+    "producto": "IPAD",
+    "modelo": "AIR",
+    "capacidad": "256GB",
+    "color": "A confirmar según stock",
+    "precioUsd": 1060,
+    "garantia": "Oficial 12 meses"
+  },
+  {
+    "id": "an-ipad-air-128gb-780-a-confirmar",
+    "producto": "IPAD",
+    "modelo": "AIR",
+    "capacidad": "128GB",
+    "color": "A confirmar según stock",
+    "precioUsd": 780,
+    "garantia": "Oficial 12 meses"
+  },
+  {
+    "id": "an-ipad-air-256gb-890-a-confirmar",
+    "producto": "IPAD",
+    "modelo": "AIR",
+    "capacidad": "256GB",
+    "color": "A confirmar según stock",
+    "precioUsd": 890,
+    "garantia": "Oficial 12 meses"
+  },
+  {
+    "id": "an-ipad-air-128gb-1000-a-confirmar",
+    "producto": "IPAD",
+    "modelo": "AIR",
+    "capacidad": "128GB",
+    "color": "A confirmar según stock",
+    "precioUsd": 1000,
+    "garantia": "Oficial 12 meses"
+  },
+  {
+    "id": "an-ipad-air-256gb-1100-a-confirmar",
+    "producto": "IPAD",
+    "modelo": "AIR",
+    "capacidad": "256GB",
+    "color": "A confirmar según stock",
+    "precioUsd": 1100,
+    "garantia": "Oficial 12 meses"
+  },
+  {
+    "id": "an-ipad-pro-256gb-1100-a-confirmar",
+    "producto": "IPAD",
+    "modelo": "PRO",
+    "capacidad": "256GB",
+    "color": "A confirmar según stock",
+    "precioUsd": 1100,
+    "garantia": "Oficial 12 meses"
+  },
+  {
+    "id": "an-ipad-pro-lte-256gb-1140-a-confirmar",
+    "producto": "IPAD",
+    "modelo": "PRO + LTE",
+    "capacidad": "256GB",
+    "color": "A confirmar según stock",
+    "precioUsd": 1140,
+    "garantia": "Oficial 12 meses"
+  },
+  {
+    "id": "an-ipad-pro-512gb-1450-a-confirmar",
+    "producto": "IPAD",
+    "modelo": "PRO",
+    "capacidad": "512GB",
+    "color": "A confirmar según stock",
+    "precioUsd": 1450,
+    "garantia": "Oficial 12 meses"
+  },
+  {
+    "id": "an-ipad-pro-256gb-1370-a-confirmar",
+    "producto": "IPAD",
+    "modelo": "PRO",
+    "capacidad": "256GB",
+    "color": "A confirmar según stock",
+    "precioUsd": 1370,
+    "garantia": "Oficial 12 meses"
+  },
+  {
+    "id": "an-ipad-pro-256gb-1120-a-confirmar",
+    "producto": "IPAD",
+    "modelo": "PRO",
+    "capacidad": "256GB",
+    "color": "A confirmar según stock",
+    "precioUsd": 1120,
+    "garantia": "Oficial 12 meses"
+  },
+  {
+    "id": "an-ipad-pro-512gb-1420-a-confirmar",
+    "producto": "IPAD",
+    "modelo": "PRO",
+    "capacidad": "512GB",
+    "color": "A confirmar según stock",
+    "precioUsd": 1420,
+    "garantia": "Oficial 12 meses"
+  },
+  {
+    "id": "an-ipad-pro-256gb-1470-a-confirmar",
+    "producto": "IPAD",
+    "modelo": "PRO",
+    "capacidad": "256GB",
+    "color": "A confirmar según stock",
+    "precioUsd": 1470,
+    "garantia": "Oficial 12 meses"
+  },
+  {
+    "id": "an-ipad-pro-lte-256gb-2040-a-confirmar",
+    "producto": "IPAD",
+    "modelo": "PRO + LTE",
+    "capacidad": "256GB",
+    "color": "A confirmar según stock",
+    "precioUsd": 2040,
+    "garantia": "Oficial 12 meses"
+  },
+  {
+    "id": "an-ipad-pro-512gb-1790-a-confirmar",
+    "producto": "IPAD",
+    "modelo": "PRO",
+    "capacidad": "512GB",
+    "color": "A confirmar según stock",
+    "precioUsd": 1790,
+    "garantia": "Oficial 12 meses"
+  },
+  {
+    "id": "an-ipad-pro-lte-512gb-2240-a-confirmar",
+    "producto": "IPAD",
+    "modelo": "PRO + LTE",
+    "capacidad": "512GB",
+    "color": "A confirmar según stock",
+    "precioUsd": 2240,
+    "garantia": "Oficial 12 meses"
+  },
+  {
+    "id": "an-ipad-pro-1tb-2390-a-confirmar",
+    "producto": "IPAD",
+    "modelo": "PRO",
+    "capacidad": "1TB",
+    "color": "A confirmar según stock",
+    "precioUsd": 2390,
+    "garantia": "Oficial 12 meses"
+  },
+  {
+    "id": "an-ipad-pro-lte-1tb-2790-a-confirmar",
+    "producto": "IPAD",
+    "modelo": "PRO + LTE",
+    "capacidad": "1TB",
+    "color": "A confirmar según stock",
+    "precioUsd": 2790,
+    "garantia": "Oficial 12 meses"
+  },
+  {
+    "id": "an-apple-watch-series-se-2-280-a-confirmar",
+    "producto": "APPLE WATCH",
+    "modelo": "SERIES SE 2",
+    "capacidad": "-",
+    "color": "A confirmar según stock",
+    "precioUsd": 280,
+    "garantia": "Oficial 12 meses"
+  },
+  {
+    "id": "an-apple-watch-series-se-2-310-a-confirmar",
+    "producto": "APPLE WATCH",
+    "modelo": "SERIES SE 2",
+    "capacidad": "-",
+    "color": "A confirmar según stock",
+    "precioUsd": 310,
+    "garantia": "Oficial 12 meses"
+  },
+  {
+    "id": "an-apple-watch-series-se-2-lte-320-a-confirmar",
+    "producto": "APPLE WATCH",
+    "modelo": "SERIES SE 2 + LTE",
+    "capacidad": "-",
+    "color": "A confirmar según stock",
+    "precioUsd": 320,
+    "garantia": "Oficial 12 meses"
+  },
+  {
+    "id": "an-apple-watch-series-se-3-330-a-confirmar",
+    "producto": "APPLE WATCH",
+    "modelo": "SERIES SE 3",
+    "capacidad": "-",
+    "color": "A confirmar según stock",
+    "precioUsd": 330,
+    "garantia": "Oficial 12 meses"
+  },
+  {
+    "id": "an-apple-watch-series-se-3-370-a-confirmar",
+    "producto": "APPLE WATCH",
+    "modelo": "SERIES SE 3",
+    "capacidad": "-",
+    "color": "A confirmar según stock",
+    "precioUsd": 370,
+    "garantia": "Oficial 12 meses"
+  },
+  {
+    "id": "an-apple-watch-series-10-390-a-confirmar",
+    "producto": "APPLE WATCH",
+    "modelo": "SERIES 10",
+    "capacidad": "-",
+    "color": "A confirmar según stock",
+    "precioUsd": 390,
+    "garantia": "Oficial 12 meses"
+  },
+  {
+    "id": "an-apple-watch-series-11-430-a-confirmar",
+    "producto": "APPLE WATCH",
+    "modelo": "SERIES 11",
+    "capacidad": "-",
+    "color": "A confirmar según stock",
+    "precioUsd": 430,
+    "garantia": "Oficial 12 meses"
+  },
+  {
+    "id": "an-apple-watch-series-11-460-a-confirmar",
+    "producto": "APPLE WATCH",
+    "modelo": "SERIES 11",
+    "capacidad": "-",
+    "color": "A confirmar según stock",
+    "precioUsd": 460,
+    "garantia": "Oficial 12 meses"
+  },
+  {
+    "id": "an-apple-watch-ultra-2-790-a-confirmar",
+    "producto": "APPLE WATCH",
+    "modelo": "ULTRA 2",
+    "capacidad": "-",
+    "color": "A confirmar según stock",
+    "precioUsd": 790,
+    "garantia": "Oficial 12 meses"
+  },
+  {
+    "id": "an-apple-watch-ultra-3-840-a-confirmar",
+    "producto": "APPLE WATCH",
+    "modelo": "ULTRA 3",
+    "capacidad": "-",
+    "color": "A confirmar según stock",
+    "precioUsd": 840,
+    "garantia": "Oficial 12 meses"
+  },
+  {
+    "id": "an-imac-256gb-1990-a-confirmar",
+    "producto": "IMAC",
+    "modelo": "-",
+    "capacidad": "256GB",
+    "color": "A confirmar según stock",
+    "precioUsd": 1990,
+    "garantia": "Oficial 12 meses"
+  },
+  {
+    "id": "an-imac-256gb-2200-a-confirmar",
+    "producto": "IMAC",
+    "modelo": "-",
+    "capacidad": "256GB",
+    "color": "A confirmar según stock",
+    "precioUsd": 2200,
+    "garantia": "Oficial 12 meses"
+  },
+  {
+    "id": "an-imac-512gb-2460-a-confirmar",
+    "producto": "IMAC",
+    "modelo": "-",
+    "capacidad": "512GB",
+    "color": "A confirmar según stock",
+    "precioUsd": 2460,
+    "garantia": "Oficial 12 meses"
+  },
+  {
+    "id": "an-imac-512gb-2680-a-confirmar",
+    "producto": "IMAC",
+    "modelo": "-",
+    "capacidad": "512GB",
+    "color": "A confirmar según stock",
+    "precioUsd": 2680,
+    "garantia": "Oficial 12 meses"
+  },
+  {
+    "id": "an-imac-1tb-3350-a-confirmar",
+    "producto": "IMAC",
+    "modelo": "-",
+    "capacidad": "1TB",
+    "color": "A confirmar según stock",
+    "precioUsd": 3350,
+    "garantia": "Oficial 12 meses"
+  },
+  {
+    "id": "an-airpods-3ra-generacion-200",
+    "producto": "AIRPODS",
+    "modelo": "3RA GENERACION",
+    "capacidad": "-",
+    "color": "-",
+    "precioUsd": 200,
+    "garantia": "Oficial 12 meses"
+  },
+  {
+    "id": "an-airpods-4ta-generacion-180",
+    "producto": "AIRPODS",
+    "modelo": "4TA GENERACION",
+    "capacidad": "-",
+    "color": "-",
+    "precioUsd": 180,
+    "garantia": "Oficial 12 meses"
+  },
+  {
+    "id": "an-airpods-4ta-generacion-noise-cancelling-230",
+    "producto": "AIRPODS",
+    "modelo": "4TA GENERACION (NOISE CANCELLING)",
+    "capacidad": "-",
+    "color": "-",
+    "precioUsd": 230,
+    "garantia": "Oficial 12 meses"
+  },
+  {
+    "id": "an-airpods-pro-3ra-generacion-310",
+    "producto": "AIRPODS",
+    "modelo": "PRO 3RA GENERACION",
+    "capacidad": "-",
+    "color": "-",
+    "precioUsd": 310,
+    "garantia": "Oficial 12 meses"
+  }
+]

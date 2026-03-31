@@ -26,11 +26,15 @@ for (let i = 0; i < products.length; i++) {
   const detail = productDetailById[p.id] ? JSON.stringify(productDetailById[p.id]) : null;
 
   const badgeSql = p.badge ? `${dq(`b${i}`, p.badge)},` : "NULL,";
+  const stockSql =
+    p.condition === "new" || p.condition === "used"
+      ? `${dq(`sc${i}`, p.condition)},`
+      : "NULL,";
 
   const detailSql = detail ? `${dq(`d${i}`, detail)},` : "NULL,";
 
   lines.push(`INSERT INTO public.products (
-  id, name, short, category, price, badge, image, image_alt, variant_groups, detail,
+  id, name, short, category, price, stock_condition, badge, image, image_alt, variant_groups, detail,
   compare_at_price, discount_percent, published, sort_order, updated_at
 ) VALUES (
   ${dq(`id${i}`, p.id)},
@@ -38,6 +42,7 @@ for (let i = 0; i < products.length; i++) {
   ${dq(`s${i}`, p.short)},
   ${dq(`c${i}`, p.category)},
   ${p.price},
+  ${stockSql}
   ${badgeSql}
   ${dq(`img${i}`, p.image)},
   ${dq(`alt${i}`, p.imageAlt)},

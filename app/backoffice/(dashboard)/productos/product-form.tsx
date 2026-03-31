@@ -151,6 +151,23 @@ export function ProductForm({
           </label>
           <label className="block">
             <span className="mb-1.5 block text-xs font-medium uppercase tracking-wide text-slate-500">
+              Condición (stock)
+            </span>
+            <select
+              name="stock_condition"
+              defaultValue={initial?.stock_condition ?? ""}
+              className="w-full rounded-xl border border-white/[0.1] bg-black/30 px-3 py-2.5 text-sm text-white outline-none focus:ring-2 focus:ring-violet-500/40"
+            >
+              <option value="">Sin clasificar</option>
+              <option value="new">Nuevo</option>
+              <option value="used">Usado</option>
+            </select>
+            <span className="mt-1 block text-[11px] text-slate-500">
+              Para filtrar en la tienda; independiente del texto del badge.
+            </span>
+          </label>
+          <label className="block">
+            <span className="mb-1.5 block text-xs font-medium uppercase tracking-wide text-slate-500">
               Badge
             </span>
             <input

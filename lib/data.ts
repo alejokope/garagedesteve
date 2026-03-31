@@ -10,6 +10,9 @@ export type CategoryId =
   | "servicio"
   | "otros";
 
+/** Condición de publicación: equipo nuevo o usado (servicios / sin clasificar: omitir). */
+export type ProductStockCondition = "new" | "used";
+
 export type Product = {
   id: string;
   name: string;
@@ -17,6 +20,8 @@ export type Product = {
   category: CategoryId;
   /** Precio orientativo en ARS — el cliente confirma por WhatsApp */
   price: number;
+  /** Nuevo o usado; se persiste como `stock_condition` en Supabase. */
+  condition?: ProductStockCondition;
   badge?: string;
   image: string;
   imageAlt: string;
@@ -48,6 +53,7 @@ export const products: Product[] = [
     short: "Rendimiento pro, pantalla Liquid Retina XDR.",
     category: "mac",
     price: 2_850_000,
+    condition: "new",
     badge: "Nuevo sellado",
     image:
       "https://images.unsplash.com/photo-1517336714731-489689fd4ca8?w=800&q=80",
@@ -82,6 +88,7 @@ export const products: Product[] = [
     short: "Ultrafina, silenciosa, batería de larga duración.",
     category: "mac",
     price: 1_650_000,
+    condition: "used",
     badge: "Premium usado",
     image:
       "https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?w=800&q=80",
@@ -117,6 +124,7 @@ export const products: Product[] = [
     short: "OLED, Apple Pencil Pro, productividad total.",
     category: "ipad",
     price: 1_980_000,
+    condition: "new",
     badge: "Nuevo sellado",
     image:
       "https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=800&q=80",
@@ -152,6 +160,7 @@ export const products: Product[] = [
     short: "Equilibrio perfecto entre potencia y portabilidad.",
     category: "ipad",
     price: 920_000,
+    condition: "new",
     image:
       "https://images.unsplash.com/photo-1585790050230-5dd28404ccb9?w=800&q=80",
     imageAlt: "iPad Air",
@@ -187,6 +196,7 @@ export const products: Product[] = [
     short: "Titanio, cámara 48 MP, Action Button.",
     category: "iphone",
     price: 1_420_000,
+    condition: "new",
     badge: "Nuevo sellado",
     image:
       "https://images.unsplash.com/photo-1695048133142-1a20484d2569?w=800&q=80",
@@ -224,6 +234,7 @@ export const products: Product[] = [
     short: "Dynamic Island, USB-C, colores premium.",
     category: "iphone",
     price: 890_000,
+    condition: "used",
     badge: "Premium usado",
     image:
       "https://images.unsplash.com/photo-1696446702183-cbd41c710f55?w=800&q=80",
@@ -261,6 +272,7 @@ export const products: Product[] = [
     short: "GPS de doble frecuencia, resistencia extrema.",
     category: "watch",
     price: 980_000,
+    condition: "new",
     badge: "Nuevo sellado",
     image:
       "https://images.unsplash.com/photo-1434493789847-2f02dc6ca35d?w=800&q=80",
@@ -295,6 +307,7 @@ export const products: Product[] = [
     short: "Pantalla más grande, carga rápida.",
     category: "watch",
     price: 520_000,
+    condition: "new",
     image:
       "https://images.unsplash.com/photo-1579586337278-3befd40fd17a?w=800&q=80",
     imageAlt: "Apple Watch Series",
@@ -328,6 +341,7 @@ export const products: Product[] = [
     short: "Cancelación activa, audio espacial.",
     category: "audio",
     price: 320_000,
+    condition: "new",
     badge: "Nuevo sellado",
     image:
       "https://images.unsplash.com/photo-1606220945770-b2b6c2c2bfb0?w=800&q=80",
@@ -351,6 +365,7 @@ export const products: Product[] = [
     short: "Sonido Hi‑Fi con cancelación de ruido.",
     category: "audio",
     price: 680_000,
+    condition: "used",
     badge: "Premium usado",
     image:
       "https://images.unsplash.com/photo-1625245488600-f03c431a446c?w=800&q=80",
@@ -377,6 +392,7 @@ export const products: Product[] = [
     short: "Todo en uno para estudio y creatividad.",
     category: "desktop",
     price: 2_100_000,
+    condition: "new",
     badge: "Nuevo sellado",
     image:
       "https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?w=800&q=80",
@@ -434,6 +450,7 @@ export const products: Product[] = [
     short: "Ideal para home office y entretenimiento.",
     category: "otros",
     price: 890_000,
+    condition: "new",
     image:
       "https://images.unsplash.com/photo-1478720568477-152d9b164e26?w=800&q=80",
     imageAlt: "Proyector",
@@ -455,6 +472,7 @@ export const products: Product[] = [
     short: "Cargadores, fundas y cables certificados.",
     category: "otros",
     price: 45_000,
+    condition: "new",
     image:
       "https://images.unsplash.com/photo-1625948519841-62c0c4b55d80?w=800&q=80",
     imageAlt: "Accesorios USB-C",

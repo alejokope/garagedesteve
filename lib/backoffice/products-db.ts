@@ -10,6 +10,7 @@ export type ProductRow = {
   short: string;
   category: string;
   price: number;
+  stock_condition: string | null;
   badge: string | null;
   image: string;
   image_alt: string;
@@ -33,6 +34,11 @@ export function productRowFromRecord(r: Record<string, unknown>): ProductRow {
   return mapRow(r);
 }
 
+function parseStockCondition(v: unknown): string | null {
+  if (v !== "new" && v !== "used") return null;
+  return v;
+}
+
 function mapRow(r: Record<string, unknown>): ProductRow {
   return {
     id: String(r.id),
@@ -40,6 +46,7 @@ function mapRow(r: Record<string, unknown>): ProductRow {
     short: String(r.short),
     category: String(r.category),
     price: num(r.price),
+    stock_condition: parseStockCondition(r.stock_condition),
     badge: r.badge != null ? String(r.badge) : null,
     image: String(r.image),
     image_alt: String(r.image_alt),
@@ -78,12 +85,17 @@ export async function getProductAdmin(id: string): Promise<ProductRow | null> {
 
 /** Para la tienda pública: fila Supabase → tipo `Product` del sitio. */
 export function productRowToProduct(row: ProductRow): Product {
+  const condition =
+    row.stock_condition === "new" || row.stock_condition === "used"
+      ? row.stock_condition
+      : undefined;
   return {
     id: row.id,
     name: row.name,
     short: row.short,
     category: row.category as Product["category"],
     price: row.price,
+    condition,
     badge: row.badge ?? undefined,
     image: row.image,
     imageAlt: row.image_alt,
@@ -100,6 +112,7 @@ export type ProductUpsertInput = {
   short: string;
   category: string;
   price: number;
+  stock_condition: string | null;
   badge: string | null;
   image: string;
   image_alt: string;
@@ -119,6 +132,7 @@ export async function upsertProductAdmin(row: ProductUpsertInput): Promise<void>
     short: row.short,
     category: row.category,
     price: row.price,
+    stock_condition: row.stock_condition,
     badge: row.badge,
     image: row.image,
     image_alt: row.image_alt,

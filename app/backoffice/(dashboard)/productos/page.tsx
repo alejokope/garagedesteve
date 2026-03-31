@@ -71,7 +71,8 @@ export default async function BackofficeProductosPage() {
                 <th className="px-4 py-3 font-medium">Nombre</th>
                 <th className="px-4 py-3 font-medium">Precio</th>
                 <th className="px-4 py-3 font-medium">Categoría</th>
-                <th className="px-4 py-3 font-medium">Estado</th>
+                <th className="px-4 py-3 font-medium">Condición</th>
+                <th className="px-4 py-3 font-medium">Publicación</th>
                 <th className="px-4 py-3 font-medium text-right">Acciones</th>
               </tr>
             </thead>
@@ -84,6 +85,13 @@ export default async function BackofficeProductosPage() {
                     {formatMoneyArs(p.price)}
                   </td>
                   <td className="px-4 py-3 text-slate-400">{p.category}</td>
+                  <td className="px-4 py-3 text-slate-400">
+                    {p.stock_condition === "new"
+                      ? "Nuevo"
+                      : p.stock_condition === "used"
+                        ? "Usado"
+                        : "—"}
+                  </td>
                   <td className="px-4 py-3">
                     {p.published ? (
                       <span className="rounded-full bg-emerald-500/15 px-2 py-0.5 text-xs font-medium text-emerald-200/90">

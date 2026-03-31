@@ -233,9 +233,15 @@ export function ProductDetailView({
 
           <div>
             <div className="flex flex-wrap items-center gap-3">
-              <span className="rounded-md bg-emerald-500 px-2.5 py-1 text-[11px] font-bold uppercase text-white">
-                Nuevo
-              </span>
+              {product.condition === "used" ? (
+                <span className="rounded-md bg-amber-600 px-2.5 py-1 text-[11px] font-bold uppercase text-white">
+                  Usado
+                </span>
+              ) : product.condition === "new" ? (
+                <span className="rounded-md bg-emerald-500 px-2.5 py-1 text-[11px] font-bold uppercase text-white">
+                  Nuevo
+                </span>
+              ) : null}
               <span className="flex items-center gap-1 text-amber-500">
                 <span className="text-lg">★</span>
                 <span className="font-semibold text-neutral-900">{enriched.rating}</span>

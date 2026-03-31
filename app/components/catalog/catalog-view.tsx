@@ -9,6 +9,7 @@ import {
   PAGE_SIZE,
   type CatalogEstado,
   type EnrichedProduct,
+  type ProductStockCondition,
   type ShopBrand,
   type ShopTipo,
   type SortKey,
@@ -16,6 +17,7 @@ import {
   filterEnriched,
   shopEstados,
   shopMarcas,
+  shopStockConditions,
   shopTipos,
   sortEnriched,
 } from "@/lib/catalog";
@@ -31,8 +33,9 @@ function CatalogCard({ p }: { p: EnrichedProduct }) {
   const { add } = useCart();
 
   const showDiscount = p.discountPercent != null && p.compareAtPrice != null;
-  const badgeNuevo = p.estado === "nuevo" && !showDiscount;
-  const badgeMasVendido = p.estado === "mas-vendido" && !showDiscount;
+  const badgeNuevo = p.estado === "nuevo" && !showDiscount && p.condition !== "used";
+  const badgeMasVendido = p.estado === "mas-vendido" && !showDiscount && p.condition !== "used";
+  const badgeUsado = p.condition === "used";
 
   return (
     <article className="group flex flex-col overflow-hidden rounded-2xl border border-[var(--border)] bg-white shadow-[0_1px_3px_rgba(15,23,42,0.06)] transition hover:-translate-y-0.5 hover:shadow-[var(--glow)]">
@@ -48,6 +51,11 @@ function CatalogCard({ p }: { p: EnrichedProduct }) {
           {showDiscount ? (
             <span className="rounded-md bg-red-500 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white shadow-sm">
               -{p.discountPercent}%
+            </span>
+          ) : null}
+          {badgeUsado ? (
+            <span className="rounded-md bg-amber-600 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white shadow-sm">
+              Usado
             </span>
           ) : null}
           {badgeNuevo ? (
@@ -230,6 +238,9 @@ export function CatalogView() {
   const [estados, setEstados] = useState<CatalogEstado[]>(
     () => parseList(searchParams.get("estados")) as CatalogEstado[],
   );
+  const [stockConditions, setStockConditions] = useState<ProductStockCondition[]>(
+    () => parseList(searchParams.get("condicion")) as ProductStockCondition[],
+  );
   const [precioMax, setPrecioMax] = useState<number | null>(null);
 
   useEffect(() => {
@@ -251,10 +262,11 @@ export function CatalogView() {
       marcas,
       tipos,
       estados,
+      stockConditions,
       precioMax: effectivePrecioMax,
     });
     return sortEnriched(f, sort);
-  }, [enriched, q, marcas, tipos, estados, effectivePrecioMax, sort]);
+  }, [enriched, q, marcas, tipos, estados, stockConditions, effectivePrecioMax, sort]);
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
   const currentPage = Math.min(page, totalPages);
@@ -293,6 +305,16 @@ export function CatalogView() {
     setPage(1);
   };
 
+  const toggleStockCondition = (id: ProductStockCondition) => {
+    setStockConditions((prev) => {
+      const set = new Set(prev);
+      if (set.has(id)) set.delete(id);
+      else set.add(id);
+      return [...set] as ProductStockCondition[];
+    });
+    setPage(1);
+  };
+
   const clearFilters = useCallback(() => {
     setQ("");
     setSort("relevancia");
@@ -300,6 +322,7 @@ export function CatalogView() {
     setMarcas([]);
     setTipos([]);
     setEstados([]);
+    setStockConditions([]);
     setPrecioMax(maxCatalogPrice);
   }, [maxCatalogPrice]);
 
@@ -480,7 +503,35 @@ export function CatalogView() {
 
               <div className="mt-6">
                 <p className="text-[11px] font-bold uppercase tracking-wider text-neutral-500">
-                  Estado
+                  Condición
+                </p>
+                <div className="mt-2 flex flex-wrap gap-2">
+                  {shopStockConditions.map((c) => {
+                    const on = stockConditions.includes(c.id);
+                    return (
+                      <button
+                        key={c.id}
+                        type="button"
+                        onClick={() => toggleStockCondition(c.id)}
+                        className={`rounded-lg border px-3 py-2 text-xs font-medium transition ${
+                          on
+                            ? "border-[var(--brand-from)] bg-[var(--brand-from)]/10 text-[var(--brand-from)]"
+                            : "border-neutral-200 bg-neutral-50 text-neutral-600 hover:border-neutral-300"
+                        }`}
+                      >
+                        {c.label}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              <div className="mt-6">
+                <p className="text-[11px] font-bold uppercase tracking-wider text-neutral-500">
+                  Etiqueta
+                </p>
+                <p className="mt-1 text-[11px] text-neutral-400">
+                  Destacados en catálogo (oferta, más vendido, etc.)
                 </p>
                 <div className="mt-2 flex flex-wrap gap-2">
                   {shopEstados.map((e) => {

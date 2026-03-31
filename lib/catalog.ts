@@ -1,4 +1,6 @@
-import type { CategoryId, Product } from "@/lib/data";
+import type { CategoryId, Product, ProductStockCondition } from "@/lib/data";
+
+export type { ProductStockCondition };
 
 export type ShopBrand = "Apple" | "Samsung";
 export type ShopTipo =
@@ -91,7 +93,7 @@ export function enrichProduct(p: Product): EnrichedProduct {
     discountPercent = 5 + (seed % 12);
     compareAtPrice = Math.round(p.price / (1 - discountPercent / 100));
     estado = "oferta";
-  } else if (badgeLower.includes("nuevo")) {
+  } else if (badgeLower.includes("nuevo") && p.condition !== "used") {
     estado = "nuevo";
   } else if (seed % 7 === 0 && p.category !== "servicio") {
     estado = "mas-vendido";
@@ -137,6 +139,11 @@ export const shopEstados: { id: CatalogEstado; label: string }[] = [
   { id: "mas-vendido", label: "Más vendido" },
 ];
 
+export const shopStockConditions: { id: ProductStockCondition; label: string }[] = [
+  { id: "new", label: "Nuevo" },
+  { id: "used", label: "Usado" },
+];
+
 export type SortKey = "relevancia" | "precio-asc" | "novedad";
 
 export function filterEnriched(
@@ -146,6 +153,7 @@ export function filterEnriched(
     marcas: ShopBrand[];
     tipos: ShopTipo[];
     estados: CatalogEstado[];
+    stockConditions: ProductStockCondition[];
     precioMax: number;
   },
 ): EnrichedProduct[] {
@@ -157,7 +165,24 @@ export function filterEnriched(
     }
     if (opts.marcas.length && !opts.marcas.includes(p.brand)) return false;
     if (opts.tipos.length && !opts.tipos.includes(p.shopTipo)) return false;
-    if (opts.estados.length && !opts.estados.includes(p.estado)) return false;
+    if (opts.estados.length) {
+      const matchEstado = opts.estados.some((e) => {
+        if (e === "nuevo") return p.estado === "nuevo" && p.condition !== "used";
+        return p.estado === e;
+      });
+      if (!matchEstado) return false;
+    }
+    if (opts.stockConditions.length) {
+      const c = p.condition;
+      const matchesNew = c !== "used";
+      const matchesUsed = c === "used";
+      const wantNew = opts.stockConditions.includes("new");
+      const wantUsed = opts.stockConditions.includes("used");
+      let ok = false;
+      if (wantNew && matchesNew) ok = true;
+      if (wantUsed && matchesUsed) ok = true;
+      if (!ok) return false;
+    }
     if (p.price > opts.precioMax) return false;
     return true;
   });
