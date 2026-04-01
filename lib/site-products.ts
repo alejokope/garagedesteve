@@ -3,7 +3,7 @@ import "server-only";
 import { cache } from "react";
 
 import { productRowFromRecord, productRowToProduct } from "@/lib/backoffice/products-db";
-import { getProductById, products, type Product } from "@/lib/data";
+import type { Product } from "@/lib/data";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 function hasSupabaseEnv(): boolean {
@@ -13,12 +13,10 @@ function hasSupabaseEnv(): boolean {
 }
 
 /**
- * Catálogo público: productos publicados en Supabase (orden sort_order, name)
- * más los que solo existen en `lib/data` (migración gradual).
+ * Catálogo público: solo productos publicados en Supabase (sort_order, name).
  */
 export async function loadPublishedProductsForSite(): Promise<Product[]> {
-  const staticList = products;
-  if (!hasSupabaseEnv()) return staticList;
+  if (!hasSupabaseEnv()) return [];
 
   try {
     const supabase = await createSupabaseServerClient();
@@ -29,16 +27,13 @@ export async function loadPublishedProductsForSite(): Promise<Product[]> {
       .order("sort_order", { ascending: true })
       .order("name", { ascending: true });
 
-    if (error || !data?.length) return staticList;
+    if (error || !data?.length) return [];
 
-    const dbProducts = data.map((r) =>
+    return data.map((r) =>
       productRowToProduct(productRowFromRecord(r as Record<string, unknown>)),
     );
-    const dbIds = new Set(dbProducts.map((p) => p.id));
-    const staticExtras = staticList.filter((p) => !dbIds.has(p.id));
-    return [...dbProducts, ...staticExtras];
   } catch {
-    return staticList;
+    return [];
   }
 }
 
@@ -50,9 +45,9 @@ export const cachedPublishedProductsForSite = cache(loadPublishedProductsForSite
 /** Mismo valor que `cachedPublishedProductsForSite` (nombre viejo; mantener por compat). */
 export const listPublishedProductsForSite = cachedPublishedProductsForSite;
 
-/** Una ficha: prioriza fila publicada en Supabase, si no existe usa `lib/data`. */
+/** Una ficha: solo si existe publicado en Supabase. */
 export async function getPublishedProductForSite(id: string): Promise<Product | undefined> {
-  if (!hasSupabaseEnv()) return getProductById(id);
+  if (!hasSupabaseEnv()) return undefined;
 
   try {
     const supabase = await createSupabaseServerClient();
@@ -67,10 +62,10 @@ export async function getPublishedProductForSite(id: string): Promise<Product | 
       return productRowToProduct(productRowFromRecord(data as Record<string, unknown>));
     }
   } catch {
-    /* fallback estático */
+    /* sin red o sin tablas */
   }
 
-  return getProductById(id);
+  return undefined;
 }
 
 export async function listPublishedProductIdsForSite(): Promise<string[]> {

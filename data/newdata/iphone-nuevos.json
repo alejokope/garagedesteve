@@ -1,0 +1,259 @@
+[
+    {
+      "product": "IPHONE",
+      "model": "13",
+      "status": "new",
+      "warranty": "OFICIAL DE 12 MESES",
+      "options": {
+        "storage": [
+          {
+            "value": "128GB",
+            "price": 560,
+            "sku": "IPHONE-13-128",
+            "stock": null
+          }
+        ],
+        "color": [
+          { "value": "A CONFIRMAR SEGUN STOCK" }
+        ]
+      }
+    },
+    {
+      "product": "IPHONE",
+      "model": "14",
+      "status": "new",
+      "warranty": "OFICIAL DE 12 MESES",
+      "options": {
+        "storage": [
+          {
+            "value": "128GB",
+            "price": 600,
+            "sku": "IPHONE-14-128",
+            "stock": null
+          },
+          {
+            "value": "512GB",
+            "price": 710,
+            "sku": "IPHONE-14-512",
+            "stock": null
+          }
+        ],
+        "color": [
+          { "value": "A CONFIRMAR SEGUN STOCK" }
+        ]
+      }
+    },
+    {
+      "product": "IPHONE",
+      "model": "15",
+      "status": "new",
+      "warranty": "OFICIAL DE 12 MESES",
+      "options": {
+        "storage": [
+          {
+            "value": "128GB",
+            "price": 700,
+            "sku": "IPHONE-15-128",
+            "stock": null
+          },
+          {
+            "value": "256GB",
+            "price": 770,
+            "sku": "IPHONE-15-256",
+            "stock": null
+          }
+        ],
+        "color": [
+          { "value": "A CONFIRMAR SEGUN STOCK" }
+        ]
+      }
+    },
+    {
+      "product": "IPHONE",
+      "model": "15 PLUS",
+      "status": "new",
+      "warranty": "OFICIAL DE 12 MESES",
+      "options": {
+        "storage": [
+          {
+            "value": "128GB",
+            "price": 790,
+            "sku": "IPHONE-15-PLUS-128",
+            "stock": null
+          },
+          {
+            "value": "512GB",
+            "price": 880,
+            "sku": "IPHONE-15-PLUS-512",
+            "stock": null
+          }
+        ],
+        "color": [
+          { "value": "A CONFIRMAR SEGUN STOCK" }
+        ]
+      }
+    },
+    {
+      "product": "IPHONE",
+      "model": "16",
+      "status": "new",
+      "warranty": "OFICIAL DE 12 MESES",
+      "options": {
+        "storage": [
+          {
+            "value": "128GB",
+            "price": 780,
+            "sku": "IPHONE-16-128",
+            "stock": null
+          }
+        ],
+        "color": [
+          { "value": "A CONFIRMAR SEGUN STOCK" }
+        ]
+      }
+    },
+    {
+      "product": "IPHONE",
+      "model": "16 PLUS",
+      "status": "new",
+      "warranty": "OFICIAL DE 12 MESES",
+      "options": {
+        "storage": [
+          {
+            "value": "128GB",
+            "price": 920,
+            "sku": "IPHONE-16-PLUS-128",
+            "stock": null
+          }
+        ],
+        "color": [
+          { "value": "A CONFIRMAR SEGUN STOCK" }
+        ]
+      }
+    },
+    {
+      "product": "IPHONE",
+      "model": "16 PRO",
+      "status": "new",
+      "warranty": "OFICIAL DE 12 MESES",
+      "options": {
+        "storage": [
+          {
+            "value": "128GB",
+            "price": 1110,
+            "sku": "IPHONE-16-PRO-128",
+            "stock": null
+          }
+        ],
+        "color": [
+          { "value": "A CONFIRMAR SEGUN STOCK" }
+        ]
+      }
+    },
+    {
+      "product": "IPHONE",
+      "model": "16 PRO MAX",
+      "status": "new",
+      "warranty": "OFICIAL DE 12 MESES",
+      "options": {
+        "storage": [
+          {
+            "value": "256GB",
+            "price": 1290,
+            "sku": "IPHONE-16-PRO-MAX-256",
+            "stock": null
+          }
+        ],
+        "color": [
+          { "value": "A CONFIRMAR SEGUN STOCK" }
+        ]
+      }
+    },
+    {
+      "product": "IPHONE",
+      "model": "17",
+      "status": "new",
+      "warranty": "OFICIAL DE 12 MESES",
+      "options": {
+        "storage": [
+          {
+            "value": "256GB",
+            "price": 930,
+            "sku": "IPHONE-17-256",
+            "stock": null
+          }
+        ],
+        "color": [
+          { "value": "A CONFIRMAR SEGUN STOCK" }
+        ]
+      }
+    },
+    {
+      "product": "IPHONE",
+      "model": "17 PRO",
+      "status": "new",
+      "warranty": "OFICIAL DE 12 MESES",
+      "options": {
+        "storage": [
+          {
+            "value": "256GB",
+            "price": 1340,
+            "sku": "IPHONE-17-PRO-256",
+            "stock": null
+          },
+          {
+            "value": "512GB",
+            "price": 1540,
+            "sku": "IPHONE-17-PRO-512",
+            "stock": null
+          },
+          {
+            "value": "1TB",
+            "price": 1720,
+            "sku": "IPHONE-17-PRO-1TB",
+            "stock": null
+          }
+        ],
+        "color": [
+          { "value": "A CONFIRMAR SEGUN STOCK" }
+        ]
+      }
+    },
+    {
+      "product": "IPHONE",
+      "model": "17 PRO MAX",
+      "status": "new",
+      "warranty": "OFICIAL DE 12 MESES",
+      "options": {
+        "storage": [
+          {
+            "value": "256GB",
+            "price": 1490,
+            "sku": "IPHONE-17-PRO-MAX-256",
+            "stock": null
+          },
+          {
+            "value": "512GB",
+            "price": 1720,
+            "sku": "IPHONE-17-PRO-MAX-512",
+            "stock": null
+          },
+          {
+            "value": "1TB",
+            "price": 1920,
+            "sku": "IPHONE-17-PRO-MAX-1TB",
+            "stock": null
+          },
+          {
+            "value": "2TB",
+            "price": 2300,
+            "sku": "IPHONE-17-PRO-MAX-2TB",
+            "stock": null
+          }
+        ],
+        "color": [
+          { "value": "A CONFIRMAR SEGUN STOCK" }
+        ]
+      }
+    }
+  ]

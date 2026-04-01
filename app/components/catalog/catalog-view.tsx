@@ -29,6 +29,16 @@ function parseList(s: string | null): string[] {
   return s.split(",").map((x) => x.trim()).filter(Boolean);
 }
 
+/** ~80 pasos útiles entre min y max sin pasos gigantes ni de 1 peso innecesarios. */
+function priceSliderStep(min: number, max: number): number {
+  const span = max - min;
+  if (span <= 0) return 1;
+  const rough = Math.ceil(span / 80);
+  if (rough < 10) return rough;
+  const pow = 10 ** Math.floor(Math.log10(rough));
+  return Math.max(pow, Math.round(rough / pow) * pow);
+}
+
 function CatalogCard({ p }: { p: EnrichedProduct }) {
   const { add } = useCart();
 
@@ -71,15 +81,9 @@ function CatalogCard({ p }: { p: EnrichedProduct }) {
         </div>
       </Link>
       <div className="flex flex-1 flex-col p-4 sm:p-5">
-        <div className="flex items-start justify-between gap-2 text-[11px] font-semibold uppercase tracking-wide text-neutral-400">
-          <span>{p.categoryLabel}</span>
-          <span className="flex shrink-0 items-center gap-0.5 text-amber-500">
-            <svg className="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor" aria-hidden>
-              <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-            </svg>
-            {p.rating}
-          </span>
-        </div>
+        <p className="text-[11px] font-semibold uppercase tracking-wide text-neutral-400">
+          {p.categoryLabel}
+        </p>
         <Link href={`/tienda/${p.id}`}>
           <h3 className="font-display mt-2 text-base font-semibold leading-snug text-neutral-900 group-hover:text-[var(--brand-from)]">
             {p.name}
@@ -216,10 +220,6 @@ export function CatalogView() {
     () => catalogProducts.map(enrichProduct),
     [catalogProducts],
   );
-  const maxCatalogPrice = useMemo(
-    () => Math.max(...enriched.map((p) => p.price), 1),
-    [enriched],
-  );
 
   /** Filtros solo en memoria: no usar router (evita navegaciones /tienda en cada tecla). */
   const [q, setQ] = useState(() => searchParams.get("q") ?? "");
@@ -243,18 +243,48 @@ export function CatalogView() {
   );
   const [precioMax, setPrecioMax] = useState<number | null>(null);
 
+  /** Min/max de precio según filtros actuales (sin tope de precio), para el slider realista. */
+  const priceScope = useMemo(() => {
+    const withoutPrice = filterEnriched(enriched, {
+      q,
+      marcas,
+      tipos,
+      estados,
+      stockConditions,
+      precioMax: Number.POSITIVE_INFINITY,
+    });
+    const basis = withoutPrice.length > 0 ? withoutPrice : enriched;
+    const prices = basis.map((p) => p.price).filter((n) => typeof n === "number" && !Number.isNaN(n));
+    if (prices.length === 0) return { min: 0, max: 1 };
+    return { min: Math.min(...prices), max: Math.max(...prices) };
+  }, [enriched, q, marcas, tipos, estados, stockConditions]);
+
+  const minCatalogPrice = priceScope.min;
+  const maxCatalogPrice = priceScope.max;
+  const sliderStep = useMemo(
+    () => priceSliderStep(minCatalogPrice, maxCatalogPrice),
+    [minCatalogPrice, maxCatalogPrice],
+  );
+
   useEffect(() => {
-    if (status !== "ready" || precioMax !== null) return;
-    const raw = searchParams.get("max");
-    const parsed = raw ? parseInt(raw, 10) : NaN;
-    if (!Number.isNaN(parsed) && parsed > 0) {
-      setPrecioMax(Math.min(maxCatalogPrice, parsed));
-    } else {
-      setPrecioMax(maxCatalogPrice);
-    }
-  }, [status, maxCatalogPrice, precioMax, searchParams]);
+    if (status !== "ready") return;
+    setPrecioMax((prev) => {
+      const clamp = (v: number) => Math.min(maxCatalogPrice, Math.max(minCatalogPrice, v));
+      if (prev === null) {
+        const raw = searchParams.get("max");
+        const parsed = raw ? parseInt(raw, 10) : NaN;
+        if (!Number.isNaN(parsed) && parsed > 0) return clamp(parsed);
+        return maxCatalogPrice;
+      }
+      return clamp(prev);
+    });
+  }, [status, minCatalogPrice, maxCatalogPrice, searchParams]);
 
   const effectivePrecioMax = precioMax ?? maxCatalogPrice;
+  const clampedPrecioMax = Math.min(
+    maxCatalogPrice,
+    Math.max(minCatalogPrice, effectivePrecioMax),
+  );
 
   const filtered = useMemo(() => {
     const f = filterEnriched(enriched, {
@@ -263,10 +293,10 @@ export function CatalogView() {
       tipos,
       estados,
       stockConditions,
-      precioMax: effectivePrecioMax,
+      precioMax: clampedPrecioMax,
     });
     return sortEnriched(f, sort);
-  }, [enriched, q, marcas, tipos, estados, stockConditions, effectivePrecioMax, sort]);
+  }, [enriched, q, marcas, tipos, estados, stockConditions, clampedPrecioMax, sort]);
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
   const currentPage = Math.min(page, totalPages);
@@ -481,22 +511,26 @@ export function CatalogView() {
                 <div className="mt-3">
                   <input
                     type="range"
-                    min={0}
+                    min={minCatalogPrice}
                     max={maxCatalogPrice}
-                    step={Math.max(1000, Math.round(maxCatalogPrice / 500))}
-                    value={effectivePrecioMax}
+                    step={sliderStep}
+                    value={clampedPrecioMax}
+                    disabled={minCatalogPrice >= maxCatalogPrice}
                     onChange={(e) => {
                       setPrecioMax(parseInt(e.target.value, 10));
                       setPage(1);
                     }}
-                    className="h-2 w-full cursor-pointer accent-[var(--brand-from)]"
+                    className="h-2 w-full cursor-pointer accent-[var(--brand-from)] disabled:cursor-not-allowed disabled:opacity-50"
+                    aria-valuemin={minCatalogPrice}
+                    aria-valuemax={maxCatalogPrice}
+                    aria-valuenow={clampedPrecioMax}
                   />
-                  <div className="mt-2 flex justify-between text-xs text-neutral-500">
-                    <span>{formatMoneyArs(0)}</span>
-                    <span className="font-semibold text-neutral-800">
-                      {formatMoneyArs(effectivePrecioMax)}
+                  <div className="mt-2 flex justify-between gap-2 text-xs text-neutral-500">
+                    <span className="min-w-0 shrink truncate">{formatMoneyArs(minCatalogPrice)}</span>
+                    <span className="shrink-0 text-center font-semibold text-neutral-800">
+                      Hasta {formatMoneyArs(clampedPrecioMax)}
                     </span>
-                    <span>{formatMoneyArs(maxCatalogPrice)}</span>
+                    <span className="min-w-0 shrink truncate text-right">{formatMoneyArs(maxCatalogPrice)}</span>
                   </div>
                 </div>
               </div>

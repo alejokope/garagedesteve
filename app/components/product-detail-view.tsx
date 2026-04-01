@@ -96,12 +96,7 @@ function SmallProductCard({
         <Image src={p.image} alt={p.imageAlt} fill className="object-contain p-3" sizes="200px" />
       </Link>
       <div className="flex flex-1 flex-col p-4">
-        <div className="flex items-center justify-between text-[10px] font-bold uppercase text-neutral-400">
-          <span>{e.categoryLabel}</span>
-          <span className="flex items-center gap-0.5 text-amber-500">
-            ★ {e.rating}
-          </span>
-        </div>
+        <p className="text-[10px] font-bold uppercase text-neutral-400">{e.categoryLabel}</p>
         <Link href={`/tienda/${p.id}`} className="font-display mt-1 text-sm font-semibold text-neutral-900 line-clamp-2 hover:text-[var(--brand-from)]">
           {p.name}
         </Link>
@@ -141,16 +136,14 @@ export function ProductDetailView({
     groups,
     selections,
   );
-  const compareAt =
-    enriched.compareAtPrice && enriched.discountPercent
-      ? enriched.compareAtPrice
-      : groups.length
-        ? Math.round(displayPrice * 1.06)
-        : null;
-  const pctOff =
-    compareAt && compareAt > displayPrice
-      ? Math.round((1 - displayPrice / compareAt) * 100)
-      : null;
+  const hasDbPromo =
+    enriched.compareAtPrice != null &&
+    enriched.discountPercent != null &&
+    enriched.discountPercent > 0 &&
+    displayPrice > 0 &&
+    enriched.compareAtPrice > displayPrice;
+  const compareAt = hasDbPromo ? enriched.compareAtPrice : null;
+  const pctOff = hasDbPromo ? enriched.discountPercent : null;
 
   const { add } = useCart();
 
@@ -244,11 +237,6 @@ export function ProductDetailView({
                   Nuevo
                 </span>
               ) : null}
-              <span className="flex items-center gap-1 text-amber-500">
-                <span className="text-lg">★</span>
-                <span className="font-semibold text-neutral-900">{enriched.rating}</span>
-                <span className="text-sm text-neutral-500">({enriched.reviewCount} opiniones)</span>
-              </span>
             </div>
             <h1 className="font-display mt-4 text-3xl font-bold tracking-tight text-neutral-900 sm:text-4xl">
               {product.name}
@@ -493,27 +481,6 @@ export function ProductDetailView({
           </section>
         ) : null}
 
-        {detail.reviews.length > 0 ? (
-          <section className="mt-16 pb-8">
-            <h2 className="font-display text-2xl font-bold text-neutral-900">Opiniones de clientes</h2>
-            <div className="mt-8 grid gap-6 md:grid-cols-3">
-              {detail.reviews.map((r) => (
-                <div key={r.name} className="rounded-2xl border border-[var(--border)] bg-white p-6 shadow-sm">
-                  <div className="flex items-center gap-3">
-                    <div className="relative h-12 w-12 overflow-hidden rounded-full bg-neutral-100">
-                      <Image src={r.avatar} alt="" fill className="object-cover" sizes="48px" />
-                    </div>
-                    <div>
-                      <p className="font-semibold text-neutral-900">{r.name}</p>
-                      <p className="text-amber-500">{"★".repeat(r.rating)}{"☆".repeat(5 - r.rating)}</p>
-                    </div>
-                  </div>
-                  <p className="mt-4 text-sm leading-relaxed text-neutral-600">&ldquo;{r.text}&rdquo;</p>
-                </div>
-              ))}
-            </div>
-          </section>
-        ) : null}
       </div>
     </div>
   );

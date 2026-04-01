@@ -1,5 +1,6 @@
 /**
- * Genera supabase/seed/demo_products.sql desde lib/data.ts y lib/product-detail-data.ts
+ * Genera supabase/seed/demo_products.sql desde lib/data.ts (`products`) y lib/product-detail-data.ts.
+ * Si `products` está vacío, solo emite DELETE (sin INSERT).
  * Ejecutar: npx tsx scripts/generate-product-seed.ts
  */
 import { mkdirSync, writeFileSync } from "node:fs";

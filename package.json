@@ -7,7 +7,9 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "seed:sql": "tsx scripts/generate-product-seed.ts"
+    "seed:sql": "tsx scripts/generate-product-seed.ts",
+    "inject:newdata": "tsx scripts/inject-newdata-products.ts",
+    "inject:newdata:dry": "tsx scripts/inject-newdata-products.ts --dry-run"
   },
   "dependencies": {
     "@supabase/ssr": "^0.9.0",

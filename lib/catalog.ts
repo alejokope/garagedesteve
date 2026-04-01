@@ -17,8 +17,6 @@ export type ShopTipo =
 export type CatalogEstado = "nuevo" | "oferta" | "mas-vendido";
 
 export type EnrichedProduct = Product & {
-  rating: number;
-  reviewCount: number;
   brand: ShopBrand;
   compareAtPrice: number | null;
   discountPercent: number | null;
@@ -72,11 +70,9 @@ function hashSeed(id: string) {
   return Math.abs(h);
 }
 
-/** Enriquece datos de catálogo (badges, rating, precio tachado) de forma determinista. */
+/** Enriquece datos de catálogo (badges, precio tachado) de forma determinista. */
 export function enrichProduct(p: Product): EnrichedProduct {
   const seed = hashSeed(p.id);
-  const rating = 4.2 + (seed % 8) / 10;
-  const reviewCount = 20 + (seed % 180);
   const brand = brandFromProduct(p);
   const shopTipo = shopTipoFromCategory(p.category);
   const categoryLabel = categoryLabels[p.category];
@@ -86,12 +82,19 @@ export function enrichProduct(p: Product): EnrichedProduct {
   let estado: CatalogEstado;
 
   const badgeLower = p.badge?.toLowerCase() ?? "";
-  const hasDiscount =
-    p.price > 0 && seed % 3 === 0 && p.category !== "servicio";
+  const cmp = p.compareAtPrice;
+  const pct = p.discountPercent;
+  const hasRealPromo =
+    p.price > 0 &&
+    typeof cmp === "number" &&
+    typeof pct === "number" &&
+    pct > 0 &&
+    pct <= 100 &&
+    cmp > p.price;
 
-  if (hasDiscount) {
-    discountPercent = 5 + (seed % 12);
-    compareAtPrice = Math.round(p.price / (1 - discountPercent / 100));
+  if (hasRealPromo) {
+    compareAtPrice = cmp;
+    discountPercent = pct;
     estado = "oferta";
   } else if (badgeLower.includes("nuevo") && p.condition !== "used") {
     estado = "nuevo";
@@ -103,8 +106,6 @@ export function enrichProduct(p: Product): EnrichedProduct {
 
   return {
     ...p,
-    rating: Math.round(rating * 10) / 10,
-    reviewCount,
     brand,
     compareAtPrice,
     discountPercent,

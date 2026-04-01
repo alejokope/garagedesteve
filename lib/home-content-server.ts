@@ -1,12 +1,7 @@
 import "server-only";
 
 import { productRowFromRecord, productRowToProduct } from "@/lib/backoffice/products-db";
-import {
-  featuredProductIds,
-  getFeaturedProducts,
-  products,
-  type Product,
-} from "@/lib/data";
+import type { Product } from "@/lib/data";
 import {
   homeFaq,
   homeServiceFeatures,
@@ -228,20 +223,15 @@ function mergeCtaFinal(payload: unknown): HomeCtaFinalData {
 }
 
 function mergeFeaturedIds(payload: unknown): string[] {
-  if (!payload || typeof payload !== "object") return [...featuredProductIds];
+  if (!payload || typeof payload !== "object") return [];
   const ids = (payload as { ids?: unknown }).ids;
-  if (!Array.isArray(ids) || ids.length === 0) return [...featuredProductIds];
+  if (!Array.isArray(ids) || ids.length === 0) return [];
   const out = ids.filter((x): x is string => typeof x === "string" && x.trim().length > 0);
-  return out.length > 0 ? out : [...featuredProductIds];
+  return out;
 }
 
 async function resolveFeaturedProducts(ids: string[]): Promise<Product[]> {
-  const staticById = new Map(products.map((p) => [p.id, p]));
-
-  if (!hasSupabaseEnv()) {
-    const only = ids.map((id) => staticById.get(id)).filter((p): p is Product => p != null);
-    return only.length > 0 ? only : getFeaturedProducts();
-  }
+  if (!hasSupabaseEnv() || ids.length === 0) return [];
 
   try {
     const supabase = await createSupabaseServerClient();
@@ -250,23 +240,17 @@ async function resolveFeaturedProducts(ids: string[]): Promise<Product[]> {
       .select("*")
       .in("id", ids)
       .eq("published", true);
-    if (error || !data?.length) {
-      const hybrid = ids.map((id) => staticById.get(id)).filter((p): p is Product => p != null);
-      return hybrid.length > 0 ? hybrid : getFeaturedProducts();
-    }
+    if (error || !data?.length) return [];
+
     const fromDb = new Map(
       data.map((r) => {
         const row = productRowFromRecord(r as Record<string, unknown>);
         return [row.id, productRowToProduct(row)] as const;
       }),
     );
-    const ordered = ids
-      .map((id) => fromDb.get(id) ?? staticById.get(id))
-      .filter((p): p is Product => p != null);
-    return ordered.length > 0 ? ordered : getFeaturedProducts();
+    return ids.map((id) => fromDb.get(id)).filter((p): p is Product => p != null);
   } catch {
-    const hybrid = ids.map((id) => staticById.get(id)).filter((p): p is Product => p != null);
-    return hybrid.length > 0 ? hybrid : getFeaturedProducts();
+    return [];
   }
 }
 

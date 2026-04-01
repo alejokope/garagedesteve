@@ -103,6 +103,8 @@ export function productRowToProduct(row: ProductRow): Product {
       ? (row.variant_groups as ProductVariantGroup[])
       : undefined,
     detail: row.detail ?? undefined,
+    compareAtPrice: row.compare_at_price,
+    discountPercent: row.discount_percent,
   };
 }
 
