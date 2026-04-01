@@ -34,14 +34,17 @@ for (let i = 0; i < products.length; i++) {
 
   const detailSql = detail ? `${dq(`d${i}`, detail)},` : "NULL,";
 
+  const brandSql = p.brand ? `${dq(`br${i}`, p.brand)},` : "NULL,";
+
   lines.push(`INSERT INTO public.products (
-  id, name, short, category, price, stock_condition, badge, image, image_alt, variant_groups, detail,
+  id, name, short, category, brand, price, stock_condition, badge, image, image_alt, variant_groups, detail,
   compare_at_price, discount_percent, published, sort_order, updated_at
 ) VALUES (
   ${dq(`id${i}`, p.id)},
   ${dq(`n${i}`, p.name)},
   ${dq(`s${i}`, p.short)},
   ${dq(`c${i}`, p.category)},
+  ${brandSql}
   ${p.price},
   ${stockSql}
   ${badgeSql}

@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, useTransition } from "react";
+import { useMemo, useState, useTransition, type ReactNode } from "react";
 
 import type { ProductDetailBlock, ProductSpec } from "@/lib/product-detail-data";
 
@@ -62,16 +62,58 @@ function parseDetail(raw: unknown): ProductDetailBlock {
   };
 }
 
-function ProductIdPicker({
+function DetailAccordion({
   title,
-  description,
+  subtitle,
+  defaultOpen,
+  badge,
+  children,
+}: {
+  title: string;
+  subtitle?: string;
+  defaultOpen: boolean;
+  badge?: string;
+  children: ReactNode;
+}) {
+  const [open, setOpen] = useState(defaultOpen);
+
+  return (
+    <div className="overflow-hidden rounded-2xl border border-white/[0.08] bg-white/[0.03] shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]">
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        className="flex w-full items-start gap-3 px-5 py-4 text-left transition-colors hover:bg-white/[0.03]"
+        aria-expanded={open}
+      >
+        <span
+          className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-violet-500/15 text-violet-200"
+          aria-hidden
+        >
+          {open ? "−" : "+"}
+        </span>
+        <span className="min-w-0 flex-1">
+          <span className="flex flex-wrap items-center gap-2">
+            <span className="font-display text-base font-semibold text-white">{title}</span>
+            {badge ? (
+              <span className="rounded-full bg-white/[0.08] px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-slate-400">
+                {badge}
+              </span>
+            ) : null}
+          </span>
+          {subtitle ? <span className="mt-0.5 block text-sm text-slate-500">{subtitle}</span> : null}
+        </span>
+      </button>
+      {open ? <div className="border-t border-white/[0.06] px-5 pb-5 pt-4">{children}</div> : null}
+    </div>
+  );
+}
+
+function ProductIdPicker({
   selectedIds,
   onChange,
   options,
   excludeId,
 }: {
-  title: string;
-  description: string;
   selectedIds: string[];
   onChange: (ids: string[]) => void;
   options: { id: string; name: string }[];
@@ -84,9 +126,7 @@ function ProductIdPicker({
     const qq = q.trim().toLowerCase();
     if (!qq) return base;
     return base.filter(
-      (o) =>
-        o.name.toLowerCase().includes(qq) ||
-        o.id.toLowerCase().includes(qq),
+      (o) => o.name.toLowerCase().includes(qq) || o.id.toLowerCase().includes(qq),
     );
   }, [options, q, excludeId]);
 
@@ -99,17 +139,15 @@ function ProductIdPicker({
   }
 
   return (
-    <section className="rounded-2xl border border-white/[0.08] bg-white/[0.03] p-6">
-      <h2 className="font-display text-lg font-semibold text-white">{title}</h2>
-      <p className="mt-1 text-sm text-slate-500">{description}</p>
+    <div className="space-y-3">
       <input
         type="search"
         value={q}
         onChange={(e) => setQ(e.target.value)}
         placeholder="Buscar por nombre o ID…"
-        className="mt-4 w-full rounded-xl border border-white/[0.1] bg-black/30 px-3 py-2.5 text-sm text-white outline-none focus:ring-2 focus:ring-violet-500/40"
+        className="w-full rounded-xl border border-white/[0.1] bg-black/30 px-3 py-2.5 text-sm text-white outline-none focus:ring-2 focus:ring-violet-500/40"
       />
-      <div className="mt-3 max-h-56 overflow-y-auto rounded-xl border border-white/[0.08] bg-black/25">
+      <div className="max-h-52 overflow-y-auto rounded-xl border border-white/[0.08] bg-black/25">
         {filtered.length === 0 ? (
           <p className="px-3 py-6 text-center text-sm text-slate-500">No hay coincidencias.</p>
         ) : (
@@ -134,11 +172,9 @@ function ProductIdPicker({
         )}
       </div>
       {selectedIds.length > 0 ? (
-        <p className="mt-3 text-xs text-slate-500">
-          Seleccionados: {selectedIds.length} — se guardan como lista en la ficha.
-        </p>
+        <p className="text-xs text-slate-500">Seleccionados: {selectedIds.length}</p>
       ) : null}
-    </section>
+    </div>
   );
 }
 
@@ -203,40 +239,39 @@ export function ProductDetailEditor({
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       <input type="hidden" name="detail" value={detailJson} readOnly />
 
-      <section className="rounded-2xl border-2 border-emerald-500/25 bg-gradient-to-br from-emerald-950/40 to-black/20 p-6 shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]">
-        <h2 className="font-display text-lg font-semibold text-emerald-100">Garantía</h2>
-        <p className="mt-1 text-sm text-emerald-200/70">
-          Se muestra en la ficha pública en un recuadro destacado (verde). Dejalo vacío si no aplica.
-        </p>
+      <DetailAccordion
+        title="Garantía"
+        subtitle="Texto destacado en verde en la ficha. Vacío = no se muestra."
+        defaultOpen={Boolean(base.warranty?.trim())}
+        badge="Opcional"
+      >
         <textarea
           value={warranty}
           onChange={(e) => setWarranty(e.target.value)}
           rows={3}
-          className="mt-4 w-full resize-y rounded-xl border border-emerald-500/30 bg-black/40 px-3 py-2.5 text-sm leading-relaxed text-white outline-none placeholder:text-slate-500 focus:ring-2 focus:ring-emerald-500/40"
-          placeholder="Ej. Oficial 12 meses · factura y caja sellada"
+          className="w-full resize-y rounded-xl border border-white/[0.1] bg-black/30 px-3 py-2.5 text-sm leading-relaxed text-white outline-none placeholder:text-slate-500 focus:ring-2 focus:ring-violet-500/40"
+          placeholder="Ej. Garantía oficial 12 meses"
         />
-      </section>
+      </DetailAccordion>
 
-      <section className="rounded-2xl border border-white/[0.08] bg-white/[0.03] p-6">
-        <div className="flex flex-wrap items-start justify-between gap-3">
-          <div>
-            <h2 className="font-display text-lg font-semibold text-white">Descripción</h2>
-            <p className="mt-1 text-sm text-slate-500">
-              Un ítem por fila: en la tienda se listan con viñetas, más ordenado que un solo bloque de texto.
-            </p>
+      <DetailAccordion
+        title="Descripción con viñetas"
+        subtitle="Cada bloque es un ítem en la lista de la tienda."
+        defaultOpen
+      >
+        <div className="space-y-3">
+          <div className="flex justify-end">
+            <button
+              type="button"
+              className="rounded-lg bg-white/[0.08] px-3 py-2 text-xs font-medium text-white hover:bg-white/[0.12]"
+              onClick={() => setDescriptionItems((rows) => [...rows, ""])}
+            >
+              + Agregar ítem
+            </button>
           </div>
-          <button
-            type="button"
-            className="shrink-0 rounded-lg bg-white/[0.08] px-3 py-2 text-xs font-medium text-white hover:bg-white/[0.12]"
-            onClick={() => setDescriptionItems((rows) => [...rows, ""])}
-          >
-            + Agregar ítem
-          </button>
-        </div>
-        <div className="mt-4 space-y-3">
           {descriptionItems.map((line, i) => (
             <div key={i} className="flex gap-2">
               <span className="mt-3 flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-violet-500/20 text-xs font-bold text-violet-200">
@@ -254,7 +289,7 @@ export function ProductDetailEditor({
                 }}
                 rows={2}
                 className="min-h-[3.25rem] flex-1 resize-y rounded-xl border border-white/[0.1] bg-black/30 px-3 py-2.5 text-sm leading-relaxed text-white outline-none focus:ring-2 focus:ring-violet-500/40"
-                placeholder="Ej. Incluye cable USB-C y documentación original."
+                placeholder="Ej. Incluye cable y caja original."
               />
               <button
                 type="button"
@@ -272,17 +307,15 @@ export function ProductDetailEditor({
             </div>
           ))}
         </div>
-      </section>
+      </DetailAccordion>
 
-      <section className="rounded-2xl border border-white/[0.08] bg-white/[0.03] p-6">
-        <h2 className="font-display text-lg font-semibold text-white">Galería de fotos</h2>
-        <p className="mt-1 text-sm text-slate-500">
-          Subí imágenes extra; se guardan en Supabase Storage.
-        </p>
-        {galleryError ? (
-          <p className="mt-2 text-sm text-amber-200/95">{galleryError}</p>
-        ) : null}
-        <div className="mt-4 space-y-3">
+      <DetailAccordion
+        title="Galería de fotos"
+        subtitle="Imágenes extra en Supabase Storage."
+        defaultOpen={base.images.length > 0}
+      >
+        {galleryError ? <p className="mb-3 text-sm text-amber-200/95">{galleryError}</p> : null}
+        <div className="space-y-3">
           {gallery.map((url, i) => (
             <div
               key={`${url}-${i}`}
@@ -302,7 +335,7 @@ export function ProductDetailEditor({
               </button>
             </div>
           ))}
-          <label className="inline-flex cursor-pointer flex-wrap items-center gap-2 rounded-xl border border-dashed border-white/[0.12] bg-black/20 px-4 py-3 text-sm text-violet-200/95 hover:bg-white/[0.04]">
+          <label className="inline-flex cursor-pointer flex-wrap items-center gap-2 rounded-xl border border-dashed border-white/[0.15] bg-black/20 px-4 py-3 text-sm text-violet-200/95 hover:bg-white/[0.04]">
             <input
               type="file"
               accept="image/jpeg,image/png,image/webp,image/gif"
@@ -314,26 +347,26 @@ export function ProductDetailEditor({
                 if (f) addGalleryFromFile(f);
               }}
             />
-            {pending ? "Subiendo…" : "+ Agregar foto a la galería"}
+            {pending ? "Subiendo…" : "+ Agregar foto"}
           </label>
         </div>
-      </section>
+      </DetailAccordion>
 
-      <section className="rounded-2xl border border-white/[0.08] bg-white/[0.03] p-6">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div>
-            <h2 className="font-display text-lg font-semibold text-white">Fichas técnicas</h2>
-            <p className="mt-1 text-sm text-slate-500">Filas con icono, título, valor y detalle corto.</p>
+      <DetailAccordion
+        title="Ficha técnica"
+        subtitle="Icono, título, valor y detalle por fila."
+        defaultOpen={base.specs.length > 0}
+      >
+        <div className="space-y-4">
+          <div className="flex justify-end">
+            <button
+              type="button"
+              className="rounded-lg bg-white/[0.08] px-3 py-2 text-xs font-medium text-white hover:bg-white/[0.12]"
+              onClick={() => setSpecs((s) => [...s, emptySpec()])}
+            >
+              + Agregar fila
+            </button>
           </div>
-          <button
-            type="button"
-            className="rounded-lg bg-white/[0.08] px-3 py-2 text-xs font-medium text-white hover:bg-white/[0.12]"
-            onClick={() => setSpecs((s) => [...s, emptySpec()])}
-          >
-            + Agregar fila
-          </button>
-        </div>
-        <div className="mt-4 space-y-4">
           {specs.map((sp, i) => (
             <div
               key={sp.key}
@@ -361,7 +394,7 @@ export function ProductDetailEditor({
                 </select>
               </label>
               <label className="block">
-                <span className="mb-1 block text-[11px] text-slate-500">Título (ej. PANTALLA)</span>
+                <span className="mb-1 block text-[11px] text-slate-500">Título</span>
                 <input
                   value={sp.title}
                   onChange={(e) => {
@@ -380,7 +413,7 @@ export function ProductDetailEditor({
                 />
               </label>
               <label className="block">
-                <span className="mb-1 block text-[11px] text-slate-500">Valor destacado</span>
+                <span className="mb-1 block text-[11px] text-slate-500">Valor</span>
                 <input
                   value={sp.value}
                   onChange={(e) => {
@@ -421,25 +454,33 @@ export function ProductDetailEditor({
             </div>
           ))}
         </div>
-      </section>
+      </DetailAccordion>
 
-      <ProductIdPicker
+      <DetailAccordion
         title="Productos relacionados"
-        description="Marcá otros ítems del catálogo que quieras sugerir en la ficha."
-        selectedIds={relatedIds}
-        onChange={setRelatedIds}
-        options={catalogProductOptions}
-        excludeId={currentProductId}
-      />
+        subtitle="Sugerencias al final de la ficha."
+        defaultOpen={base.relatedIds.length > 0}
+      >
+        <ProductIdPicker
+          selectedIds={relatedIds}
+          onChange={setRelatedIds}
+          options={catalogProductOptions}
+          excludeId={currentProductId}
+        />
+      </DetailAccordion>
 
-      <ProductIdPicker
+      <DetailAccordion
         title="Accesorios sugeridos"
-        description="Misma idea: elegí de la lista sin tener que acordarte del ID."
-        selectedIds={accessoryIds}
-        onChange={setAccessoryIds}
-        options={catalogProductOptions}
-        excludeId={currentProductId}
-      />
+        subtitle="Misma lista del catálogo, sin escribir IDs a mano."
+        defaultOpen={base.accessoryIds.length > 0}
+      >
+        <ProductIdPicker
+          selectedIds={accessoryIds}
+          onChange={setAccessoryIds}
+          options={catalogProductOptions}
+          excludeId={currentProductId}
+        />
+      </DetailAccordion>
     </div>
   );
 }

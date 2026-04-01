@@ -9,7 +9,11 @@
     "lint": "eslint",
     "seed:sql": "tsx scripts/generate-product-seed.ts",
     "inject:newdata": "tsx scripts/inject-newdata-products.ts",
-    "inject:newdata:dry": "tsx scripts/inject-newdata-products.ts --dry-run"
+    "inject:newdata:dry": "tsx scripts/inject-newdata-products.ts --dry-run",
+    "inject:newdata:all": "tsx scripts/inject-all-newdata.ts",
+    "inject:newdata:all:dry": "tsx scripts/inject-all-newdata.ts --dry-run",
+    "inject:marcas-usados": "tsx scripts/inject-otras-iphone-usados.ts",
+    "inject:marcas-usados:dry": "tsx scripts/inject-otras-iphone-usados.ts --dry-run"
   },
   "dependencies": {
     "@supabase/ssr": "^0.9.0",

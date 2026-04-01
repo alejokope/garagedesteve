@@ -1,0 +1,566 @@
+[
+    {
+      "product": "Parlante",
+      "model": "🔊 Sony SRS - XB13",
+      "status": "new",
+      "color": "A CONFIRMAR SEGUN STOCK",
+      "warranty": null,
+      "options": {
+        "price": [
+          { "value": 60, "sku": "PARLANTE-SONY-SRS-XB13-60", "stock": null },
+          { "value": 70, "sku": "PARLANTE-SONY-SRS-XB13-70", "stock": null }
+        ]
+      }
+    },
+    {
+      "product": "Auriculares",
+      "model": "🔊 Airpods 2da generacion",
+      "status": "new",
+      "color": "A CONFIRMAR SEGUN STOCK",
+      "price": 50,
+      "warranty": null,
+      "sku": "AURICULARES-AIRPODS-2DA-GENERACION",
+      "stock": null
+    },
+    {
+      "product": "Auriculares",
+      "model": "🔊 Bose QuietComfort 360",
+      "status": "new",
+      "color": "A CONFIRMAR SEGUN STOCK",
+      "price": 55,
+      "warranty": null,
+      "sku": "AURICULARES-BOSE-QUIETCOMFORT-360",
+      "stock": null
+    },
+    {
+      "product": "Auriculares",
+      "model": "🔊 Bose QuietComfort 45II",
+      "status": "new",
+      "color": "A CONFIRMAR SEGUN STOCK",
+      "price": 55,
+      "warranty": null,
+      "sku": "AURICULARES-BOSE-QUIETCOMFORT-45II",
+      "stock": null
+    },
+    {
+      "product": "Auriculares",
+      "model": "🔊 JBL Tune 900",
+      "status": "new",
+      "color": "A CONFIRMAR SEGUN STOCK",
+      "price": 55,
+      "warranty": null,
+      "sku": "AURICULARES-JBL-TUNE-900",
+      "stock": null
+    },
+    {
+      "product": "Auriculares",
+      "model": "🔊 JBL RGB TUNE A8",
+      "status": "new",
+      "color": "A CONFIRMAR SEGUN STOCK",
+      "price": 55,
+      "warranty": null,
+      "sku": "AURICULARES-JBL-RGB-TUNE-A8",
+      "stock": null
+    },
+    {
+      "product": "Parlante",
+      "model": "🔊 JBL XTREME 4",
+      "status": "new",
+      "price": 350,
+      "warranty": null,
+      "options": {
+        "color": [
+          { "value": "Black" },
+          { "value": "Blue" }
+        ]
+      },
+      "sku": "PARLANTE-JBL-XTREME-4",
+      "stock": null
+    },
+    {
+      "product": "Parlante",
+      "model": "🔊 JBL FLIP 7",
+      "status": "new",
+      "price": 195,
+      "warranty": null,
+      "options": {
+        "color": [
+          { "value": "Blue" },
+          { "value": "Camuflado" }
+        ]
+      },
+      "sku": "PARLANTE-JBL-FLIP-7",
+      "stock": null
+    },
+    {
+      "product": "Parlante",
+      "model": "🔊 JBL CHARGE 5",
+      "status": "new",
+      "price": 190,
+      "warranty": null,
+      "options": {
+        "color": [
+          { "value": "Red" },
+          { "value": "Teal" }
+        ]
+      },
+      "sku": "PARLANTE-JBL-CHARGE-5",
+      "stock": null
+    },
+    {
+      "product": "Parlante",
+      "model": "🔊 JBL CHARGE 6",
+      "status": "new",
+      "price": 230,
+      "warranty": null,
+      "options": {
+        "color": [
+          { "value": "Black" },
+          { "value": "Blue" }
+        ]
+      },
+      "sku": "PARLANTE-JBL-CHARGE-6",
+      "stock": null
+    },
+    {
+      "product": "Parlante",
+      "model": "🔊 JBL BOOMBOX 3",
+      "status": "new",
+      "color": "Camuflado",
+      "price": 500,
+      "warranty": null,
+      "sku": "PARLANTE-JBL-BOOMBOX-3-CAMUFLADO",
+      "stock": null
+    },
+    {
+      "product": "Parlante",
+      "model": "🔊 JBL BOOMBOX 3 WIFI",
+      "status": "new",
+      "color": "Black",
+      "price": 540,
+      "warranty": null,
+      "sku": "PARLANTE-JBL-BOOMBOX-3-WIFI-BLACK",
+      "stock": null
+    },
+    {
+      "product": "Parlante",
+      "model": "🔊 JBL PARTYBOX ESSENTIAL ENCORE 2",
+      "status": "new",
+      "color": "A CONFIRMAR SEGUN STOCK",
+      "price": 400,
+      "warranty": null,
+      "sku": "PARLANTE-JBL-PARTYBOX-ESSENTIAL-ENCORE-2",
+      "stock": null
+    },
+    {
+      "product": "Parlante",
+      "model": "🔊 JBL SOUNDBAR 500 PRO",
+      "status": "new",
+      "color": "A CONFIRMAR SEGUN STOCK",
+      "price": 550,
+      "warranty": null,
+      "sku": "PARLANTE-JBL-SOUNDBAR-500-PRO",
+      "stock": null
+    },
+    {
+      "product": "Parlante",
+      "model": "🔊 JBL AUTHENTICS 500",
+      "status": "new",
+      "color": "Black",
+      "price": 710,
+      "warranty": null,
+      "sku": "PARLANTE-JBL-AUTHENTICS-500-BLACK",
+      "stock": null
+    },
+  
+    {
+      "product": "Consolas",
+      "model": "SONY PS5 Slim Digital Edition",
+      "capacity": "1TB",
+      "status": "new",
+      "color": "A CONFIRMAR SEGUN STOCK",
+      "price": 600,
+      "warranty": null,
+      "sku": "CONSOLAS-SONY-PS5-SLIM-DIGITAL-EDITION-1TB",
+      "stock": null
+    },
+    {
+      "product": "Consolas",
+      "model": "SONY PS5 Slim Digital Edition “Fortnite Cobalt Star Bundle”",
+      "capacity": "1TB",
+      "status": "new",
+      "color": "A CONFIRMAR SEGUN STOCK",
+      "price": 615,
+      "warranty": null,
+      "sku": "CONSOLAS-SONY-PS5-SLIM-DIGITAL-FORTNITE-COBALT-STAR-BUNDLE-1TB",
+      "stock": null
+    },
+    {
+      "product": "Consolas",
+      "model": "SONY PS5 Slim Digital \"Call Of Duty: Black Ops 6 usa specs Bundle”",
+      "capacity": "1TB",
+      "status": "new",
+      "color": "A CONFIRMAR SEGUN STOCK",
+      "price": 615,
+      "warranty": null,
+      "sku": "CONSOLAS-SONY-PS5-SLIM-DIGITAL-COD-BLACK-OPS-6-BUNDLE-1TB",
+      "stock": null
+    },
+    {
+      "product": "Consolas",
+      "model": "SONY PS5 Slim Lectora de CD",
+      "capacity": "1TB",
+      "status": "new",
+      "color": "A CONFIRMAR SEGUN STOCK",
+      "price": 670,
+      "warranty": null,
+      "sku": "CONSOLAS-SONY-PS5-SLIM-LECTORA-CD-1TB",
+      "stock": null
+    },
+    {
+      "product": "Consolas",
+      "model": "SONY PS5 Slim Lectora de CD + Juego Astro Bot Edition",
+      "capacity": "1TB",
+      "status": "new",
+      "color": "A CONFIRMAR SEGUN STOCK",
+      "price": 690,
+      "warranty": null,
+      "sku": "CONSOLAS-SONY-PS5-SLIM-LECTORA-CD-ASTRO-BOT-EDITION-1TB",
+      "stock": null
+    },
+    {
+      "product": "Consolas",
+      "model": "SONY PS5 Slim Lec. de CD “Ratcher & Clan: Rift Apart + Returnal Bundle”",
+      "capacity": "1TB",
+      "status": "new",
+      "color": "A CONFIRMAR SEGUN STOCK",
+      "price": 730,
+      "warranty": null,
+      "sku": "CONSOLAS-SONY-PS5-SLIM-LECTORA-CD-RATCHER-CLAN-RIFT-APART-RETURNAL-BUNDLE-1TB",
+      "stock": null
+    },
+    {
+      "product": "Consolas",
+      "model": "SONY PS5 PRO Digital Edition",
+      "capacity": "2TB",
+      "status": "new",
+      "color": "A CONFIRMAR SEGUN STOCK",
+      "price": 1000,
+      "warranty": null,
+      "sku": "CONSOLAS-SONY-PS5-PRO-DIGITAL-EDITION-2TB",
+      "stock": null
+    },
+    {
+      "product": "Consolas",
+      "model": "SONY PS5 Portal Remote Player",
+      "status": "new",
+      "color": "A CONFIRMAR SEGUN STOCK",
+      "price": 400,
+      "warranty": null,
+      "sku": "CONSOLAS-SONY-PS5-PORTAL-REMOTE-PLAYER",
+      "stock": null
+    },
+    {
+      "product": "Consolas",
+      "model": "Joystick Dualsense",
+      "status": "new",
+      "color": "A CONFIRMAR SEGUN STOCK",
+      "price": 150,
+      "warranty": null,
+      "sku": "CONSOLAS-JOYSTICK-DUALSENSE",
+      "stock": null
+    },
+  
+    {
+      "product": "Telefono",
+      "model": "📱A16 DS",
+      "capacity": "128GB",
+      "ram": "4GB",
+      "status": "new",
+      "warranty": null,
+      "options": {
+        "color": [
+          { "value": "Gray", "price": 240, "sku": "TELEFONO-A16-DS-128-4GB-GRAY", "stock": null },
+          { "value": "Blue", "price": 260, "sku": "TELEFONO-A16-DS-128-4GB-BLUE", "stock": null },
+          { "value": "Black", "price": 260, "sku": "TELEFONO-A16-DS-128-4GB-BLACK", "stock": null },
+          { "value": "Light Gray", "price": 260, "sku": "TELEFONO-A16-DS-128-4GB-LIGHT-GRAY", "stock": null }
+        ]
+      }
+    },
+    {
+      "product": "Telefono",
+      "model": "📱A26 DS",
+      "capacity": "256GB",
+      "ram": "8GB",
+      "status": "new",
+      "color": "Black",
+      "price": 330,
+      "warranty": null,
+      "sku": "TELEFONO-A26-DS-256-8GB-BLACK",
+      "stock": null
+    },
+    {
+      "product": "Telefono",
+      "model": "📱A36 DS",
+      "capacity": "256GB",
+      "ram": "8GB",
+      "status": "new",
+      "price": 390,
+      "warranty": null,
+      "options": {
+        "color": [
+          { "value": "Black" },
+          { "value": "Lime" },
+          { "value": "White" }
+        ]
+      },
+      "sku": "TELEFONO-A36-DS-256-8GB",
+      "stock": null
+    },
+    {
+      "product": "Telefono",
+      "model": "📱A56 DS Graph/Gray",
+      "capacity": "256GB",
+      "ram": "8GB",
+      "status": "new",
+      "price": 460,
+      "warranty": null,
+      "options": {
+        "color": [
+          { "value": "Graph" },
+          { "value": "Gray" }
+        ]
+      },
+      "sku": "TELEFONO-A56-DS-GRAPH-GRAY-256-8GB",
+      "stock": null
+    },
+    {
+      "product": "Telefono",
+      "model": "📱S24 FE",
+      "capacity": "256GB",
+      "ram": "8GB",
+      "status": "new",
+      "color": "A CONFIRMAR SEGUN STOCK",
+      "price": 600,
+      "warranty": null,
+      "sku": "TELEFONO-S24-FE-256-8GB",
+      "stock": null
+    },
+    {
+      "product": "Telefono",
+      "model": "📱S24",
+      "capacity": "128GB",
+      "ram": "8GB",
+      "status": "new",
+      "color": "A CONFIRMAR SEGUN STOCK",
+      "price": 660,
+      "warranty": null,
+      "sku": "TELEFONO-S24-128-8GB",
+      "stock": null
+    },
+    {
+      "product": "Telefono",
+      "model": "📱S24 Ultra",
+      "capacity": "256GB",
+      "ram": "12GB",
+      "status": "new",
+      "color": "A CONFIRMAR SEGUN STOCK",
+      "price": 890,
+      "warranty": null,
+      "sku": "TELEFONO-S24-ULTRA-256-12GB",
+      "stock": null
+    },
+    {
+      "product": "Telefono",
+      "model": "📱S25 DS Ice Blue",
+      "capacity": "128GB",
+      "ram": "12GB",
+      "status": "new",
+      "color": "A CONFIRMAR SEGUN STOCK",
+      "price": 710,
+      "warranty": null,
+      "sku": "TELEFONO-S25-DS-ICE-BLUE-128-12GB",
+      "stock": null
+    },
+    {
+      "product": "Telefono",
+      "model": "📱S25",
+      "capacity": "256GB",
+      "ram": "12GB",
+      "status": "new",
+      "color": "A CONFIRMAR SEGUN STOCK",
+      "price": 820,
+      "warranty": null,
+      "sku": "TELEFONO-S25-256-12GB",
+      "stock": null
+    },
+    {
+      "product": "Telefono",
+      "model": "📱S25 Ultra DS",
+      "ram": "12GB",
+      "status": "new",
+      "warranty": null,
+      "options": {
+        "capacity": [
+          {
+            "value": "256GB",
+            "price": 1040,
+            "colors": ["Blue", "Gray", "Green", "Pink"],
+            "sku": "TELEFONO-S25-ULTRA-DS-256-12GB",
+            "stock": null
+          },
+          {
+            "value": "512GB",
+            "price": 1150,
+            "colors": ["Black", "Blue"],
+            "sku": "TELEFONO-S25-ULTRA-DS-512-12GB",
+            "stock": null
+          }
+        ]
+      }
+    },
+    {
+      "product": "Telefono",
+      "model": "📱S Z FLIP 7",
+      "capacity": "512GB",
+      "ram": "12GB",
+      "status": "new",
+      "color": "A CONFIRMAR SEGUN STOCK",
+      "price": 1080,
+      "warranty": null,
+      "sku": "TELEFONO-S-Z-FLIP-7-512-12GB",
+      "stock": null
+    },
+    {
+      "product": "Tablet",
+      "model": "📱Redmi Pad SE 1",
+      "capacity": "128GB",
+      "ram": "6GB",
+      "status": "new",
+      "color": "A CONFIRMAR SEGUN STOCK",
+      "price": 280,
+      "warranty": null,
+      "sku": "TABLET-REDMI-PAD-SE-1-128-6GB",
+      "stock": null
+    },
+    {
+      "product": "Telefono",
+      "model": "📱Poco F6 Pro",
+      "capacity": "512GB",
+      "ram": "12GB",
+      "status": "new",
+      "color": "A CONFIRMAR SEGUN STOCK",
+      "price": 550,
+      "warranty": null,
+      "sku": "TELEFONO-POCO-F6-PRO-512-12GB",
+      "stock": null
+    },
+    {
+      "product": "Telefono",
+      "model": "📱Note 13 Pro Plus",
+      "capacity": "512GB",
+      "ram": "12GB",
+      "status": "new",
+      "color": "A CONFIRMAR SEGUN STOCK",
+      "price": 430,
+      "warranty": null,
+      "sku": "TELEFONO-NOTE-13-PRO-PLUS-512-12GB",
+      "stock": null
+    },
+    {
+      "product": "Telefono",
+      "model": "📱Note 14 Pro Plus",
+      "capacity": "256GB",
+      "ram": "8GB",
+      "status": "new",
+      "color": "A CONFIRMAR SEGUN STOCK",
+      "price": 430,
+      "warranty": null,
+      "sku": "TELEFONO-NOTE-14-PRO-PLUS-256-8GB",
+      "stock": null
+    },
+    {
+      "product": "Telefono",
+      "model": "📱Poco X7 Pro",
+      "capacity": "512GB",
+      "ram": "12GB",
+      "status": "new",
+      "color": "A CONFIRMAR SEGUN STOCK",
+      "price": 460,
+      "warranty": null,
+      "sku": "TELEFONO-POCO-X7-PRO-512-12GB",
+      "stock": null
+    },
+    {
+      "product": "Telefono",
+      "model": "📱Motorola G15",
+      "capacity": "256GB",
+      "ram": "4GB",
+      "status": "new",
+      "color": "A CONFIRMAR SEGUN STOCK",
+      "price": 230,
+      "warranty": null,
+      "sku": "TELEFONO-MOTOROLA-G15-256-4GB",
+      "stock": null
+    },
+    {
+      "product": "Telefono",
+      "model": "📱Motorola G55",
+      "capacity": "256GB",
+      "ram": "8GB",
+      "status": "new",
+      "color": "A CONFIRMAR SEGUN STOCK",
+      "price": 280,
+      "warranty": null,
+      "sku": "TELEFONO-MOTOROLA-G55-256-8GB",
+      "stock": null
+    },
+    {
+      "product": "Telefono",
+      "model": "📱Motorola G85",
+      "capacity": "256GB",
+      "ram": "8GB",
+      "status": "new",
+      "color": "A CONFIRMAR SEGUN STOCK",
+      "price": 330,
+      "warranty": null,
+      "sku": "TELEFONO-MOTOROLA-G85-256-8GB",
+      "stock": null
+    },
+    {
+      "product": "Telefono",
+      "model": "📱Motorola Edge 50 Fusion",
+      "capacity": "256GB",
+      "ram": "8GB",
+      "status": "new",
+      "color": "A CONFIRMAR SEGUN STOCK",
+      "price": 340,
+      "warranty": null,
+      "sku": "TELEFONO-MOTOROLA-EDGE-50-FUSION-256-8GB",
+      "stock": null
+    },
+    {
+      "product": "Telefono",
+      "model": "📱Motorola Edge 50 Pro",
+      "capacity": "512GB",
+      "ram": "12GB",
+      "status": "new",
+      "color": "A CONFIRMAR SEGUN STOCK",
+      "price": 560,
+      "warranty": null,
+      "sku": "TELEFONO-MOTOROLA-EDGE-50-PRO-512-12GB",
+      "stock": null
+    },
+    {
+      "product": "Telefono",
+      "model": "📱Motorola Razr 50 Ultra",
+      "capacity": "512GB",
+      "ram": "12GB",
+      "status": "new",
+      "color": "A CONFIRMAR SEGUN STOCK",
+      "price": 810,
+      "warranty": null,
+      "sku": "TELEFONO-MOTOROLA-RAZR-50-ULTRA-512-12GB",
+      "stock": null
+    }
+  ]

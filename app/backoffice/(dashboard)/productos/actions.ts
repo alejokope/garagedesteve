@@ -4,7 +4,11 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
 import { categoryExistsActive } from "@/lib/backoffice/catalog-dictionaries-db";
-import { deleteProductAdmin, upsertProductAdmin } from "@/lib/backoffice/products-db";
+import {
+  deleteProductAdmin,
+  updateProductPublishedAdmin,
+  upsertProductAdmin,
+} from "@/lib/backoffice/products-db";
 import { requireBackofficeSession } from "@/lib/backoffice/session";
 import { uploadProductMainImage } from "@/lib/backoffice/storage/product-images";
 
@@ -30,6 +34,7 @@ export async function saveProduct(
 
   const name = String(formData.get("name") ?? "").trim();
   const short = String(formData.get("short") ?? "").trim();
+  const brandRaw = String(formData.get("brand") ?? "").trim();
   const categoryRaw = String(formData.get("category") ?? "").trim();
   const imageFile = formData.get("image_file");
   let image = String(formData.get("image") ?? "").trim();
@@ -109,6 +114,7 @@ export async function saveProduct(
       name,
       short,
       category: categoryRaw,
+      brand: brandRaw || null,
       price,
       stock_condition,
       badge: badgeRaw || null,
@@ -128,11 +134,34 @@ export async function saveProduct(
   revalidatePath("/backoffice/productos");
   revalidatePath("/tienda");
   revalidatePath(`/tienda/${id}`);
+  revalidatePath("/");
 
   if (mode === "create") {
     redirect(`/backoffice/productos/${encodeURIComponent(id)}`);
   }
   redirect("/backoffice/productos");
+}
+
+/** Cambia solo `published` (desde checkbox en el listado o llamadas programáticas). */
+export async function toggleProductPublished(
+  id: string,
+  published: boolean,
+): Promise<{ ok: boolean }> {
+  await requireBackofficeSession();
+  const trimmed = id.trim();
+  if (!trimmed) return { ok: false };
+
+  try {
+    await updateProductPublishedAdmin(trimmed, published);
+  } catch {
+    return { ok: false };
+  }
+
+  revalidatePath("/backoffice/productos");
+  revalidatePath("/tienda");
+  revalidatePath(`/tienda/${encodeURIComponent(trimmed)}`);
+  revalidatePath("/");
+  return { ok: true };
 }
 
 export async function deleteProductAdminAction(formData: FormData) {

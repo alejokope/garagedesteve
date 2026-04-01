@@ -43,8 +43,13 @@ export function FeaturedProductCard({ product }: { product: Product }) {
         ) : null}
       </Link>
       <div className="flex min-h-0 flex-1 flex-col p-4 pt-3 sm:p-5 sm:pt-4">
+        {product.brand?.trim() ? (
+          <p className="text-[10px] font-bold uppercase tracking-wide text-neutral-500">{product.brand.trim()}</p>
+        ) : null}
         <Link href={`/tienda/${product.id}`}>
-          <h3 className="font-display text-[15px] font-semibold leading-snug text-neutral-950 transition hover:text-[var(--brand-from)] sm:text-base">
+          <h3
+            className={`font-display text-[15px] font-semibold leading-snug text-neutral-950 transition hover:text-[var(--brand-from)] sm:text-base ${product.brand?.trim() ? "mt-1" : ""}`}
+          >
             {product.name}
           </h3>
         </Link>

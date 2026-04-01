@@ -96,7 +96,12 @@ function SmallProductCard({
         <Image src={p.image} alt={p.imageAlt} fill className="object-contain p-3" sizes="200px" />
       </Link>
       <div className="flex flex-1 flex-col p-4">
-        <p className="text-[10px] font-bold uppercase text-neutral-400">{e.categoryLabel}</p>
+        {p.brand?.trim() ? (
+          <p className="text-[10px] font-bold uppercase text-neutral-500">{p.brand.trim()}</p>
+        ) : null}
+        <p className={`text-[10px] font-bold uppercase text-neutral-400 ${p.brand?.trim() ? "mt-1" : ""}`}>
+          {e.categoryLabel}
+        </p>
         <Link href={`/tienda/${p.id}`} className="font-display mt-1 text-sm font-semibold text-neutral-900 line-clamp-2 hover:text-[var(--brand-from)]">
           {p.name}
         </Link>
@@ -228,6 +233,11 @@ export function ProductDetailView({
 
           <div>
             <div className="flex flex-wrap items-center gap-3">
+              {product.brand?.trim() ? (
+                <span className="text-xs font-bold uppercase tracking-[0.14em] text-neutral-500">
+                  {product.brand.trim()}
+                </span>
+              ) : null}
               {product.condition === "used" ? (
                 <span className="rounded-md bg-amber-600 px-2.5 py-1 text-[11px] font-bold uppercase text-white">
                   Usado

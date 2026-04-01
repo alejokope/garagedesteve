@@ -28,11 +28,10 @@ export function ProductImageSection({
   const displaySrc = filePreview ?? initialUrl ?? "";
 
   return (
-    <section className="rounded-2xl border border-white/[0.08] bg-white/[0.03] p-6">
-      <h2 className="font-display text-lg font-semibold text-white">Imagen principal</h2>
-      <p className="mt-1 text-sm text-slate-500">
-        Se guarda en el almacenamiento de Supabase (bucket público). En alta, necesitás el ID del
-        producto y un archivo; en edición podés mantener la foto actual o subir una nueva.
+    <section className="rounded-2xl border border-white/[0.08] bg-white/[0.03] p-6 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]">
+      <h3 className="text-sm font-semibold text-white">Imagen principal</h3>
+      <p className="mt-1 text-xs text-slate-500">
+        Supabase Storage. En producto nuevo, completá el ID arriba para poder subir archivo.
       </p>
 
       <input type="hidden" name="image" value={initialUrl ?? ""} readOnly />
@@ -51,9 +50,7 @@ export function ProductImageSection({
 
         <div className="min-w-0 flex-1 space-y-3">
           <label className="block">
-            <span className="mb-1.5 block text-xs font-medium uppercase tracking-wide text-slate-500">
-              Subir archivo
-            </span>
+            <span className="mb-1.5 block text-xs font-medium text-slate-400">Archivo</span>
             <input
               ref={fileRef}
               type="file"
@@ -78,9 +75,7 @@ export function ProductImageSection({
             </p>
           ) : null}
           <label className="block">
-            <span className="mb-1.5 block text-xs font-medium uppercase tracking-wide text-slate-500">
-              Texto alternativo (accesibilidad)
-            </span>
+            <span className="mb-1.5 block text-xs font-medium text-slate-400">Texto alternativo</span>
             <input
               name="image_alt"
               required

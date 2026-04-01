@@ -7,16 +7,17 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useCart } from "@/app/context/cart-context";
 import {
   PAGE_SIZE,
+  brandFilterOptionsFromProducts,
   type CatalogEstado,
   type EnrichedProduct,
+  parseBrandFilterKeysFromUrlParam,
   type ProductStockCondition,
-  type ShopBrand,
+  type ShopBrandFilterId,
   type ShopTipo,
   type SortKey,
   enrichProduct,
   filterEnriched,
   shopEstados,
-  shopMarcas,
   shopStockConditions,
   shopTipos,
   sortEnriched,
@@ -81,9 +82,21 @@ function CatalogCard({ p }: { p: EnrichedProduct }) {
         </div>
       </Link>
       <div className="flex flex-1 flex-col p-4 sm:p-5">
-        <p className="text-[11px] font-semibold uppercase tracking-wide text-neutral-400">
-          {p.categoryLabel}
-        </p>
+        <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
+          {p.brand?.trim() ? (
+            <p className="text-[11px] font-bold uppercase tracking-wide text-neutral-600">
+              {p.brand.trim()}
+            </p>
+          ) : null}
+          {p.brand?.trim() ? (
+            <span className="text-[10px] text-neutral-300" aria-hidden>
+              ·
+            </span>
+          ) : null}
+          <p className="text-[11px] font-semibold uppercase tracking-wide text-neutral-400">
+            {p.categoryLabel}
+          </p>
+        </div>
         <Link href={`/tienda/${p.id}`}>
           <h3 className="font-display mt-2 text-base font-semibold leading-snug text-neutral-900 group-hover:text-[var(--brand-from)]">
             {p.name}
@@ -221,6 +234,11 @@ export function CatalogView() {
     [catalogProducts],
   );
 
+  const brandFilterOptions = useMemo(
+    () => brandFilterOptionsFromProducts(catalogProducts),
+    [catalogProducts],
+  );
+
   /** Filtros solo en memoria: no usar router (evita navegaciones /tienda en cada tecla). */
   const [q, setQ] = useState(() => searchParams.get("q") ?? "");
   const [sort, setSort] = useState<SortKey>(
@@ -229,8 +247,8 @@ export function CatalogView() {
   const [page, setPage] = useState(() =>
     Math.max(1, parseInt(searchParams.get("page") ?? "1", 10) || 1),
   );
-  const [marcas, setMarcas] = useState<ShopBrand[]>(
-    () => parseList(searchParams.get("marcas")) as ShopBrand[],
+  const [marcas, setMarcas] = useState<ShopBrandFilterId[]>(() =>
+    parseBrandFilterKeysFromUrlParam(searchParams.get("marcas")),
   );
   const [tipos, setTipos] = useState<ShopTipo[]>(
     () => parseList(searchParams.get("tipos")) as ShopTipo[],
@@ -243,11 +261,22 @@ export function CatalogView() {
   );
   const [precioMax, setPrecioMax] = useState<number | null>(null);
 
+  const validBrandFilterIds = useMemo(
+    () => new Set(brandFilterOptions.map((o) => o.id)),
+    [brandFilterOptions],
+  );
+
+  /** Ignora claves de URL que ya no existen en el catálogo cargado. */
+  const effectiveMarcas = useMemo(() => {
+    if (validBrandFilterIds.size === 0) return marcas;
+    return marcas.filter((id) => validBrandFilterIds.has(id));
+  }, [marcas, validBrandFilterIds]);
+
   /** Min/max de precio según filtros actuales (sin tope de precio), para el slider realista. */
   const priceScope = useMemo(() => {
     const withoutPrice = filterEnriched(enriched, {
       q,
-      marcas,
+      marcas: effectiveMarcas,
       tipos,
       estados,
       stockConditions,
@@ -257,7 +286,7 @@ export function CatalogView() {
     const prices = basis.map((p) => p.price).filter((n) => typeof n === "number" && !Number.isNaN(n));
     if (prices.length === 0) return { min: 0, max: 1 };
     return { min: Math.min(...prices), max: Math.max(...prices) };
-  }, [enriched, q, marcas, tipos, estados, stockConditions]);
+  }, [enriched, q, effectiveMarcas, tipos, estados, stockConditions]);
 
   const minCatalogPrice = priceScope.min;
   const maxCatalogPrice = priceScope.max;
@@ -289,14 +318,14 @@ export function CatalogView() {
   const filtered = useMemo(() => {
     const f = filterEnriched(enriched, {
       q,
-      marcas,
+      marcas: effectiveMarcas,
       tipos,
       estados,
       stockConditions,
       precioMax: clampedPrecioMax,
     });
     return sortEnriched(f, sort);
-  }, [enriched, q, marcas, tipos, estados, stockConditions, clampedPrecioMax, sort]);
+  }, [enriched, q, effectiveMarcas, tipos, estados, stockConditions, clampedPrecioMax, sort]);
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
   const currentPage = Math.min(page, totalPages);
@@ -305,12 +334,12 @@ export function CatalogView() {
     currentPage * PAGE_SIZE,
   );
 
-  const toggleMarcas = (id: ShopBrand) => {
+  const toggleMarcas = (id: ShopBrandFilterId) => {
     setMarcas((prev) => {
       const set = new Set(prev);
       if (set.has(id)) set.delete(id);
       else set.add(id);
-      return [...set] as ShopBrand[];
+      return [...set];
     });
     setPage(1);
   };
@@ -458,24 +487,31 @@ export function CatalogView() {
                 <p className="text-[11px] font-bold uppercase tracking-wider text-neutral-500">
                   Marca
                 </p>
+                <p className="mt-1 text-[11px] leading-snug text-neutral-400">
+                  Se generan desde el campo marca de cada producto. “Otras marcas” = sin marca definida.
+                </p>
                 <div className="mt-2 flex flex-wrap gap-2">
-                  {shopMarcas.map((m) => {
-                    const on = marcas.includes(m.id);
-                    return (
-                      <button
-                        key={m.id}
-                        type="button"
-                        onClick={() => toggleMarcas(m.id)}
-                        className={`rounded-lg border px-3 py-2 text-xs font-medium transition ${
-                          on
-                            ? "border-[var(--brand-from)] bg-[var(--brand-from)]/10 text-[var(--brand-from)]"
-                            : "border-neutral-200 bg-neutral-50 text-neutral-600 hover:border-neutral-300"
-                        }`}
-                      >
-                        {m.label}
-                      </button>
-                    );
-                  })}
+                  {brandFilterOptions.length === 0 ? (
+                    <span className="text-xs text-neutral-400">No hay marcas en el catálogo.</span>
+                  ) : (
+                    brandFilterOptions.map((m) => {
+                      const on = marcas.includes(m.id);
+                      return (
+                        <button
+                          key={m.id}
+                          type="button"
+                          onClick={() => toggleMarcas(m.id)}
+                          className={`rounded-lg border px-3 py-2 text-xs font-medium transition ${
+                            on
+                              ? "border-[var(--brand-from)] bg-[var(--brand-from)]/10 text-[var(--brand-from)]"
+                              : "border-neutral-200 bg-neutral-50 text-neutral-600 hover:border-neutral-300"
+                          }`}
+                        >
+                          {m.label}
+                        </button>
+                      );
+                    })
+                  )}
                 </div>
               </div>
 

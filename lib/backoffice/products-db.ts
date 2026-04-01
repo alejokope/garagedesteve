@@ -9,6 +9,7 @@ export type ProductRow = {
   name: string;
   short: string;
   category: string;
+  brand: string | null;
   price: number;
   stock_condition: string | null;
   badge: string | null;
@@ -45,6 +46,7 @@ function mapRow(r: Record<string, unknown>): ProductRow {
     name: String(r.name),
     short: String(r.short),
     category: String(r.category),
+    brand: r.brand != null && String(r.brand).trim() !== "" ? String(r.brand).trim() : null,
     price: num(r.price),
     stock_condition: parseStockCondition(r.stock_condition),
     badge: r.badge != null ? String(r.badge) : null,
@@ -94,6 +96,7 @@ export function productRowToProduct(row: ProductRow): Product {
     name: row.name,
     short: row.short,
     category: row.category as Product["category"],
+    ...(row.brand ? { brand: row.brand } : {}),
     price: row.price,
     condition,
     badge: row.badge ?? undefined,
@@ -113,6 +116,7 @@ export type ProductUpsertInput = {
   name: string;
   short: string;
   category: string;
+  brand: string | null;
   price: number;
   stock_condition: string | null;
   badge: string | null;
@@ -133,6 +137,7 @@ export async function upsertProductAdmin(row: ProductUpsertInput): Promise<void>
     name: row.name,
     short: row.short,
     category: row.category,
+    brand: row.brand,
     price: row.price,
     stock_condition: row.stock_condition,
     badge: row.badge,
@@ -148,6 +153,15 @@ export async function upsertProductAdmin(row: ProductUpsertInput): Promise<void>
   };
 
   const { error } = await supabase.from("products").upsert(payload, { onConflict: "id" });
+  if (error) throw new Error(error.message);
+}
+
+export async function updateProductPublishedAdmin(id: string, published: boolean): Promise<void> {
+  const supabase = createSupabaseServiceClient();
+  const { error } = await supabase
+    .from("products")
+    .update({ published, updated_at: new Date().toISOString() })
+    .eq("id", id);
   if (error) throw new Error(error.message);
 }
 

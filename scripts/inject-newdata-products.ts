@@ -1,4 +1,7 @@
 /**
+ * Inyecta solo iphone-nuevos + resto-apples-nuevos. Para **todos** los JSON de newdata usá
+ * `scripts/inject-all-newdata.ts` o `npm run inject:newdata:all`.
+ *
  * Inyecta productos desde data/newdata/*.json a Supabase (tabla public.products).
  *
  * Requiere en .env.local: NEXT_PUBLIC_SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY
@@ -277,6 +280,7 @@ function rowToPayload(row: RawRow, sortOrder: number, usedIds: Set<string>) {
     name,
     short: `${warranty || "Consultá garantía"} · Precios referencia USD`,
     category,
+    brand: null as string | null,
     price,
     stock_condition,
     badge: "Nuevo sellado",

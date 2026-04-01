@@ -2,7 +2,67 @@ import type { CategoryId, Product, ProductStockCondition } from "@/lib/data";
 
 export type { ProductStockCondition };
 
-export type ShopBrand = "Apple" | "Samsung";
+/**
+ * Clave interna para filtrar por marca (minúsculas, espacios colapsados).
+ * Productos sin `brand` en BD usan {@link SIN_MARCA_BUCKET_ID} y se muestran bajo "Otras marcas".
+ */
+export type ShopBrandFilterId = string;
+
+/** Valor reservado: productos sin campo `brand` (filtro "Otras marcas"). */
+export const SIN_MARCA_BUCKET_ID = "__sin_marca__";
+
+export function normalizeBrandFilterKey(raw: string): ShopBrandFilterId {
+  return raw.trim().toLowerCase().replace(/\s+/g, " ");
+}
+
+export function shopBrandKeyFromProduct(p: Product): ShopBrandFilterId {
+  const b = p.brand?.trim();
+  if (b) return normalizeBrandFilterKey(b);
+  return SIN_MARCA_BUCKET_ID;
+}
+
+/**
+ * Opciones del filtro Marca: una entrada por cada texto distinto en `product.brand`,
+ * más "Otras marcas" si hay algún producto sin marca.
+ */
+export function brandFilterOptionsFromProducts(products: Product[]): { id: ShopBrandFilterId; label: string }[] {
+  const labelByKey = new Map<string, string>();
+  let hasSinMarca = false;
+
+  for (const p of products) {
+    const b = p.brand?.trim();
+    if (!b) {
+      hasSinMarca = true;
+      continue;
+    }
+    const key = normalizeBrandFilterKey(b);
+    if (!labelByKey.has(key)) labelByKey.set(key, b);
+  }
+
+  const sorted = [...labelByKey.entries()].sort((a, b) =>
+    a[1].localeCompare(b[1], "es", { sensitivity: "base" }),
+  );
+  const out: { id: ShopBrandFilterId; label: string }[] = sorted.map(([id, label]) => ({ id, label }));
+  if (hasSinMarca) {
+    out.push({ id: SIN_MARCA_BUCKET_ID, label: "Otras marcas" });
+  }
+  return out;
+}
+
+/** Normaliza tokens de URL (compat: valores viejos Apple/Samsung/Otras). */
+export function parseBrandFilterKeysFromUrlParam(param: string | null): ShopBrandFilterId[] {
+  const tokens = param
+    ?.split(",")
+    .map((x) => x.trim())
+    .filter(Boolean);
+  if (!tokens?.length) return [];
+  return tokens.map((t) => {
+    const lower = t.toLowerCase();
+    if (t === "Otras" || lower === "otras") return SIN_MARCA_BUCKET_ID;
+    return normalizeBrandFilterKey(t);
+  });
+}
+
 export type ShopTipo =
   | "smartphones"
   | "accessories"
@@ -17,7 +77,8 @@ export type ShopTipo =
 export type CatalogEstado = "nuevo" | "oferta" | "mas-vendido";
 
 export type EnrichedProduct = Product & {
-  brand: ShopBrand;
+  /** Clave para el filtro de marcas (ver {@link shopBrandKeyFromProduct}). */
+  shopBrand: ShopBrandFilterId;
   compareAtPrice: number | null;
   discountPercent: number | null;
   estado: CatalogEstado;
@@ -59,11 +120,6 @@ function shopTipoFromCategory(c: CategoryId): ShopTipo {
   }
 }
 
-function brandFromProduct(p: Product): ShopBrand {
-  if (p.id === "otro-laptop-win") return "Samsung";
-  return "Apple";
-}
-
 function hashSeed(id: string) {
   let h = 0;
   for (let i = 0; i < id.length; i++) h = (h << 5) - h + id.charCodeAt(i);
@@ -73,7 +129,7 @@ function hashSeed(id: string) {
 /** Enriquece datos de catálogo (badges, precio tachado) de forma determinista. */
 export function enrichProduct(p: Product): EnrichedProduct {
   const seed = hashSeed(p.id);
-  const brand = brandFromProduct(p);
+  const shopBrand = shopBrandKeyFromProduct(p);
   const shopTipo = shopTipoFromCategory(p.category);
   const categoryLabel = categoryLabels[p.category];
 
@@ -106,7 +162,7 @@ export function enrichProduct(p: Product): EnrichedProduct {
 
   return {
     ...p,
-    brand,
+    shopBrand,
     compareAtPrice,
     discountPercent,
     estado,
@@ -116,11 +172,6 @@ export function enrichProduct(p: Product): EnrichedProduct {
 }
 
 export const PAGE_SIZE = 9;
-
-export const shopMarcas: { id: ShopBrand; label: string }[] = [
-  { id: "Apple", label: "Apple" },
-  { id: "Samsung", label: "Samsung" },
-];
 
 export const shopTipos: { id: ShopTipo; label: string }[] = [
   { id: "smartphones", label: "Smartphones" },
@@ -151,7 +202,7 @@ export function filterEnriched(
   list: EnrichedProduct[],
   opts: {
     q: string;
-    marcas: ShopBrand[];
+    marcas: ShopBrandFilterId[];
     tipos: ShopTipo[];
     estados: CatalogEstado[];
     stockConditions: ProductStockCondition[];
@@ -161,10 +212,10 @@ export function filterEnriched(
   const q = opts.q.trim().toLowerCase();
   return list.filter((p) => {
     if (q) {
-      const blob = `${p.name} ${p.short}`.toLowerCase();
+      const blob = `${p.name} ${p.short} ${p.brand ?? ""}`.toLowerCase();
       if (!blob.includes(q)) return false;
     }
-    if (opts.marcas.length && !opts.marcas.includes(p.brand)) return false;
+    if (opts.marcas.length > 0 && !opts.marcas.includes(p.shopBrand)) return false;
     if (opts.tipos.length && !opts.tipos.includes(p.shopTipo)) return false;
     if (opts.estados.length) {
       const matchEstado = opts.estados.some((e) => {

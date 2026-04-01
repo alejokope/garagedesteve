@@ -1,0 +1,445 @@
+[
+    {
+      "product": "IPHONE",
+      "model": "12 PRO MAX",
+      "status": "used",
+      "capacity": "128GB",
+      "quality": "A/A+",
+      "battery": "100%",
+      "price": 320,
+      "warranty": "1 MES, SE EXTIENDE POR 3 MESES ADQUIRIENDO EL CARGADOR ORIGINAL",
+      "options": {
+        "color": [
+          {
+            "value": "BLUE"
+          }
+        ]
+      },
+      "sku": "IPHONE-12-PRO-MAX-128-AAPLUS-100-BLUE",
+      "stock": null,
+      "brand": "apple"
+    },
+    {
+      "product": "IPHONE",
+      "model": "13",
+      "status": "used",
+      "capacity": "128GB",
+      "quality": "A/B",
+      "battery": "100%",
+      "price": 310,
+      "warranty": "1 MES, SE EXTIENDE POR 3 MESES ADQUIRIENDO EL CARGADOR ORIGINAL",
+      "options": {
+        "color": [
+          {
+            "value": "GREEN"
+          },
+          {
+            "value": "MIDNIGHT"
+          }
+        ]
+      },
+      "sku": "IPHONE-13-128-AB-100",
+      "stock": null,
+      "brand": "apple"
+    },
+    {
+      "product": "IPHONE",
+      "model": "13",
+      "status": "used",
+      "capacity": "128GB",
+      "quality": "A/A+",
+      "battery": "100%",
+      "price": 350,
+      "warranty": "1 MES, SE EXTIENDE POR 3 MESES ADQUIRIENDO EL CARGADOR ORIGINAL",
+      "options": {
+        "color": [
+          {
+            "value": "PINK"
+          },
+          {
+            "value": "STARLIGHT"
+          },
+          {
+            "value": "RED"
+          },
+          {
+            "value": "MIDNIGHT"
+          }
+        ]
+      },
+      "sku": "IPHONE-13-128-AAPLUS-100",
+      "stock": null,
+      "brand": "apple"
+    },
+    {
+      "product": "IPHONE",
+      "model": "13",
+      "status": "used",
+      "capacity": "256GB",
+      "quality": "A/A+",
+      "battery": "100%",
+      "price": 370,
+      "warranty": "1 MES, SE EXTIENDE POR 3 MESES ADQUIRIENDO EL CARGADOR ORIGINAL",
+      "options": {
+        "color": [
+          {
+            "value": "MIDNIGHT"
+          }
+        ]
+      },
+      "sku": "IPHONE-13-256-AAPLUS-100-MIDNIGHT",
+      "stock": null,
+      "brand": "apple"
+    },
+    {
+      "product": "IPHONE",
+      "model": "13 PRO",
+      "status": "used",
+      "capacity": "128GB",
+      "quality": "A/B",
+      "battery": "100%",
+      "price": 430,
+      "warranty": "1 MES, SE EXTIENDE POR 3 MESES ADQUIRIENDO EL CARGADOR ORIGINAL",
+      "options": {
+        "color": [
+          {
+            "value": "GRAPHITE"
+          }
+        ]
+      },
+      "sku": "IPHONE-13-PRO-128-AB-100-GRAPHITE",
+      "stock": null,
+      "brand": "apple"
+    },
+    {
+      "product": "IPHONE",
+      "model": "13 PRO",
+      "status": "used",
+      "quality": "A/A+",
+      "battery": "100%",
+      "warranty": "1 MES, SE EXTIENDE POR 3 MESES ADQUIRIENDO EL CARGADOR ORIGINAL",
+      "options": {
+        "capacity": [
+          {
+            "value": "128GB",
+            "price": 450,
+            "sku": "IPHONE-13-PRO-128-AAPLUS-100",
+            "stock": null
+          },
+          {
+            "value": "256GB",
+            "price": 470,
+            "sku": "IPHONE-13-PRO-256-AAPLUS-100",
+            "stock": null
+          }
+        ],
+        "color": [
+          {
+            "value": "GRAPHITE"
+          },
+          {
+            "value": "BLUE"
+          }
+        ]
+      },
+      "brand": "apple"
+    },
+    {
+      "product": "IPHONE",
+      "model": "13 PRO MAX",
+      "status": "used",
+      "capacity": "128GB",
+      "quality": "A/A+",
+      "battery": "100%",
+      "price": 480,
+      "warranty": "1 MES, SE EXTIENDE POR 3 MESES ADQUIRIENDO EL CARGADOR ORIGINAL",
+      "options": {
+        "color": [
+          {
+            "value": "GREEN"
+          },
+          {
+            "value": "GOLD"
+          },
+          {
+            "value": "BLUE"
+          },
+          {
+            "value": "SILVER"
+          }
+        ]
+      },
+      "sku": "IPHONE-13-PRO-MAX-128-AAPLUS-100",
+      "stock": null,
+      "brand": "apple"
+    },
+    {
+      "product": "IPHONE",
+      "model": "14",
+      "status": "used",
+      "capacity": "128GB",
+      "quality": "A/A+",
+      "battery": "100%",
+      "price": 370,
+      "warranty": "1 MES, SE EXTIENDE POR 3 MESES ADQUIRIENDO EL CARGADOR ORIGINAL",
+      "options": {
+        "color": [
+          {
+            "value": "MIDNIGHT"
+          }
+        ]
+      },
+      "sku": "IPHONE-14-128-AAPLUS-100-MIDNIGHT",
+      "stock": null,
+      "brand": "apple"
+    },
+    {
+      "product": "IPHONE",
+      "model": "14 PRO",
+      "status": "used",
+      "capacity": "128GB",
+      "quality": "A/B",
+      "battery": "100%",
+      "price": 440,
+      "warranty": "1 MES, SE EXTIENDE POR 3 MESES ADQUIRIENDO EL CARGADOR ORIGINAL",
+      "options": {
+        "color": [
+          {
+            "value": "BLACK"
+          }
+        ]
+      },
+      "sku": "IPHONE-14-PRO-128-AB-100-BLACK",
+      "stock": null,
+      "brand": "apple"
+    },
+    {
+      "product": "IPHONE",
+      "model": "14 PRO",
+      "status": "used",
+      "capacity": "128GB",
+      "quality": "A/A+",
+      "battery": "100%",
+      "warranty": "1 MES, SE EXTIENDE POR 3 MESES ADQUIRIENDO EL CARGADOR ORIGINAL",
+      "options": {
+        "color": [
+          {
+            "value": "PURPLE",
+            "price": 500,
+            "sku": "IPHONE-14-PRO-128-AAPLUS-100-PURPLE",
+            "stock": null
+          },
+          {
+            "value": "SILVER",
+            "price": 580,
+            "sku": "IPHONE-14-PRO-128-AAPLUS-100-SILVER",
+            "stock": null
+          }
+        ]
+      },
+      "brand": "apple"
+    },
+    {
+      "product": "IPHONE",
+      "model": "14 PRO MAX",
+      "status": "used",
+      "quality": "A/A+",
+      "battery": "100%",
+      "warranty": "1 MES, SE EXTIENDE POR 3 MESES ADQUIRIENDO EL CARGADOR ORIGINAL",
+      "options": {
+        "capacity": [
+          {
+            "value": "128GB",
+            "price": 560,
+            "sku": "IPHONE-14-PRO-MAX-128-AAPLUS-100-PURPLE",
+            "stock": null
+          },
+          {
+            "value": "256GB",
+            "price": 590,
+            "sku": "IPHONE-14-PRO-MAX-256-AAPLUS-100-PURPLE",
+            "stock": null
+          }
+        ],
+        "color": [
+          {
+            "value": "PURPLE"
+          }
+        ]
+      },
+      "brand": "apple"
+    },
+    {
+      "product": "IPHONE",
+      "model": "15",
+      "status": "used",
+      "capacity": "128GB",
+      "quality": "A/B",
+      "battery": "100%",
+      "price": 430,
+      "warranty": "1 MES, SE EXTIENDE POR 3 MESES ADQUIRIENDO EL CARGADOR ORIGINAL",
+      "options": {
+        "color": [
+          {
+            "value": "BLACK"
+          }
+        ]
+      },
+      "sku": "IPHONE-15-128-AB-100-BLACK",
+      "stock": null,
+      "brand": "apple"
+    },
+    {
+      "product": "IPHONE",
+      "model": "15",
+      "status": "used",
+      "capacity": "128GB",
+      "quality": "A/A+",
+      "battery": "100%",
+      "price": 490,
+      "warranty": "1 MES, SE EXTIENDE POR 3 MESES ADQUIRIENDO EL CARGADOR ORIGINAL",
+      "options": {
+        "color": [
+          {
+            "value": "BLUE"
+          },
+          {
+            "value": "YELLOW"
+          }
+        ]
+      },
+      "sku": "IPHONE-15-128-AAPLUS-100",
+      "stock": null,
+      "brand": "apple"
+    },
+    {
+      "product": "IPHONE",
+      "model": "15 PRO",
+      "status": "used",
+      "capacity": "128GB",
+      "quality": "A/A+",
+      "battery": "100%",
+      "price": 590,
+      "warranty": "1 MES, SE EXTIENDE POR 3 MESES ADQUIRIENDO EL CARGADOR ORIGINAL",
+      "options": {
+        "color": [
+          {
+            "value": "BLACK"
+          },
+          {
+            "value": "NATURAL"
+          }
+        ]
+      },
+      "sku": "IPHONE-15-PRO-128-AAPLUS-100",
+      "stock": null,
+      "brand": "apple"
+    },
+    {
+      "product": "IPHONE",
+      "model": "15 PRO MAX",
+      "status": "used",
+      "capacity": "256GB",
+      "quality": "A/A+",
+      "battery": "100%",
+      "price": 700,
+      "warranty": "1 MES, SE EXTIENDE POR 3 MESES ADQUIRIENDO EL CARGADOR ORIGINAL",
+      "options": {
+        "color": [
+          {
+            "value": "BLACK"
+          }
+        ]
+      },
+      "sku": "IPHONE-15-PRO-MAX-256-AAPLUS-100-BLACK",
+      "stock": null,
+      "brand": "apple"
+    },
+    {
+      "product": "IPHONE",
+      "model": "16",
+      "status": "used",
+      "capacity": "128GB",
+      "quality": "A/A+",
+      "battery": "93% o mas",
+      "price": 660,
+      "warranty": "1 MES, SE EXTIENDE POR 3 MESES ADQUIRIENDO EL CARGADOR ORIGINAL",
+      "options": {
+        "color": [
+          {
+            "value": "WHITE"
+          },
+          {
+            "value": "BLACK"
+          }
+        ]
+      },
+      "sku": "IPHONE-16-128-AAPLUS-93PLUS",
+      "stock": null,
+      "brand": "apple"
+    },
+    {
+      "product": "IPHONE",
+      "model": "16 PRO",
+      "status": "used",
+      "capacity": "128GB",
+      "quality": "A/A+",
+      "battery": "90% o mas",
+      "price": 710,
+      "warranty": "1 MES, SE EXTIENDE POR 3 MESES ADQUIRIENDO EL CARGADOR ORIGINAL",
+      "options": {
+        "color": [
+          {
+            "value": "BLACK"
+          },
+          {
+            "value": "DESERT"
+          }
+        ]
+      },
+      "sku": "IPHONE-16-PRO-128-AAPLUS-90PLUS",
+      "stock": null,
+      "brand": "apple"
+    },
+    {
+      "product": "IPHONE",
+      "model": "16 PRO MAX",
+      "status": "used",
+      "capacity": "256GB",
+      "quality": "A/A+",
+      "battery": "93% o mas",
+      "price": 870,
+      "warranty": "1 MES, SE EXTIENDE POR 3 MESES ADQUIRIENDO EL CARGADOR ORIGINAL",
+      "options": {
+        "color": [
+          {
+            "value": "NATURAL"
+          }
+        ]
+      },
+      "sku": "IPHONE-16-PRO-MAX-256-AAPLUS-93PLUS-NATURAL",
+      "stock": null,
+      "brand": "apple"
+    },
+    {
+      "product": "IPHONE",
+      "model": "17 PRO MAX",
+      "status": "used",
+      "capacity": "512GB",
+      "quality": "A+++",
+      "battery": "100%",
+      "price": 1500,
+      "warranty": "1 MES, SE EXTIENDE POR 3 MESES ADQUIRIENDO EL CARGADOR ORIGINAL",
+      "options": {
+        "color": [
+          {
+            "value": "BLUE"
+          }
+        ]
+      },
+      "sku": "IPHONE-17-PRO-MAX-512-AAA-100-BLUE",
+      "stock": null,
+      "brand": "apple"
+    }
+  ]
+  
