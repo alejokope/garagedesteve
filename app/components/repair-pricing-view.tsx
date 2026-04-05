@@ -3,8 +3,10 @@
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import {
-  formatRepairPrice,
-  type RepairCurrency,
+  formatRepairTablePriceCell,
+  repairCategoryVisibleForDevice,
+  repairRowMatchesDeviceFilter,
+  repairRowModelDisplay,
   type RepairPricingPayload,
 } from "@/lib/repair-pricing-schema";
 import {
@@ -24,14 +26,6 @@ const headerToneClass: Record<
   red: "bg-black",
 };
 
-function rowCurrency(
-  defaultC: RepairCurrency,
-  row: { currency?: RepairCurrency | null },
-): RepairCurrency {
-  if (row.currency === "ARS" || row.currency === "USD") return row.currency;
-  return defaultC;
-}
-
 export function RepairPricingView({
   config,
   variant = "page",
@@ -40,17 +34,19 @@ export function RepairPricingView({
   variant?: "page" | "section";
 }) {
   const isSection = variant === "section";
-  const [filterId, setFilterId] = useState<string | "all">(
-    config.deviceFilters[0]?.id ?? "all",
-  );
+  const [deviceFilterId, setDeviceFilterId] = useState<string | "all">("all");
+
+  const sortedDevices = useMemo(() => {
+    return [...config.devices].sort((a, b) =>
+      a.label.localeCompare(b.label, "es", { sensitivity: "base" }),
+    );
+  }, [config.devices]);
 
   const visibleCategories = useMemo(() => {
-    return config.categories.filter((cat) => {
-      if (cat.deviceFilterIds.length === 0) return true;
-      if (filterId === "all") return true;
-      return cat.deviceFilterIds.includes(filterId);
-    });
-  }, [config.categories, filterId]);
+    return config.categories.filter((cat) =>
+      repairCategoryVisibleForDevice(cat, deviceFilterId),
+    );
+  }, [config.categories, deviceFilterId]);
 
   const waCta = useMemo(() => {
     const text = buildRepairPricingWhatsAppMessage();
@@ -111,39 +107,50 @@ export function RepairPricingView({
           </div>
         </div>
 
-        {config.deviceFilters.length > 0 ? (
-          <div className="mt-8 flex flex-wrap gap-2">
-            <button
-              type="button"
-              onClick={() => setFilterId("all")}
-              className={`rounded-full px-4 py-2 text-sm font-semibold transition ${
-                filterId === "all"
-                  ? "bg-neutral-950 text-white shadow-sm"
-                  : "bg-white text-neutral-700 ring-1 ring-neutral-200 hover:bg-neutral-50"
-              }`}
+        {sortedDevices.length > 0 ? (
+          <div className="mt-8 max-w-xl">
+            <label
+              htmlFor="repair-device-filter"
+              className="block text-xs font-semibold uppercase tracking-wide text-neutral-500"
             >
-              Todos
-            </button>
-            {config.deviceFilters.map((f) => (
-              <button
-                key={f.id}
-                type="button"
-                onClick={() => setFilterId(f.id)}
-                className={`rounded-full px-4 py-2 text-sm font-semibold transition ${
-                  filterId === f.id
-                    ? "bg-neutral-950 text-white shadow-sm"
-                    : "bg-white text-neutral-700 ring-1 ring-neutral-200 hover:bg-neutral-50"
-                }`}
-              >
-                {f.label}
-              </button>
-            ))}
+              Buscar por dispositivo
+            </label>
+            <select
+              id="repair-device-filter"
+              value={deviceFilterId}
+              onChange={(e) => {
+                const v = e.target.value;
+                setDeviceFilterId(v === "all" ? "all" : v);
+              }}
+              className="mt-2 w-full rounded-xl border border-neutral-200 bg-white px-4 py-3 text-sm font-medium text-neutral-900 shadow-sm ring-0 focus:border-[var(--brand-from)] focus:outline-none focus:ring-2 focus:ring-[var(--brand-from)]/25"
+            >
+              <option value="all">Todos los modelos</option>
+              {sortedDevices.map((d) => (
+                <option key={d.id} value={d.id}>
+                  {d.label}
+                </option>
+              ))}
+            </select>
+            <p className="mt-2 text-xs text-neutral-500">
+              Mostramos solo las filas del modelo elegido en cada tabla.
+            </p>
           </div>
         ) : null}
 
         <div className="mt-10 flex flex-col gap-10 lg:flex-row lg:items-start lg:gap-10">
           <div className="min-w-0 flex-1 space-y-8">
-            {visibleCategories.map((cat) => (
+            {visibleCategories.map((cat) => {
+              const filteredRows =
+                cat.layout === "table"
+                  ? cat.tableRows.filter((row) =>
+                      repairRowMatchesDeviceFilter(row, deviceFilterId, config.devices),
+                    )
+                  : cat.tableRows;
+              const showBrand =
+                cat.layout === "table" &&
+                filteredRows.some((r) => r.partBrand?.trim());
+
+              return (
               <section
                 key={cat.id}
                 className="overflow-hidden rounded-2xl border border-[var(--border)] bg-white shadow-sm"
@@ -159,28 +166,45 @@ export function RepairPricingView({
 
                 {cat.layout === "table" ? (
                   <div className="overflow-x-auto">
+                    {filteredRows.length === 0 ? (
+                      <p className="px-5 py-8 text-center text-sm text-neutral-500">
+                        No hay precios cargados para este modelo en esta categoría.
+                      </p>
+                    ) : (
                     <table className="min-w-full text-left text-sm">
                       <thead>
                         <tr className="border-b border-neutral-100 bg-neutral-50/80 text-xs uppercase tracking-wide text-neutral-500">
                           <th className="px-4 py-3 font-semibold">Modelo</th>
+                          {showBrand ? (
+                            <th className="px-4 py-3 font-semibold">Repuesto</th>
+                          ) : null}
                           <th className="px-4 py-3 font-semibold">Precio</th>
                           <th className="px-4 py-3 font-semibold">Tiempo</th>
                           <th className="px-4 py-3 font-semibold">Garantía</th>
                         </tr>
                       </thead>
                       <tbody>
-                        {cat.tableRows.map((row, i) => {
-                          const cur = rowCurrency(config.defaultCurrency, row);
+                        {filteredRows.map((row, i) => {
+                          const priceText = formatRepairTablePriceCell(row, config.defaultCurrency);
+                          const priceIsNumeric = !row.priceLabel?.trim();
+                          const modelDisplay = repairRowModelDisplay(row, config.devices);
                           return (
                             <tr
-                              key={`${cat.id}-${i}`}
+                              key={`${cat.id}-${row.deviceId || row.model}-${i}`}
                               className="border-b border-neutral-100 last:border-0"
                             >
                               <td className="px-4 py-3 font-medium text-neutral-900">
-                                {row.model}
+                                {modelDisplay}
                               </td>
-                              <td className="px-4 py-3 font-display font-bold tabular-nums text-[var(--brand-from)]">
-                                {formatRepairPrice(row.price, cur)}
+                              {showBrand ? (
+                                <td className="px-4 py-3 text-neutral-600">
+                                  {row.partBrand?.trim() || "—"}
+                                </td>
+                              ) : null}
+                              <td
+                                className={`px-4 py-3 font-display font-bold text-[var(--brand-from)] ${priceIsNumeric ? "tabular-nums" : ""}`}
+                              >
+                                {priceText}
                               </td>
                               <td className="px-4 py-3 text-neutral-600">{row.time}</td>
                               <td className="px-4 py-3">
@@ -193,6 +217,7 @@ export function RepairPricingView({
                         })}
                       </tbody>
                     </table>
+                    )}
                   </div>
                 ) : (
                   <div className="grid gap-4 p-5 sm:grid-cols-2">
@@ -225,7 +250,8 @@ export function RepairPricingView({
                   </ul>
                 ) : null}
               </section>
-            ))}
+            );
+            })}
 
             {visibleCategories.length === 0 ? (
               <p className="rounded-2xl border border-dashed border-neutral-200 bg-white px-6 py-12 text-center text-neutral-500">

@@ -4,11 +4,27 @@ import { z } from "zod";
 export const repairCurrencySchema = z.enum(["ARS", "USD"]);
 export type RepairCurrency = z.infer<typeof repairCurrencySchema>;
 
+/** Modelo / dispositivo tipado (lista maestra en el payload). */
+export const repairDeviceEntrySchema = z.object({
+  id: z.string(),
+  label: z.string(),
+});
+export type RepairDeviceEntry = z.infer<typeof repairDeviceEntrySchema>;
+
 export const repairPricingTableRowSchema = z.object({
+  /** Referencia a `devices[].id`. Si falta, se usa `model` como respaldo (contenido legado). */
+  deviceId: z.string().default(""),
   model: z.string(),
   price: z.number().nonnegative(),
   /** Si falta, usa `defaultCurrency` de la página. */
   currency: repairCurrencySchema.nullable().optional(),
+  /**
+   * Texto libre que reemplaza el precio numérico (ej. "Consultar").
+   * Si está vacío, se muestra `formatRepairPrice(price, currency)`.
+   */
+  priceLabel: z.string().default(""),
+  /** Marca del repuesto (ej. Ampsentrix). Opcional; si hay filas con valor, la tabla muestra columna. */
+  partBrand: z.string().default(""),
   time: z.string(),
   warrantyLabel: z.string(),
 });
@@ -41,7 +57,12 @@ export const repairPricingPayloadSchema = z.object({
   subtitle: z.string(),
   /** Moneda por defecto para filas sin `currency` propia. */
   defaultCurrency: repairCurrencySchema.default("ARS"),
+  /**
+   * Lista maestra de dispositivos (ej. iPhone 11). Los filtros por categoría y las filas referencian estos ids.
+   * @deprecated Usar solo `devices`. Se mantiene vacío al guardar desde el backoffice nuevo.
+   */
   deviceFilters: z.array(z.object({ id: z.string(), label: z.string() })).default([]),
+  devices: z.array(repairDeviceEntrySchema).default([]),
   categories: z.array(repairPricingCategorySchema).default([]),
   sidebarWarranty: z.object({
     title: z.string(),
@@ -93,8 +114,155 @@ function emptyCategory(): RepairPricingPayload["categories"][number] {
   };
 }
 
+function normalizeDeviceLabelKey(s: string): string {
+  return s
+    .normalize("NFD")
+    .replace(/\p{M}/gu, "")
+    .toLowerCase()
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+/** Etiqueta del dispositivo por id, o null si no existe. */
+export function repairDeviceLabel(
+  devices: RepairDeviceEntry[],
+  deviceId: string,
+): string | null {
+  const id = deviceId.trim();
+  if (!id) return null;
+  const d = devices.find((x) => x.id === id);
+  return d?.label ?? null;
+}
+
+/** Texto a mostrar en columna Modelo (prioriza lista maestra). */
+export function repairRowModelDisplay(
+  row: { deviceId?: string; model: string },
+  devices: RepairDeviceEntry[],
+): string {
+  const fromId = row.deviceId?.trim()
+    ? repairDeviceLabel(devices, row.deviceId.trim())
+    : null;
+  if (fromId) return fromId;
+  return row.model?.trim() || "—";
+}
+
+/** Fila visible para el filtro global por dispositivo. */
+export function repairRowMatchesDeviceFilter(
+  row: { deviceId?: string; model: string },
+  selectedId: string | "all",
+  devices: RepairDeviceEntry[],
+): boolean {
+  if (selectedId === "all") return true;
+  if (row.deviceId?.trim() === selectedId) return true;
+  const want = repairDeviceLabel(devices, selectedId);
+  if (want && normalizeDeviceLabelKey(row.model) === normalizeDeviceLabelKey(want)) {
+    return true;
+  }
+  return false;
+}
+
+/** Categoría visible según dispositivo seleccionado y `deviceFilterIds`. */
+export function repairCategoryVisibleForDevice(
+  cat: { deviceFilterIds: string[]; layout: "table" | "highlights" },
+  selectedId: string | "all",
+): boolean {
+  if (selectedId === "all") return true;
+  if (cat.deviceFilterIds.length === 0) return true;
+  return cat.deviceFilterIds.includes(selectedId);
+}
+
+/** Id estable a partir de etiqueta (para alta rápida en backoffice). */
+export function repairSlugDeviceId(label: string): string {
+  const base = label
+    .normalize("NFD")
+    .replace(/\p{M}/gu, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "");
+  return (base || "device").slice(0, 48);
+}
+
+/** Genera id único ante colisiones. */
+export function repairUniqueDeviceId(label: string, existingIds: Set<string>): string {
+  let base = repairSlugDeviceId(label);
+  let id = base;
+  let n = 0;
+  while (existingIds.has(id)) {
+    n += 1;
+    id = `${base}-${n}`;
+  }
+  return id;
+}
+
+/** Texto de precio para una fila: etiqueta libre o importe formateado. */
+export function formatRepairTablePriceCell(
+  row: {
+    price: number;
+    priceLabel?: string;
+    currency?: RepairCurrency | null;
+  },
+  defaultCurrency: RepairCurrency,
+): string {
+  const label = row.priceLabel?.trim();
+  if (label) return label;
+  const cur =
+    row.currency === "ARS" || row.currency === "USD" ? row.currency : defaultCurrency;
+  return formatRepairPrice(row.price, cur);
+}
+
 export function parseRepairPricingPayload(raw: unknown): RepairPricingPayload {
   return mergeRepairPricingDefaults(raw);
+}
+
+function resolveDevicesFromPartial(
+  o: Record<string, unknown>,
+  base: RepairPricingPayload,
+): RepairDeviceEntry[] {
+  if (Array.isArray(o.devices) && o.devices.length > 0) {
+    try {
+      return z.array(repairDeviceEntrySchema).parse(o.devices);
+    } catch {
+      return base.devices;
+    }
+  }
+  if (Array.isArray(o.deviceFilters) && o.deviceFilters.length > 0) {
+    try {
+      return z.array(repairDeviceEntrySchema).parse(o.deviceFilters);
+    } catch {
+      return base.devices;
+    }
+  }
+  return base.devices;
+}
+
+function matchModelToDeviceId(model: string, devices: RepairDeviceEntry[]): string {
+  const k = normalizeDeviceLabelKey(model);
+  if (!k) return "";
+  for (const d of devices) {
+    if (normalizeDeviceLabelKey(d.label) === k) return d.id;
+  }
+  return "";
+}
+
+function sanitizeCategoriesDevices(
+  categories: RepairPricingPayload["categories"],
+  devices: RepairDeviceEntry[],
+): RepairPricingPayload["categories"] {
+  const deviceIdSet = new Set(devices.map((d) => d.id));
+  return categories.map((cat) => ({
+    ...cat,
+    deviceFilterIds: cat.deviceFilterIds.filter((id) => deviceIdSet.has(id)),
+    tableRows: cat.tableRows.map((row) => {
+      let deviceId = row.deviceId?.trim() ?? "";
+      if (!deviceId && row.model.trim()) {
+        const m = matchModelToDeviceId(row.model, devices);
+        if (m) deviceId = m;
+      }
+      const label = deviceId ? repairDeviceLabel(devices, deviceId) : null;
+      const model = label ?? row.model;
+      return { ...row, deviceId, model };
+    }),
+  }));
 }
 
 export function mergeRepairPricingDefaults(partial: unknown): RepairPricingPayload {
@@ -102,13 +270,19 @@ export function mergeRepairPricingDefaults(partial: unknown): RepairPricingPaylo
   if (!partial || typeof partial !== "object") return base;
   const o = partial as Record<string, unknown>;
 
+  const devices = resolveDevicesFromPartial(o, base);
+
   const categoriesRaw = Array.isArray(o.categories) ? o.categories : base.categories;
-  const categories = categoriesRaw.map((c) =>
+  let categories = categoriesRaw.map((c) =>
     repairPricingCategorySchema.parse({
       ...emptyCategory(),
       ...(typeof c === "object" && c ? c : {}),
     }),
   );
+  if (categories.length === 0) categories = base.categories;
+  categories = sanitizeCategoriesDevices(categories, devices);
+
+  const legacyFilters = Array.isArray(o.deviceFilters) ? o.deviceFilters : base.deviceFilters;
 
   try {
     return repairPricingPayloadSchema.parse({
@@ -118,8 +292,9 @@ export function mergeRepairPricingDefaults(partial: unknown): RepairPricingPaylo
         o.defaultCurrency === "ARS" || o.defaultCurrency === "USD"
           ? o.defaultCurrency
           : base.defaultCurrency,
-      deviceFilters: Array.isArray(o.deviceFilters) ? o.deviceFilters : base.deviceFilters,
-      categories: categories.length > 0 ? categories : base.categories,
+      devices,
+      deviceFilters: devices.length > 0 ? [] : legacyFilters,
+      categories,
       sidebarWarranty:
         o.sidebarWarranty && typeof o.sidebarWarranty === "object"
           ? { ...base.sidebarWarranty, ...(o.sidebarWarranty as object) }
@@ -147,22 +322,24 @@ export function defaultRepairPricingPayload(): RepairPricingPayload {
     subtitle:
       "Valores orientativos. La cotización final se confirma en tienda o por WhatsApp según el diagnóstico.",
     defaultCurrency: "ARS",
-    deviceFilters: [
-      { id: "iphone", label: "iPhone" },
-      { id: "watch", label: "Apple Watch" },
-      { id: "ipad", label: "iPad" },
-      { id: "mac", label: "MacBook" },
+    deviceFilters: [],
+    devices: [
+      { id: "iphone-13-pro-max", label: "iPhone 13 Pro Max" },
+      { id: "iphone-14", label: "iPhone 14" },
+      { id: "iphone-12-plus", label: "iPhone 12 en adelante" },
+      { id: "iphone-ipad-carga", label: "iPhone / iPad (según modelo)" },
     ],
     categories: [
       {
         id: "pantalla",
-        deviceFilterIds: ["iphone"],
+        deviceFilterIds: [],
         title: "Cambio de pantalla",
         headerTone: "blue",
         iconEmoji: "📱",
         layout: "table",
         tableRows: [
           {
+            deviceId: "iphone-13-pro-max",
             model: "iPhone 13 Pro Max",
             price: 220,
             currency: "USD",
@@ -170,6 +347,7 @@ export function defaultRepairPricingPayload(): RepairPricingPayload {
             warrantyLabel: "6 meses",
           },
           {
+            deviceId: "iphone-14",
             model: "iPhone 14",
             price: 180,
             currency: "USD",
@@ -186,13 +364,14 @@ export function defaultRepairPricingPayload(): RepairPricingPayload {
       },
       {
         id: "bateria",
-        deviceFilterIds: ["iphone"],
+        deviceFilterIds: [],
         title: "Cambio de batería",
         headerTone: "green",
         iconEmoji: "🔋",
         layout: "table",
         tableRows: [
           {
+            deviceId: "iphone-12-plus",
             model: "iPhone 12 en adelante",
             price: 85,
             currency: "USD",
@@ -205,13 +384,14 @@ export function defaultRepairPricingPayload(): RepairPricingPayload {
       },
       {
         id: "carga",
-        deviceFilterIds: ["iphone", "ipad"],
+        deviceFilterIds: [],
         title: "Pin de carga",
         headerTone: "purple",
         iconEmoji: "⚡",
         layout: "table",
         tableRows: [
           {
+            deviceId: "iphone-ipad-carga",
             model: "iPhone / iPad (según modelo)",
             price: 65,
             currency: null,

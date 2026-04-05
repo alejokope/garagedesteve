@@ -10,6 +10,8 @@ import {
 } from "@/app/components/backoffice/bo-editor-styles";
 import {
   defaultRepairPricingPayload,
+  repairRowMatchesDeviceFilter,
+  repairUniqueDeviceId,
   type RepairCurrency,
   type RepairPricingPayload,
 } from "@/lib/repair-pricing-schema";
@@ -22,18 +24,58 @@ export function RepairPricingEditor({ initial }: { initial: RepairPricingPayload
   const [data, setData] = useState<RepairPricingPayload>(initial);
   const [err, setErr] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
+  const [newDeviceLabel, setNewDeviceLabel] = useState("");
+  const [previewDeviceId, setPreviewDeviceId] = useState<string | "all">("all");
 
   const jsonPreview = useMemo(() => JSON.stringify(data, null, 2), [data]);
+
+  const sortedEditorDevices = useMemo(() => {
+    return [...data.devices].sort((a, b) =>
+      a.label.localeCompare(b.label, "es", { sensitivity: "base" }),
+    );
+  }, [data.devices]);
 
   function save() {
     setErr(null);
     startTransition(async () => {
       try {
-        await saveRepairPricingAction(data);
+        const payload: RepairPricingPayload = {
+          ...data,
+          deviceFilters: data.devices.length > 0 ? [] : data.deviceFilters,
+        };
+        await saveRepairPricingAction(payload);
       } catch (e) {
         setErr(e instanceof Error ? e.message : "Error al guardar");
       }
     });
+  }
+
+  function addDevice() {
+    const label = newDeviceLabel.trim();
+    if (!label) return;
+    const ids = new Set(data.devices.map((d) => d.id));
+    const id = repairUniqueDeviceId(label, ids);
+    setData((d) => ({ ...d, devices: [...d.devices, { id, label }] }));
+    setNewDeviceLabel("");
+  }
+
+  function removeDevice(deviceId: string) {
+    const dev = data.devices.find((x) => x.id === deviceId);
+    const fallbackLabel = dev?.label ?? "";
+    setData((d) => ({
+      ...d,
+      devices: d.devices.filter((x) => x.id !== deviceId),
+      categories: d.categories.map((cat) => ({
+        ...cat,
+        deviceFilterIds: cat.deviceFilterIds.filter((id) => id !== deviceId),
+        tableRows: cat.tableRows.map((row) =>
+          row.deviceId === deviceId
+            ? { ...row, deviceId: "", model: row.model.trim() || fallbackLabel }
+            : row,
+        ),
+      })),
+    }));
+    if (previewDeviceId === deviceId) setPreviewDeviceId("all");
   }
 
   return (
@@ -97,65 +139,108 @@ export function RepairPricingEditor({ initial }: { initial: RepairPricingPayload
       </section>
 
       <section className={boEditorSection}>
-        <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
-          <h2 className={boEditorH2}>Filtros de dispositivo</h2>
+        <h2 className={boEditorH2}>Dispositivos (modelos)</h2>
+        <p className="mt-2 text-sm text-slate-400">
+          Lista maestra: cada fila de precios y cada categoría referencian estos modelos. El id se genera
+          al crear; podés editar solo la etiqueta visible.
+        </p>
+        <div className="mt-4 flex flex-wrap gap-2">
+          <input
+            value={newDeviceLabel}
+            onChange={(e) => setNewDeviceLabel(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                addDevice();
+              }
+            }}
+            placeholder="Ej. iPhone 15 Pro"
+            className="min-w-[12rem] flex-1 rounded-xl border border-white/[0.1] bg-black/30 px-3 py-2 text-sm text-white"
+          />
           <button
             type="button"
-            className="rounded-lg bg-white/[0.08] px-3 py-1.5 text-xs font-medium text-white hover:bg-white/[0.12]"
-            onClick={() =>
-              setData((d) => ({
-                ...d,
-                deviceFilters: [...d.deviceFilters, { id: uid(), label: "Nuevo" }],
-              }))
-            }
+            onClick={addDevice}
+            className="rounded-xl bg-white/[0.1] px-4 py-2 text-sm font-medium text-white hover:bg-white/[0.14]"
           >
-            + Filtro
+            Agregar dispositivo
           </button>
         </div>
-        <div className="mt-4 space-y-3">
-          {data.deviceFilters.map((f, i) => (
-            <div key={f.id} className="flex flex-wrap gap-2 rounded-xl bg-black/20 p-3">
+        <div className="mt-4 space-y-2">
+          {data.devices.length === 0 ? (
+            <p className="rounded-lg border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-sm text-amber-100/90">
+              Agregá al menos un dispositivo para usar el selector en las filas.
+            </p>
+          ) : null}
+          {data.devices.map((dev) => (
+            <div
+              key={dev.id}
+              className="flex flex-wrap items-center gap-2 rounded-xl border border-white/[0.06] bg-black/25 px-3 py-2"
+            >
+              <span className="font-mono text-[11px] text-slate-500">{dev.id}</span>
               <input
-                value={f.id}
-                onChange={(e) => {
-                  const id = e.target.value;
-                  setData((d) => {
-                    const next = [...d.deviceFilters];
-                    next[i] = { ...next[i]!, id };
-                    return { ...d, deviceFilters: next };
-                  });
-                }}
-                placeholder="id (ej. iphone)"
-                className="min-w-[8rem] flex-1 rounded-lg border border-white/[0.08] bg-black/40 px-2 py-1.5 font-mono text-xs text-white"
-              />
-              <input
-                value={f.label}
+                value={dev.label}
                 onChange={(e) => {
                   const label = e.target.value;
-                  setData((d) => {
-                    const next = [...d.deviceFilters];
-                    next[i] = { ...next[i]!, label };
-                    return { ...d, deviceFilters: next };
-                  });
+                  setData((d) => ({
+                    ...d,
+                    devices: d.devices.map((x) => (x.id === dev.id ? { ...x, label } : x)),
+                    categories: d.categories.map((cat) => ({
+                      ...cat,
+                      tableRows: cat.tableRows.map((row) =>
+                        row.deviceId === dev.id ? { ...row, model: label } : row,
+                      ),
+                    })),
+                  }));
                 }}
-                placeholder="Etiqueta"
-                className="min-w-[8rem] flex-1 rounded-lg border border-white/[0.08] bg-black/40 px-2 py-1.5 text-sm text-white"
+                className="min-w-[10rem] flex-1 rounded-lg border border-white/[0.08] bg-black/40 px-2 py-1.5 text-sm text-white"
               />
               <button
                 type="button"
                 className="text-xs text-red-300 hover:text-red-200"
-                onClick={() =>
-                  setData((d) => ({
-                    ...d,
-                    deviceFilters: d.deviceFilters.filter((_, j) => j !== i),
-                  }))
-                }
+                onClick={() => removeDevice(dev.id)}
               >
-                Quitar
+                Eliminar
               </button>
             </div>
           ))}
         </div>
+      </section>
+
+      <section className={boEditorSection}>
+        <h2 className={boEditorH2}>Vista al editar tablas</h2>
+        <p className="mt-2 text-sm text-slate-400">
+          Igual que en la web pública: filtrá por modelo para ver solo las filas relevantes mientras
+          editás.
+        </p>
+        <label className="mt-4 block max-w-md">
+          <span className="text-xs font-medium uppercase tracking-wide text-slate-500">
+            Dispositivo (vista)
+          </span>
+          <select
+            value={previewDeviceId}
+            onChange={(e) => {
+              const v = e.target.value;
+              setPreviewDeviceId(v === "all" ? "all" : v);
+            }}
+            className="mt-1 w-full rounded-xl border border-white/[0.1] bg-black/30 px-3 py-2 text-sm text-white"
+          >
+            <option value="all">Todos los modelos</option>
+            {sortedEditorDevices.map((d) => (
+              <option key={d.id} value={d.id}>
+                {d.label}
+              </option>
+            ))}
+          </select>
+        </label>
+        {previewDeviceId !== "all" ? (
+          <p className="mt-2 text-xs text-violet-300/90">
+            Mostrando solo filas de{" "}
+            <span className="font-medium text-white">
+              {data.devices.find((x) => x.id === previewDeviceId)?.label ?? previewDeviceId}
+            </span>
+            .
+          </p>
+        ) : null}
       </section>
 
       <section className={boEditorSection}>
@@ -273,26 +358,46 @@ export function RepairPricingEditor({ initial }: { initial: RepairPricingPayload
                     className="mt-1 w-full rounded-lg border border-white/[0.08] bg-black/40 px-2 py-1.5 text-sm text-white"
                   />
                 </label>
-                <label className="block sm:col-span-2">
+                <div className="block sm:col-span-2">
                   <span className="text-xs text-slate-500">
-                    Filtros aplicables (ids, coma; vacío = todos)
+                    Dispositivos aplicables a esta categoría
                   </span>
-                  <input
-                    value={cat.deviceFilterIds.join(", ")}
-                    onChange={(e) => {
-                      const ids = e.target.value
-                        .split(",")
-                        .map((s) => s.trim())
-                        .filter(Boolean);
-                      setData((d) => {
-                        const c = [...d.categories];
-                        c[ci] = { ...c[ci]!, deviceFilterIds: ids };
-                        return { ...d, categories: c };
-                      });
-                    }}
-                    className="mt-1 w-full rounded-lg border border-white/[0.08] bg-black/40 px-2 py-1.5 font-mono text-xs text-white"
-                  />
-                </label>
+                  <p className="mt-0.5 text-[11px] text-slate-500">
+                    Sin marcar ninguno = la categoría se muestra para todos los modelos al filtrar en la
+                    web.
+                  </p>
+                  <div className="mt-2 flex max-h-36 flex-wrap gap-x-4 gap-y-2 overflow-y-auto rounded-lg border border-white/[0.08] bg-black/30 px-3 py-2">
+                    {data.devices.length === 0 ? (
+                      <span className="text-xs text-slate-500">Agregá dispositivos arriba.</span>
+                    ) : (
+                      sortedEditorDevices.map((dev) => (
+                        <label
+                          key={dev.id}
+                          className="flex cursor-pointer items-center gap-2 text-xs text-slate-200"
+                        >
+                          <input
+                            type="checkbox"
+                            checked={cat.deviceFilterIds.includes(dev.id)}
+                            onChange={(e) => {
+                              const on = e.target.checked;
+                              setData((d) => {
+                                const c = [...d.categories];
+                                const cur = c[ci]!;
+                                const nextIds = on
+                                  ? [...new Set([...cur.deviceFilterIds, dev.id])]
+                                  : cur.deviceFilterIds.filter((id) => id !== dev.id);
+                                c[ci] = { ...cur, deviceFilterIds: nextIds };
+                                return { ...d, categories: c };
+                              });
+                            }}
+                            className="rounded border-white/20 bg-black/40"
+                          />
+                          {dev.label}
+                        </label>
+                      ))
+                    )}
+                  </div>
+                </div>
                 <label className="block sm:col-span-2">
                   <span className="text-xs text-slate-500">Layout</span>
                   <select
@@ -326,9 +431,12 @@ export function RepairPricingEditor({ initial }: { initial: RepairPricingPayload
                           const rows = [
                             ...c[ci]!.tableRows,
                             {
+                              deviceId: "",
                               model: "",
                               price: 0,
                               currency: null as RepairCurrency | null,
+                              priceLabel: "",
+                              partBrand: "",
                               time: "",
                               warrantyLabel: "6 meses",
                             },
@@ -342,20 +450,57 @@ export function RepairPricingEditor({ initial }: { initial: RepairPricingPayload
                     </button>
                   </div>
                   <div className="mt-3 w-full min-w-0 max-w-full touch-pan-x overflow-x-auto overscroll-x-contain rounded-xl border border-white/[0.08] bg-black/25 p-2 [-webkit-overflow-scrolling:touch]">
-                    {cat.tableRows.map((row, ri) => (
+                    {cat.tableRows.length > 0 &&
+                    previewDeviceId !== "all" &&
+                    !cat.tableRows.some((row) =>
+                      repairRowMatchesDeviceFilter(row, previewDeviceId, data.devices),
+                    ) ? (
+                      <p className="px-2 py-6 text-center text-xs text-slate-500">
+                        Ninguna fila coincide con el filtro de vista. Cambiá a «Todos los modelos» o
+                        elegí otro dispositivo.
+                      </p>
+                    ) : null}
+                    {cat.tableRows.map((row, ri) =>
+                      !repairRowMatchesDeviceFilter(row, previewDeviceId, data.devices) ? null : (
                       <div
                         key={ri}
-                        className="mb-2 grid min-w-[640px] grid-cols-[2fr_1fr_1fr_1fr_1fr_auto] gap-2 rounded-lg bg-black/35 p-2 last:mb-0"
+                        className="mb-2 grid min-w-[920px] grid-cols-[1.4fr_1fr_0.75fr_1fr_0.65fr_0.85fr_0.85fr_auto] gap-2 rounded-lg bg-black/35 p-2 last:mb-0"
                       >
+                        <select
+                          value={row.deviceId || ""}
+                          onChange={(e) => {
+                            const id = e.target.value;
+                            const dev = data.devices.find((x) => x.id === id);
+                            setData((d) => {
+                              const c = [...d.categories];
+                              const rows = [...c[ci]!.tableRows];
+                              rows[ri] = {
+                                ...rows[ri]!,
+                                deviceId: id,
+                                model: dev?.label ?? rows[ri]!.model,
+                              };
+                              c[ci] = { ...c[ci]!, tableRows: rows };
+                              return { ...d, categories: c };
+                            });
+                          }}
+                          className="rounded border border-white/[0.08] bg-black/40 px-2 py-1 text-xs text-white"
+                        >
+                          <option value="">— Elegir modelo —</option>
+                          {sortedEditorDevices.map((d) => (
+                            <option key={d.id} value={d.id}>
+                              {d.label}
+                            </option>
+                          ))}
+                        </select>
                         <input
-                          placeholder="Modelo"
-                          value={row.model}
+                          placeholder="Marca repuesto"
+                          value={row.partBrand ?? ""}
                           onChange={(e) => {
                             const v = e.target.value;
                             setData((d) => {
                               const c = [...d.categories];
                               const rows = [...c[ci]!.tableRows];
-                              rows[ri] = { ...rows[ri]!, model: v };
+                              rows[ri] = { ...rows[ri]!, partBrand: v };
                               c[ci] = { ...c[ci]!, tableRows: rows };
                               return { ...d, categories: c };
                             });
@@ -374,6 +519,21 @@ export function RepairPricingEditor({ initial }: { initial: RepairPricingPayload
                               const c = [...d.categories];
                               const rows = [...c[ci]!.tableRows];
                               rows[ri] = { ...rows[ri]!, price: v };
+                              c[ci] = { ...c[ci]!, tableRows: rows };
+                              return { ...d, categories: c };
+                            });
+                          }}
+                          className="rounded border border-white/[0.08] bg-black/40 px-2 py-1 text-xs text-white"
+                        />
+                        <input
+                          placeholder='Texto precio (ej. "Consultar")'
+                          value={row.priceLabel ?? ""}
+                          onChange={(e) => {
+                            const v = e.target.value;
+                            setData((d) => {
+                              const c = [...d.categories];
+                              const rows = [...c[ci]!.tableRows];
+                              rows[ri] = { ...rows[ri]!, priceLabel: v };
                               c[ci] = { ...c[ci]!, tableRows: rows };
                               return { ...d, categories: c };
                             });
@@ -445,7 +605,8 @@ export function RepairPricingEditor({ initial }: { initial: RepairPricingPayload
                           ×
                         </button>
                       </div>
-                    ))}
+                    )
+                    )}
                   </div>
                   <label className="mt-4 block">
                     <span className="text-xs text-slate-500">Viñetas pie (una por línea)</span>
