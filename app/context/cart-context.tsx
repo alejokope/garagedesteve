@@ -8,6 +8,7 @@ import {
   useReducer,
   type ReactNode,
 } from "react";
+import { useShopFeedback } from "@/app/context/shop-feedback-context";
 import { cartLineUnitPrice } from "@/lib/cart-line";
 import type { Product } from "@/lib/data";
 import { cartLineKey, type VariantSelections } from "@/lib/product-variants";
@@ -82,14 +83,16 @@ export type CartContextValue = {
 
 const CartContext = createContext<CartContextValue | null>(null);
 
-export function CartProvider({ children }: { children: ReactNode }) {
+function CartProviderInner({ children }: { children: ReactNode }) {
+  const { celebrateCart } = useShopFeedback();
   const [state, dispatch] = useReducer(reducer, { items: [] });
 
   const add = useCallback(
     (product: Product, variantSelections?: VariantSelections) => {
       dispatch({ type: "ADD", product, variantSelections });
+      celebrateCart();
     },
-    [],
+    [celebrateCart],
   );
 
   const remove = useCallback((lineKey: string) => {
@@ -134,6 +137,10 @@ export function CartProvider({ children }: { children: ReactNode }) {
   return (
     <CartContext.Provider value={value}>{children}</CartContext.Provider>
   );
+}
+
+export function CartProvider({ children }: { children: ReactNode }) {
+  return <CartProviderInner>{children}</CartProviderInner>;
 }
 
 export function useCart() {

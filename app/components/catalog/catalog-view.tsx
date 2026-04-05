@@ -4,7 +4,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { ProductFavoriteButton } from "@/app/components/product-favorite-button";
 import { useCart } from "@/app/context/cart-context";
+import { useAckFlash } from "@/app/hooks/use-ack-flash";
 import {
   PAGE_SIZE,
   brandFilterOptionsFromProducts,
@@ -44,6 +46,7 @@ function priceSliderStep(min: number, max: number): number {
 
 function CatalogCard({ p }: { p: EnrichedProduct }) {
   const { add } = useCart();
+  const { on: addAck, trigger: triggerAddAck } = useAckFlash();
 
   const showDiscount = p.discountPercent != null && p.compareAtPrice != null;
   const badgeNuevo = p.estado === "nuevo" && !showDiscount && p.condition !== "used";
@@ -51,7 +54,14 @@ function CatalogCard({ p }: { p: EnrichedProduct }) {
   const badgeUsado = p.condition === "used";
 
   return (
-    <article className="group flex flex-col overflow-hidden rounded-2xl border border-[var(--border)] bg-white shadow-[0_1px_3px_rgba(15,23,42,0.06)] transition hover:-translate-y-0.5 hover:shadow-[var(--glow)]">
+    <article className="group relative flex flex-col overflow-hidden rounded-2xl border border-[var(--border)] bg-white shadow-[0_1px_3px_rgba(15,23,42,0.06)] transition hover:-translate-y-0.5 hover:shadow-[var(--glow)]">
+      <div className="absolute left-2 top-2 z-10">
+        <ProductFavoriteButton
+          product={p}
+          className="h-9 w-9 border-white/80 bg-white/95 shadow-sm backdrop-blur-sm"
+          iconClass="h-[18px] w-[18px]"
+        />
+      </div>
       <Link href={`/tienda/${p.id}`} className="relative block aspect-[4/3] bg-neutral-50">
         <Image
           src={p.image}
@@ -118,8 +128,11 @@ function CatalogCard({ p }: { p: EnrichedProduct }) {
           </div>
           <button
             type="button"
-            onClick={() => add(p)}
-            className="shrink-0 rounded-lg bg-neutral-950 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-neutral-800 active:scale-[0.99]"
+            onClick={() => {
+              add(p);
+              triggerAddAck();
+            }}
+            className={`shrink-0 rounded-lg bg-neutral-950 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-neutral-800 active:scale-[0.99] ${addAck ? "egd-add-ack" : ""}`}
           >
             Agregar
           </button>

@@ -4,7 +4,9 @@ import type { Product } from "@/lib/data";
 import { formatMoneyArs } from "@/lib/format";
 import Image from "next/image";
 import Link from "next/link";
+import { ProductFavoriteButton } from "@/app/components/product-favorite-button";
 import { useCart } from "@/app/context/cart-context";
+import { useAckFlash } from "@/app/hooks/use-ack-flash";
 
 function productBadgeLabel(badge: string | undefined) {
   if (!badge) return null;
@@ -16,14 +18,22 @@ function productBadgeLabel(badge: string | undefined) {
 
 export function FeaturedProductCard({ product }: { product: Product }) {
   const { add } = useCart();
+  const { on: addAck, trigger: triggerAddAck } = useAckFlash();
   const badge = productBadgeLabel(product.badge);
 
   return (
     <article
       suppressHydrationWarning
       data-featured-product-card
-      className="group flex h-full w-full min-h-0 min-w-0 flex-col overflow-hidden rounded-2xl border border-[var(--border)] bg-white shadow-[0_1px_0_rgba(15,23,42,0.04)] transition hover:-translate-y-0.5 hover:shadow-[var(--glow)]"
+      className="group relative flex h-full w-full min-h-0 min-w-0 flex-col overflow-hidden rounded-2xl border border-[var(--border)] bg-white shadow-[0_1px_0_rgba(15,23,42,0.04)] transition hover:-translate-y-0.5 hover:shadow-[var(--glow)]"
     >
+      <div className="absolute left-2 top-2 z-10 sm:left-3 sm:top-3">
+        <ProductFavoriteButton
+          product={product}
+          className="h-9 w-9 border-white/80 bg-white/95 shadow-sm backdrop-blur-sm sm:h-10 sm:w-10"
+          iconClass="h-[18px] w-[18px] sm:h-5 sm:w-5"
+        />
+      </div>
       <Link href={`/tienda/${product.id}`} className="relative block aspect-[5/4] bg-neutral-50 sm:aspect-square">
         <Image
           src={product.image}
@@ -60,8 +70,11 @@ export function FeaturedProductCard({ product }: { product: Product }) {
         <div className="mt-auto w-full pt-3 sm:pt-4">
           <button
             type="button"
-            onClick={() => add(product)}
-            className="flex h-11 w-full items-center justify-center rounded-xl bg-neutral-950 text-center text-sm font-semibold leading-none text-white transition hover:bg-neutral-800 active:scale-[0.99]"
+            onClick={() => {
+              add(product);
+              triggerAddAck();
+            }}
+            className={`flex h-11 w-full items-center justify-center rounded-xl bg-neutral-950 text-center text-sm font-semibold leading-none text-white transition hover:bg-neutral-800 active:scale-[0.99] ${addAck ? "egd-add-ack" : ""}`}
           >
             Agregar al carrito
           </button>

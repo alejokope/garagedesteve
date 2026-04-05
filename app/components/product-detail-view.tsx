@@ -3,7 +3,9 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useMemo, useState } from "react";
+import { ProductFavoriteButton } from "@/app/components/product-favorite-button";
 import { useCart } from "@/app/context/cart-context";
+import { useAckFlash } from "@/app/hooks/use-ack-flash";
 import { enrichProduct } from "@/lib/catalog";
 import type { Product } from "@/lib/data";
 import { getProductById } from "@/lib/data";
@@ -88,10 +90,18 @@ function SmallProductCard({
 }) {
   const p = productLookup?.[id] ?? getProductById(id);
   const { add } = useCart();
+  const { on: addAck, trigger: triggerAddAck } = useAckFlash();
   if (!p) return null;
   const e = enrichProduct(p);
   return (
-    <article className="flex flex-col overflow-hidden rounded-2xl border border-[var(--border)] bg-white shadow-sm">
+    <article className="relative flex flex-col overflow-hidden rounded-2xl border border-[var(--border)] bg-white shadow-sm">
+      <div className="absolute left-2 top-2 z-10">
+        <ProductFavoriteButton
+          product={p}
+          className="h-8 w-8 border-white/90 bg-white/95 shadow-sm"
+          iconClass="h-4 w-4"
+        />
+      </div>
       <Link href={`/tienda/${p.id}`} className="relative aspect-square bg-neutral-50">
         <Image src={p.image} alt={p.imageAlt} fill className="object-contain p-3" sizes="200px" />
       </Link>
@@ -109,8 +119,11 @@ function SmallProductCard({
         <p className="font-display mt-2 text-sm font-bold">{formatMoneyArs(p.price)}</p>
         <button
           type="button"
-          onClick={() => add(p)}
-          className="mt-3 rounded-xl bg-[var(--brand-from)] py-2 text-xs font-semibold text-white transition hover:opacity-95"
+          onClick={() => {
+            add(p);
+            triggerAddAck();
+          }}
+          className={`mt-3 rounded-xl bg-[var(--brand-from)] py-2 text-xs font-semibold text-white transition hover:opacity-95 ${addAck ? "egd-add-ack" : ""}`}
         >
           Comprar
         </button>
@@ -151,6 +164,7 @@ export function ProductDetailView({
   const pctOff = hasDbPromo ? enriched.discountPercent : null;
 
   const { add } = useCart();
+  const { on: addMainAck, trigger: triggerAddMainAck } = useAckFlash();
 
   const setVariant = (groupId: string, optionId: string) => {
     setSelections((prev) => ({ ...prev, [groupId]: optionId }));
@@ -176,6 +190,7 @@ export function ProductDetailView({
 
   const addToCart = () => {
     add(product, groups.length ? selections : undefined);
+    triggerAddMainAck();
   };
 
   const images = detail.images.length ? detail.images : [product.image];
@@ -398,22 +413,18 @@ export function ProductDetailView({
               <button
                 type="button"
                 onClick={addToCart}
-                className="inline-flex flex-1 min-w-[200px] items-center justify-center gap-2 rounded-xl bg-[var(--brand-from)] px-6 py-3.5 text-sm font-semibold text-white shadow-lg shadow-[var(--brand-from)]/25 transition hover:opacity-95"
+                className={`inline-flex flex-1 min-w-[200px] items-center justify-center gap-2 rounded-xl bg-[var(--brand-from)] px-6 py-3.5 text-sm font-semibold text-white shadow-lg shadow-[var(--brand-from)]/25 transition hover:opacity-95 ${addMainAck ? "egd-add-ack" : ""}`}
               >
                 <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" aria-hidden>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007z" />
                 </svg>
                 Agregar al carrito
               </button>
-              <button
-                type="button"
-                className="flex h-[52px] w-[52px] items-center justify-center rounded-xl border border-neutral-200 bg-white text-neutral-700 transition hover:bg-neutral-50"
-                aria-label="Favoritos"
-              >
-                <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
-                </svg>
-              </button>
+              <ProductFavoriteButton
+                product={product}
+                className="h-[52px] w-[52px] shrink-0"
+                iconClass="h-6 w-6"
+              />
               {waHref ? (
                 <a
                   href={waHref}

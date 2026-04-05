@@ -5,6 +5,8 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useCart } from "@/app/context/cart-context";
+import { useFavorites } from "@/app/context/favorites-context";
+import { useShopFeedback } from "@/app/context/shop-feedback-context";
 import { siteConfig } from "@/lib/site-config";
 
 function mobileNavItemKey(item: (typeof siteConfig.mainNav)[number]): string {
@@ -15,6 +17,8 @@ function mainNavItemActive(id: string, pathname: string): boolean {
   switch (id) {
     case "shop":
       return pathname === "/tienda" || pathname.startsWith("/tienda/");
+    case "favorites":
+      return pathname === "/favoritos";
     case "cart":
       return pathname === "/carrito";
     case "service":
@@ -43,8 +47,9 @@ function desktopNavLinkClass(active: boolean) {
 export function SiteHeader() {
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
-  const [favOn, setFavOn] = useState(false);
   const { count } = useCart();
+  const { count: favCount } = useFavorites();
+  const { cartPulseGeneration, favPulseGeneration } = useShopFeedback();
   /** Evita mismatch de hidratación si el HTML del servidor quedó cacheado (Turbopack/HMR) distinto al bundle del cliente. */
   const [desktopNavReady, setDesktopNavReady] = useState(false);
 
@@ -110,35 +115,57 @@ export function SiteHeader() {
           </nav>
 
           <div className="flex shrink-0 items-center gap-0.5 sm:gap-1">
-            <button
-              type="button"
-              onClick={() => setFavOn((v) => !v)}
-              className="hidden h-11 w-11 items-center justify-center rounded-xl text-neutral-700 transition-colors hover:bg-neutral-100 sm:flex"
-              aria-label={favOn ? "Quitar de favoritos" : "Favoritos"}
-              aria-pressed={favOn}
+            <Link
+              href="/favoritos"
+              className="relative hidden h-11 w-11 items-center justify-center rounded-xl text-neutral-700 transition-colors hover:bg-neutral-100 sm:flex"
+              aria-label={`Favoritos${favCount ? `, ${favCount} guardados` : ""}`}
             >
-              <svg
-                className={`h-[22px] w-[22px] ${favOn ? "fill-red-500 text-red-500" : ""}`}
-                fill={favOn ? "currentColor" : "none"}
-                viewBox="0 0 24 24"
-                strokeWidth={1.5}
-                stroke="currentColor"
+              <span
+                key={favPulseGeneration}
+                className={
+                  favPulseGeneration > 0
+                    ? "egd-header-icon-pulse inline-flex items-center justify-center"
+                    : "inline-flex items-center justify-center"
+                }
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z"
-                />
-              </svg>
-            </button>
+                <svg
+                  className={`h-[22px] w-[22px] ${favCount > 0 ? "fill-red-500 text-red-500" : ""}`}
+                  fill={favCount > 0 ? "currentColor" : "none"}
+                  viewBox="0 0 24 24"
+                  strokeWidth={1.5}
+                  stroke="currentColor"
+                  aria-hidden
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z"
+                  />
+                </svg>
+              </span>
+              {favCount > 0 ? (
+                <span className="absolute -right-0.5 -top-0.5 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-bold text-white shadow-sm">
+                  {favCount > 99 ? "99+" : favCount}
+                </span>
+              ) : null}
+            </Link>
             <Link
               href="/carrito"
               className="relative flex h-11 w-11 items-center justify-center rounded-xl text-neutral-800 transition-colors hover:bg-neutral-100"
               aria-label={`Carrito${count ? `, ${count} productos` : ""}`}
             >
-              <svg className="h-[22px] w-[22px]" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007z" />
-              </svg>
+              <span
+                key={cartPulseGeneration}
+                className={
+                  cartPulseGeneration > 0
+                    ? "egd-header-icon-pulse inline-flex items-center justify-center"
+                    : "inline-flex items-center justify-center"
+                }
+              >
+                <svg className="h-[22px] w-[22px]" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" aria-hidden>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007z" />
+                </svg>
+              </span>
               {count > 0 ? (
                 <span className="absolute -right-0.5 -top-0.5 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-[var(--brand-from)] px-1 text-[10px] font-bold text-white shadow-sm">
                   {count > 99 ? "99+" : count}

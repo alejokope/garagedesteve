@@ -89,3 +89,90 @@ body {
     animation: fade-up 0.65s cubic-bezier(0.22, 1, 0.36, 1) both;
   }
 }
+
+@keyframes egd-shop-toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes egd-icon-bump {
+  0% {
+    transform: scale(1);
+  }
+  35% {
+    transform: scale(1.14);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes egd-add-ack {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.45);
+  }
+  45% {
+    transform: scale(1.03);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 14px rgba(16, 185, 129, 0);
+  }
+}
+
+@keyframes egd-fav-pop {
+  0% {
+    transform: scale(1);
+  }
+  40% {
+    transform: scale(1.12);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .egd-shop-toast {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  .egd-header-icon-pulse {
+    animation: none !important;
+  }
+
+  .egd-add-ack {
+    animation: none !important;
+  }
+
+  .egd-fav-pop {
+    animation: none !important;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .egd-shop-toast {
+    animation: egd-shop-toast-in 0.42s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  .egd-header-icon-pulse {
+    animation: egd-icon-bump 0.55s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  }
+
+  .egd-add-ack {
+    animation: egd-add-ack 0.68s ease-out both;
+  }
+
+  .egd-fav-pop {
+    animation: egd-fav-pop 0.48s cubic-bezier(0.34, 1.45, 0.64, 1) both;
+  }
+}

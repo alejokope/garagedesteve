@@ -14,6 +14,12 @@ export const siteConfig = {
    */
   mainNav: [
     { id: "shop", href: "/tienda", label: "Comprar", shortLabel: "Comprar" },
+    {
+      id: "favorites",
+      href: "/favoritos",
+      label: "Favoritos",
+      shortLabel: "Favoritos",
+    },
     { id: "cart", href: "/carrito", label: "Carrito", shortLabel: "Carrito" },
     {
       id: "service",
