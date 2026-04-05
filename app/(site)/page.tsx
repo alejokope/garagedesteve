@@ -10,7 +10,8 @@ import { ScrollReveal } from "@/app/components/scroll-reveal";
 import { SiteFooter } from "@/app/components/site-footer";
 import { getHomePageData } from "@/lib/home-content-server";
 
-export const revalidate = 60;
+/** Sin ISR (caché fija en dev con `revalidate` > 0). Literal exigido por Next. */
+export const revalidate = 0;
 
 export default async function HomePage() {
   const home = await getHomePageData();

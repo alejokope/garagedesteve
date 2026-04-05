@@ -11,7 +11,7 @@ import { notFound } from "next/navigation";
 
 type Props = { params: Promise<{ productId: string }> };
 
-export const revalidate = 60;
+export const revalidate = 0;
 
 export async function generateStaticParams() {
   const ids = await listPublishedProductIdsForSite();

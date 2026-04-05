@@ -1,7 +1,15 @@
 import Image from "next/image";
 import Link from "next/link";
 
+import type { HomeCategoryTile } from "@/lib/home-categories";
 import type { HomeCategoriesData } from "@/lib/home-types";
+
+const carouselTrack =
+  "-mx-5 flex touch-scroll-x snap-x snap-mandatory items-stretch gap-4 overflow-x-auto overscroll-x-contain scroll-pl-5 scroll-pr-5 pb-2 pt-0.5 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden touch-scroll-x";
+
+/** Mínimo ≈ tarjeta con foto (4/3 + texto); solo se usa en el carrusel móvil. */
+const carouselSlide =
+  "flex min-h-[24rem] w-[min(19rem,calc(100vw-2.75rem))] shrink-0 snap-start flex-col";
 
 function ArrowLink() {
   return (
@@ -9,6 +17,77 @@ function ArrowLink() {
       Ver productos
       <span aria-hidden>→</span>
     </span>
+  );
+}
+
+function HomeCategoryTileCard({ tile }: { tile: HomeCategoryTile }) {
+  if (tile.kind === "service") {
+    return (
+      <Link
+        href={tile.href}
+        className="group relative flex min-h-0 w-full flex-1 flex-col items-start overflow-hidden rounded-2xl border border-neutral-900 bg-neutral-950 p-6 text-left shadow-[var(--glow-lg)] transition hover:bg-neutral-900 sm:h-full sm:min-h-[18rem] sm:flex-none sm:p-8"
+      >
+        <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full border border-white/25 bg-white/10">
+          <svg
+            className="h-8 w-8 text-white"
+            fill="none"
+            viewBox="0 0 24 24"
+            strokeWidth={1.5}
+            stroke="currentColor"
+            aria-hidden
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M14.121 14.121L19 19m-2-2l1.414-1.414a2 2 0 00-2.828-2.828l-1.414 1.414m2 2L14.12 14.12m-2.829-2.828L4 4m5.657 5.657l6.364 6.364"
+            />
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
+            />
+          </svg>
+        </div>
+        <div className="mt-auto min-w-0">
+          <p className="font-display text-lg font-semibold text-white sm:text-xl">
+            {tile.title}
+          </p>
+          <p className="mt-2 text-sm leading-relaxed text-white/90">
+            {tile.description}
+          </p>
+          <span className="mt-6 inline-flex items-center gap-1 text-sm font-semibold text-white/95">
+            Saber más
+            <span aria-hidden>→</span>
+          </span>
+        </div>
+      </Link>
+    );
+  }
+
+  return (
+    <Link
+      href={tile.href}
+      className="group flex min-h-0 flex-1 flex-col overflow-hidden rounded-2xl border border-[var(--border)] bg-white shadow-[0_1px_0_rgba(0,0,0,0.04)] transition hover:-translate-y-0.5 hover:shadow-[var(--glow)] sm:h-full sm:flex-none"
+    >
+      <div className="relative aspect-[4/3] bg-neutral-100">
+        <Image
+          src={tile.image}
+          alt={tile.imageAlt}
+          fill
+          sizes="(max-width: 640px) 85vw, 33vw"
+          className="object-cover transition duration-500 group-hover:scale-[1.03]"
+        />
+      </div>
+      <div className="flex min-h-0 flex-1 flex-col p-5 sm:p-6">
+        <h3 className="font-display text-base font-semibold text-neutral-950 sm:text-lg">
+          {tile.title}
+        </h3>
+        <p className="mt-1.5 flex-1 text-sm leading-relaxed text-neutral-500 sm:mt-2">
+          {tile.description}
+        </p>
+        <ArrowLink />
+      </div>
+    </Link>
   );
 }
 
@@ -25,76 +104,30 @@ export function HomeCategoriesGrid({ data }: { data: HomeCategoriesData }) {
           </p>
         </div>
 
-        <div className="mt-8 grid gap-4 sm:mt-12 sm:grid-cols-2 sm:gap-5 lg:grid-cols-3 lg:gap-6">
-          {data.tiles.map((tile) =>
-            tile.kind === "service" ? (
-              <Link
-                key={tile.title}
-                href={tile.href}
-                className="group relative flex min-h-0 flex-col items-start justify-between gap-6 overflow-hidden rounded-2xl border border-neutral-900 bg-neutral-950 p-6 text-left shadow-[var(--glow-lg)] transition hover:bg-neutral-900 sm:min-h-[18rem] sm:gap-0 sm:p-8"
-              >
-                <div className="flex h-14 w-14 items-center justify-center rounded-full border border-white/25 bg-white/10">
-                  <svg
-                    className="h-8 w-8 text-white"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    strokeWidth={1.5}
-                    stroke="currentColor"
-                    aria-hidden
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M14.121 14.121L19 19m-2-2l1.414-1.414a2 2 0 00-2.828-2.828l-1.414 1.414m2 2L14.12 14.12m-2.829-2.828L4 4m5.657 5.657l6.364 6.364"
-                    />
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
-                    />
-                  </svg>
-                </div>
-                <div>
-                  <p className="font-display text-lg font-semibold text-white sm:text-xl">
-                    {tile.title}
-                  </p>
-                  <p className="mt-2 text-sm leading-relaxed text-white/90">
-                    {tile.description}
-                  </p>
-                  <span className="mt-6 inline-flex items-center gap-1 text-sm font-semibold text-white/95">
-                    Saber más
-                    <span aria-hidden>→</span>
-                  </span>
-                </div>
-              </Link>
-            ) : (
-              <Link
-                key={tile.title}
-                href={tile.href}
-                className="group flex flex-col overflow-hidden rounded-2xl border border-[var(--border)] bg-white shadow-[0_1px_0_rgba(0,0,0,0.04)] transition hover:-translate-y-0.5 hover:shadow-[var(--glow)]"
-              >
-                <div className="relative aspect-[4/3] bg-neutral-100">
-                  <Image
-                    src={tile.image}
-                    alt={tile.imageAlt}
-                    fill
-                    sizes="(max-width: 640px) 100vw, 33vw"
-                    className="object-cover transition duration-500 group-hover:scale-[1.03]"
-                  />
-                </div>
-                <div className="flex flex-1 flex-col p-5 sm:p-6">
-                  <h3 className="font-display text-base font-semibold text-neutral-950 sm:text-lg">
-                    {tile.title}
-                  </h3>
-                  <p className="mt-1.5 flex-1 text-sm leading-relaxed text-neutral-500 sm:mt-2">
-                    {tile.description}
-                  </p>
-                  <ArrowLink />
-                </div>
-              </Link>
-            ),
-          )}
+        <div className="mt-8 sm:mt-12">
+          <div
+            className={`${carouselTrack} sm:hidden`}
+            role="region"
+            aria-roledescription="carrusel"
+            aria-label="Categorías, deslizá para ver más"
+          >
+            {data.tiles.map((tile) => (
+              <div key={tile.title} className={carouselSlide}>
+                <HomeCategoryTileCard tile={tile} />
+              </div>
+            ))}
+          </div>
+
+          <div className="hidden gap-4 sm:mt-0 sm:grid sm:grid-cols-2 sm:gap-5 lg:grid-cols-3 lg:gap-6">
+            {data.tiles.map((tile) => (
+              <HomeCategoryTileCard key={tile.title} tile={tile} />
+            ))}
+          </div>
         </div>
+
+        <p className="mt-3 text-center text-xs font-medium tracking-wide text-neutral-400 sm:hidden">
+          Deslizá para ver más
+        </p>
       </div>
     </section>
   );

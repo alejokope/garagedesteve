@@ -13,6 +13,11 @@ function supabaseHost(): string | null {
 const host = supabaseHost();
 
 const nextConfig: NextConfig = {
+  // En dev, sin esto las respuestas de red (p. ej. Supabase) pueden quedar
+  // cacheadas entre refrescos por HMR y parece que “no actualiza” hasta `next build`.
+  experimental: {
+    serverComponentsHmrCache: false,
+  },
   images: {
     remotePatterns: [
       {
