@@ -71,8 +71,7 @@ export default async function BackofficeContenidoPage() {
           <p className="mt-2 max-w-2xl text-sm leading-relaxed text-slate-400">
             Editá cada parte de la home con formularios claros. No hace falta saber programación: abrí el
             bloque, cambiá textos o imágenes y tocá <strong className="font-medium text-slate-300">Guardar</strong>.
-            Si querés volver atrás, usá <strong className="font-medium text-slate-300">Usar valores por defecto</strong>{" "}
-            en esa misma sección. En cada módulo podés desmarcar{" "}
+            En cada módulo podés desmarcar{" "}
             <strong className="font-medium text-slate-300">Mostrar este bloque en la página de inicio</strong> para
             ocultarlo en el sitio público sin perder lo que guardaste.
           </p>

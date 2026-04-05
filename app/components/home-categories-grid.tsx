@@ -1,7 +1,11 @@
 import Image from "next/image";
 import Link from "next/link";
 
-import type { HomeCategoryTile } from "@/lib/home-categories";
+import {
+  SERVICE_CATEGORY_DEFAULT_ALT,
+  SERVICE_CATEGORY_DEFAULT_IMAGE,
+  type HomeCategoryTile,
+} from "@/lib/home-categories";
 import type { HomeCategoriesData } from "@/lib/home-types";
 
 const carouselTrack =
@@ -11,10 +15,10 @@ const carouselTrack =
 const carouselSlide =
   "flex min-h-[24rem] w-[min(19rem,calc(100vw-2.75rem))] shrink-0 snap-start flex-col";
 
-function ArrowLink() {
+function CtaLink({ label }: { label: string }) {
   return (
     <span className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-[var(--brand-from)] transition group-hover:gap-1.5">
-      Ver productos
+      {label}
       <span aria-hidden>→</span>
     </span>
   );
@@ -24,59 +28,35 @@ function productCategoryHref(tile: HomeCategoryTile & { kind: "product" }): stri
   return `/tienda?cat=${encodeURIComponent(tile.category)}#catalogo`;
 }
 
-function HomeCategoryTileCard({ tile }: { tile: HomeCategoryTile }) {
-  if (tile.kind === "service") {
-    return (
-      <Link
-        href={tile.href}
-        className="group relative flex min-h-0 w-full flex-1 flex-col items-start overflow-hidden rounded-2xl border border-neutral-900 bg-neutral-950 p-6 text-left shadow-[var(--glow-lg)] transition hover:bg-neutral-900 sm:h-full sm:min-h-[18rem] sm:flex-none sm:p-8"
-      >
-        <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full border border-white/25 bg-white/10">
-          <svg
-            className="h-8 w-8 text-white"
-            fill="none"
-            viewBox="0 0 24 24"
-            strokeWidth={1.5}
-            stroke="currentColor"
-            aria-hidden
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M14.121 14.121L19 19m-2-2l1.414-1.414a2 2 0 00-2.828-2.828l-1.414 1.414m2 2L14.12 14.12m-2.829-2.828L4 4m5.657 5.657l6.364 6.364"
-            />
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
-            />
-          </svg>
-        </div>
-        <div className="mt-auto min-w-0">
-          <p className="font-display text-lg font-semibold text-white sm:text-xl">
-            {tile.title}
-          </p>
-          <p className="mt-2 text-sm leading-relaxed text-white/90">
-            {tile.description}
-          </p>
-          <span className="mt-6 inline-flex items-center gap-1 text-sm font-semibold text-white/95">
-            Saber más
-            <span aria-hidden>→</span>
-          </span>
-        </div>
-      </Link>
-    );
+function tileImage(tile: HomeCategoryTile): { src: string; alt: string } {
+  if (tile.kind === "product") {
+    return {
+      src: tile.image.trim() || SERVICE_CATEGORY_DEFAULT_IMAGE,
+      alt: tile.imageAlt.trim() || tile.title,
+    };
   }
+  return {
+    src: tile.image?.trim() || SERVICE_CATEGORY_DEFAULT_IMAGE,
+    alt: tile.imageAlt?.trim() || SERVICE_CATEGORY_DEFAULT_ALT,
+  };
+}
+
+function HomeCategoryTileCard({ tile }: { tile: HomeCategoryTile }) {
+  const { src, alt } = tileImage(tile);
+  const isService = tile.kind === "service";
+  const href = isService ? tile.href : productCategoryHref(tile);
+  const ctaLabel = isService ? "Saber más" : "Ver productos";
 
   return (
     <Link
-      href={productCategoryHref(tile)}
+      href={href}
       className="group flex min-h-0 flex-1 flex-col overflow-hidden rounded-2xl border border-[var(--border)] bg-white shadow-[0_1px_0_rgba(0,0,0,0.04)] transition hover:-translate-y-0.5 hover:shadow-[var(--glow)] sm:h-full sm:flex-none"
     >
+      {/* Proporción alineada con HOME_CATEGORY_TILE_* en lib/home-categories.ts */}
       <div className="relative aspect-[4/3] bg-neutral-100">
         <Image
-          src={tile.image}
-          alt={tile.imageAlt}
+          src={src}
+          alt={alt}
           fill
           sizes="(max-width: 640px) 85vw, 33vw"
           className="object-cover transition duration-500 group-hover:scale-[1.03]"
@@ -89,7 +69,7 @@ function HomeCategoryTileCard({ tile }: { tile: HomeCategoryTile }) {
         <p className="mt-1.5 flex-1 text-sm leading-relaxed text-neutral-500 sm:mt-2">
           {tile.description}
         </p>
-        <ArrowLink />
+        <CtaLink label={ctaLabel} />
       </div>
     </Link>
   );

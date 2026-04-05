@@ -5,7 +5,7 @@ import {
   homeTestimonials,
   whyChooseItems,
 } from "@/lib/home-content";
-import { homeCategoryTiles } from "@/lib/home-categories";
+import { homeCategoryTiles, normalizeHomeCategoryTiles } from "@/lib/home-categories";
 import type {
   HomeCategoriesData,
   HomeCtaFinalData,
@@ -133,16 +133,22 @@ export function mergeHero(payload: unknown): HomeHeroData {
 }
 
 export function mergeCategories(payload: unknown): HomeCategoriesData {
-  if (!payload || typeof payload !== "object") return DEFAULT_CATEGORIES;
+  if (!payload || typeof payload !== "object") {
+    return {
+      ...DEFAULT_CATEGORIES,
+      tiles: normalizeHomeCategoryTiles(DEFAULT_CATEGORIES.tiles),
+    };
+  }
   const p = payload as Partial<HomeCategoriesData>;
+  const rawTiles =
+    Array.isArray(p.tiles) && p.tiles.length > 0
+      ? (p.tiles as HomeCategoriesData["tiles"])
+      : DEFAULT_CATEGORIES.tiles;
   return {
     sectionTitle: p.sectionTitle ?? DEFAULT_CATEGORIES.sectionTitle,
     sectionSubtitle: p.sectionSubtitle ?? DEFAULT_CATEGORIES.sectionSubtitle,
     visible: mergeHomeModuleVisible(payload),
-    tiles:
-      Array.isArray(p.tiles) && p.tiles.length > 0
-        ? (p.tiles as HomeCategoriesData["tiles"])
-        : DEFAULT_CATEGORIES.tiles,
+    tiles: normalizeHomeCategoryTiles(rawTiles),
   };
 }
 

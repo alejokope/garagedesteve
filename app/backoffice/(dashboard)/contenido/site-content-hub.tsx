@@ -6,7 +6,14 @@ import { useCallback, useEffect, useMemo, useState, useTransition } from "react"
 import type { ProductRow } from "@/lib/backoffice/products-db";
 import { SITE_HOME_SECTION_META } from "@/lib/backoffice/site-content-sections-meta";
 import { categories as categoryNav } from "@/lib/data";
-import type { HomeCategoryTile } from "@/lib/home-categories";
+import {
+  HOME_CATEGORY_TILE_ASPECT_LABEL,
+  HOME_CATEGORY_TILE_IMAGE_GUIDE_ES,
+  HOME_CATEGORY_TILE_RECOMMENDED_PX,
+  SERVICE_CATEGORY_DEFAULT_ALT,
+  SERVICE_CATEGORY_DEFAULT_IMAGE,
+  type HomeCategoryTile,
+} from "@/lib/home-categories";
 import type {
   HomeCategoriesData,
   HomeCtaFinalData,
@@ -18,7 +25,8 @@ import type {
 } from "@/lib/home-types";
 import type { HomeContentKey } from "@/lib/home-public-content";
 
-import { resetHomeSectionToDefaults, saveHomeSection, type SaveHomeSectionResult } from "./home-section-actions";
+import { HomeCategoryTileImageUpload } from "./home-category-tile-image-upload";
+import { saveHomeSection, type SaveHomeSectionResult } from "./home-section-actions";
 
 const inputClass =
   "w-full rounded-xl border border-white/[0.1] bg-black/30 px-3 py-2.5 text-sm text-white outline-none placeholder:text-slate-600 focus:ring-2 focus:ring-violet-500/40";
@@ -27,8 +35,6 @@ const btnPrimary =
   "rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-violet-900/25 disabled:opacity-50";
 const btnGhost =
   "rounded-xl border border-white/15 bg-white/5 px-4 py-2 text-sm font-medium text-slate-200 hover:bg-white/10 disabled:opacity-50";
-const btnDanger =
-  "rounded-xl border border-amber-500/35 bg-amber-500/10 px-4 py-2 text-sm font-medium text-amber-100 hover:bg-amber-500/15 disabled:opacity-50";
 
 const SERVICE_ICONS: { value: HomeServiceTechData["features"][0]["icon"]; label: string }[] = [
   { value: "shield", label: "Escudo (garantía)" },
@@ -87,7 +93,6 @@ function SectionCard({
   visibleOnSite = true,
   children,
   onSave,
-  onReset,
   saveLabel,
 }: {
   anchorId: string;
@@ -98,7 +103,6 @@ function SectionCard({
   visibleOnSite?: boolean;
   children: React.ReactNode;
   onSave: () => Promise<SaveHomeSectionResult>;
-  onReset: () => Promise<SaveHomeSectionResult>;
   saveLabel?: string;
 }) {
   const [pending, startTransition] = useTransition();
@@ -156,27 +160,6 @@ function SectionCard({
           >
             {pending ? "Guardando…" : saveLabel ?? "Guardar esta sección"}
           </button>
-          <button
-            type="button"
-            disabled={pending || !hasCustomInDb}
-            title={!hasCustomInDb ? "No hay nada personalizado que borrar" : undefined}
-            onClick={() =>
-              run(async () => {
-                if (
-                  !confirm(
-                    "¿Volver a los textos e imágenes por defecto del sitio? Se borrará lo guardado para esta sección.",
-                  )
-                )
-                  return;
-                const r = await onReset();
-                if (r.ok) setMsgOk("Se restauraron los valores por defecto.");
-                else setMsgErr(r.error);
-              })
-            }
-            className={btnDanger}
-          >
-            Usar valores por defecto
-          </button>
           <Message type="ok" text={msgOk} />
           <Message type="err" text={msgErr} />
         </div>
@@ -203,6 +186,8 @@ function newServiceTile(): HomeCategoryTile {
     title: "",
     description: "",
     href: "/servicio-tecnico",
+    image: SERVICE_CATEGORY_DEFAULT_IMAGE,
+    imageAlt: SERVICE_CATEGORY_DEFAULT_ALT,
   };
 }
 
@@ -281,7 +266,6 @@ export function SiteContentHub({ revision, homeKeys, merged, hasRow, products }:
               hasCustomInDb={hasCustom}
               visibleOnSite={hero.visible}
               onSave={() => wrapSave(async () => saveHomeSection("home.hero", hero))}
-              onReset={() => wrapSave(async () => resetHomeSectionToDefaults("home.hero"))}
             >
               <ModuleVisibilityToggle checked={hero.visible} onChange={(v) => setHero({ ...hero, visible: v })} />
               <div className="grid gap-5 sm:grid-cols-2">
@@ -385,7 +369,6 @@ export function SiteContentHub({ revision, homeKeys, merged, hasRow, products }:
               hasCustomInDb={hasCustom}
               visibleOnSite={categories.visible}
               onSave={() => wrapSave(async () => saveHomeSection("home.categories", categories))}
-              onReset={() => wrapSave(async () => resetHomeSectionToDefaults("home.categories"))}
             >
               <ModuleVisibilityToggle
                 checked={categories.visible}
@@ -400,6 +383,10 @@ export function SiteContentHub({ revision, homeKeys, merged, hasRow, products }:
                 <textarea className={`${inputClass} mt-1 min-h-[72px] resize-y`} value={categories.sectionSubtitle} onChange={(e) => setCategories({ ...categories, sectionSubtitle: e.target.value })} />
               </label>
               <p className="mt-6 text-sm font-medium text-slate-300">Tarjetas</p>
+              <p className="mt-2 rounded-lg border border-violet-500/25 bg-violet-950/20 px-3 py-2.5 text-xs leading-relaxed text-slate-400">
+                <span className="font-semibold text-slate-300">Fotos de cada tarjeta: </span>
+                {HOME_CATEGORY_TILE_IMAGE_GUIDE_ES}
+              </p>
               <div className="mt-3 space-y-4">
                 {categories.tiles.map((tile, i) => (
                   <div key={i} className="rounded-xl border border-white/[0.08] bg-black/20 p-4">
@@ -416,7 +403,7 @@ export function SiteContentHub({ revision, homeKeys, merged, hasRow, products }:
                         }}
                       >
                         <option value="product">Producto (con foto y categoría)</option>
-                        <option value="service">Servicio (solo texto y enlace)</option>
+                        <option value="service">Servicio (con foto y enlace)</option>
                       </select>
                       <button type="button" className="ml-auto text-xs text-red-300 hover:underline" onClick={() => setCategories({ ...categories, tiles: categories.tiles.filter((_, j) => j !== i) })}>
                         Quitar tarjeta
@@ -448,45 +435,69 @@ export function SiteContentHub({ revision, homeKeys, merged, hasRow, products }:
                         }} />
                       </label>
                       {tile.kind === "product" ? (
+                        <label className="block">
+                          <span className={labelClass}>Categoría en la tienda</span>
+                          <select
+                            className={inputClass}
+                            value={tile.category}
+                            onChange={(e) => {
+                              const t = [...categories.tiles] as HomeCategoryTile[];
+                              const cur = t[i];
+                              if (cur.kind === "product") {
+                                t[i] = { ...cur, category: e.target.value as (typeof cur)["category"] };
+                                setCategories({ ...categories, tiles: t });
+                              }
+                            }}
+                          >
+                            {categoryOptions.map((c) => (
+                              <option key={c.id} value={c.id}>
+                                {c.label}
+                              </option>
+                            ))}
+                          </select>
+                        </label>
+                      ) : null}
+                      {tile.kind === "product" || tile.kind === "service" ? (
                         <>
-                          <label className="block">
-                            <span className={labelClass}>Categoría en la tienda</span>
-                            <select
+                          <label className="block sm:col-span-1">
+                            <span className={labelClass}>URL de la imagen</span>
+                            <input
                               className={inputClass}
-                              value={tile.category}
+                              placeholder={`https://… (${HOME_CATEGORY_TILE_RECOMMENDED_PX.width}×${HOME_CATEGORY_TILE_RECOMMENDED_PX.height}px, ${HOME_CATEGORY_TILE_ASPECT_LABEL})`}
+                              value={tile.kind === "product" ? tile.image : tile.image ?? ""}
                               onChange={(e) => {
                                 const t = [...categories.tiles] as HomeCategoryTile[];
                                 const cur = t[i];
-                                if (cur.kind === "product") {
-                                  t[i] = { ...cur, category: e.target.value as (typeof cur)["category"] };
-                                  setCategories({ ...categories, tiles: t });
-                                }
+                                if (cur.kind === "product") t[i] = { ...cur, image: e.target.value };
+                                else if (cur.kind === "service") t[i] = { ...cur, image: e.target.value };
+                                setCategories({ ...categories, tiles: t });
                               }}
-                            >
-                              {categoryOptions.map((c) => (
-                                <option key={c.id} value={c.id}>
-                                  {c.label}
-                                </option>
-                              ))}
-                            </select>
+                            />
                           </label>
-                          <label className="block sm:col-span-1">
-                            <span className={labelClass}>URL de la imagen</span>
-                            <input className={inputClass} value={tile.image} onChange={(e) => {
-                              const t = [...categories.tiles];
+                          <HomeCategoryTileImageUpload
+                            labelClass={labelClass}
+                            inputClass={inputClass}
+                            onUploaded={(url) => {
+                              const t = [...categories.tiles] as HomeCategoryTile[];
                               const cur = t[i];
-                              if (cur.kind === "product") t[i] = { ...cur, image: e.target.value };
+                              if (cur.kind === "product") t[i] = { ...cur, image: url };
+                              else if (cur.kind === "service") t[i] = { ...cur, image: url };
                               setCategories({ ...categories, tiles: t });
-                            }} />
-                          </label>
+                            }}
+                          />
                           <label className="block sm:col-span-2">
                             <span className={labelClass}>Texto alternativo de la imagen</span>
-                            <input className={inputClass} value={tile.imageAlt} onChange={(e) => {
-                              const t = [...categories.tiles];
-                              const cur = t[i];
-                              if (cur.kind === "product") t[i] = { ...cur, imageAlt: e.target.value };
-                              setCategories({ ...categories, tiles: t });
-                            }} />
+                            <input
+                              className={inputClass}
+                              value={tile.kind === "product" ? tile.imageAlt : tile.imageAlt ?? ""}
+                              onChange={(e) => {
+                                const t = [...categories.tiles] as HomeCategoryTile[];
+                                const cur = t[i];
+                                if (cur.kind === "product") t[i] = { ...cur, imageAlt: e.target.value };
+                                else if (cur.kind === "service") t[i] = { ...cur, imageAlt: e.target.value };
+                                setCategories({ ...categories, tiles: t });
+                              }}
+                            />
                           </label>
                         </>
                       ) : null}
@@ -531,7 +542,6 @@ export function SiteContentHub({ revision, homeKeys, merged, hasRow, products }:
               onSave={() =>
                 wrapSave(async () => saveHomeSection("home.featured", { ids: featuredIds, visible: featuredVisible }))
               }
-              onReset={() => wrapSave(async () => resetHomeSectionToDefaults("home.featured"))}
             >
               <ModuleVisibilityToggle checked={featuredVisible} onChange={setFeaturedVisible} />
               <p className="text-sm text-slate-400">
@@ -588,7 +598,6 @@ export function SiteContentHub({ revision, homeKeys, merged, hasRow, products }:
               hasCustomInDb={hasCustom}
               visibleOnSite={serviceTech.visible}
               onSave={() => wrapSave(async () => saveHomeSection("home.service_tech", serviceTech))}
-              onReset={() => wrapSave(async () => resetHomeSectionToDefaults("home.service_tech"))}
             >
               <ModuleVisibilityToggle
                 checked={serviceTech.visible}
@@ -683,7 +692,6 @@ export function SiteContentHub({ revision, homeKeys, merged, hasRow, products }:
               hasCustomInDb={hasCustom}
               visibleOnSite={whyChoose.visible}
               onSave={() => wrapSave(async () => saveHomeSection("home.why_choose", whyChoose))}
-              onReset={() => wrapSave(async () => resetHomeSectionToDefaults("home.why_choose"))}
             >
               <ModuleVisibilityToggle
                 checked={whyChoose.visible}
@@ -747,7 +755,6 @@ export function SiteContentHub({ revision, homeKeys, merged, hasRow, products }:
               hasCustomInDb={hasCustom}
               visibleOnSite={testimonials.visible}
               onSave={() => wrapSave(async () => saveHomeSection("home.testimonials", testimonials))}
-              onReset={() => wrapSave(async () => resetHomeSectionToDefaults("home.testimonials"))}
             >
               <ModuleVisibilityToggle
                 checked={testimonials.visible}
@@ -829,7 +836,6 @@ export function SiteContentHub({ revision, homeKeys, merged, hasRow, products }:
               hasCustomInDb={hasCustom}
               visibleOnSite={faq.visible}
               onSave={() => wrapSave(async () => saveHomeSection("home.faq", faq))}
-              onReset={() => wrapSave(async () => resetHomeSectionToDefaults("home.faq"))}
             >
               <ModuleVisibilityToggle checked={faq.visible} onChange={(v) => setFaq({ ...faq, visible: v })} />
               <label className="block">
@@ -882,7 +888,6 @@ export function SiteContentHub({ revision, homeKeys, merged, hasRow, products }:
               hasCustomInDb={hasCustom}
               visibleOnSite={ctaFinal.visible}
               onSave={() => wrapSave(async () => saveHomeSection("home.cta_final", ctaFinal))}
-              onReset={() => wrapSave(async () => resetHomeSectionToDefaults("home.cta_final"))}
             >
               <ModuleVisibilityToggle
                 checked={ctaFinal.visible}

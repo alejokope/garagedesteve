@@ -56,6 +56,8 @@ const homeCategoryTileSchema = z.discriminatedUnion("kind", [
     title: z.string().min(1),
     description: z.string(),
     href: z.string().min(1),
+    image: z.string().optional(),
+    imageAlt: z.string().optional(),
   }),
 ]);
 

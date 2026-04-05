@@ -3,10 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
-import {
-  deleteContentEntryAdmin,
-  upsertContentEntryAdmin,
-} from "@/lib/backoffice/content-db";
+import { upsertContentEntryAdmin } from "@/lib/backoffice/content-db";
 import {
   homeCategoriesPayloadSchema,
   homeCtaFinalPayloadSchema,
@@ -103,18 +100,6 @@ export async function saveHomeSection(
     return { ok: false, error: e instanceof Error ? e.message : "No se pudo guardar" };
   }
 
-  revalidatePath("/");
-  revalidatePath("/backoffice/contenido");
-  return { ok: true };
-}
-
-export async function resetHomeSectionToDefaults(key: HomeContentKey): Promise<SaveHomeSectionResult> {
-  await requireBackofficeSession();
-  try {
-    await deleteContentEntryAdmin(key);
-  } catch (e) {
-    return { ok: false, error: e instanceof Error ? e.message : "No se pudo borrar" };
-  }
   revalidatePath("/");
   revalidatePath("/backoffice/contenido");
   return { ok: true };
