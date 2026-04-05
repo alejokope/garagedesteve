@@ -227,7 +227,7 @@ function main() {
     badge: "Reparación en el momento",
     title: "Precios y cobertura de reparaciones",
     subtitle:
-      "Valores en USD con repuesto indicado. Donde dice «Consultar», cotizamos por WhatsApp o en tienda según stock y diagnóstico.",
+      "Valores en USD con repuesto indicado. Donde dice «Consultar», lo cerramos por WhatsApp o en tienda según stock y diagnóstico. Garantía escrita y repuestos de calidad.",
     devices,
     categories,
     sidebarQuickInfo: [

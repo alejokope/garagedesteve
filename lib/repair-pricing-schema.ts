@@ -317,10 +317,10 @@ export function mergeRepairPricingDefaults(partial: unknown): RepairPricingPaylo
 
 export function defaultRepairPricingPayload(): RepairPricingPayload {
   return repairPricingPayloadSchema.parse({
-    badge: "Reparación en el momento",
+    badge: "Servicio técnico Apple",
     title: "Precios y cobertura de reparaciones",
     subtitle:
-      "Valores orientativos. La cotización final se confirma en tienda o por WhatsApp según el diagnóstico.",
+      "Valores orientativos en la tabla. La cotización final la cerramos por WhatsApp o en tienda según diagnóstico y stock. Repuestos de calidad y garantía escrita en el trabajo.",
     defaultCurrency: "ARS",
     deviceFilters: [],
     devices: [
@@ -418,49 +418,62 @@ export function defaultRepairPricingPayload(): RepairPricingPayload {
       },
     ],
     sidebarWarranty: {
-      title: "Garantía completa",
+      title: "Garantía y calidad",
       bullets: [
-        "Control de calidad al entregar",
-        "Repuestos según disponibilidad",
-        "Asesoramiento antes de reparar",
+        "Garantía escrita en la reparación (plazo según lo acordado)",
+        "Repuestos de primera línea según disponibilidad (te informamos marca y cobertura)",
+        "Coordinación rápida y sin vueltas",
       ],
-      buttonLabel: "Políticas de garantía",
+      buttonLabel: "Ver más en FAQ",
       buttonHref: "/#faq",
     },
     sidebarQuickInfo: [
-      { title: "Repuestos", body: "Originales o equivalentes según stock.", iconEmoji: "📦" },
-      { title: "Tiempos", body: "Varían según complejidad y repuesto.", iconEmoji: "⏱️" },
+      {
+        title: "Repuestos",
+        body: "Trabajamos con marcas reconocidas (ej. baterías Ampsentrix, módulos Repart u equivalentes de igual o mejor calidad).",
+        iconEmoji: "📦",
+      },
+      {
+        title: "Tiempos",
+        body: "Orientativos: batería suele ser 30–60 min; módulo 2–4 hs; tapa trasera puede requerir dejar el equipo para pegado.",
+        iconEmoji: "⏱️",
+      },
     ],
     warrantyAccordion: [
       {
         id: "cubre",
         title: "¿Qué cubre la garantía?",
         bullets: [
-          "Defectos de la reparación realizada",
-          "Repuesto instalado en el servicio",
-          "Plazos según lo informado al cliente",
+          "Fallos de funcionamiento cubiertos según lo acordado al presupuestar",
+          "El repuesto instalado en esa reparación, en el marco del plazo informado",
+          "Control al entregar: probamos el equipo con vos",
         ],
       },
       {
         id: "no-cubre",
-        title: "¿Qué NO cubre la garantía?",
+        title: "¿Qué no suele cubrir?",
         bullets: [
-          "Daños por caídas o líquidos posteriores",
-          "Desgaste normal de batería",
-          "Intervenciones de terceros",
+          "Golpes, roturas o filtraciones de agua posteriores al servicio",
+          "Desgaste normal (incluida batería con el uso)",
+          "Equipos abiertos o intervenidos por terceros después de nuestra reparación",
         ],
       },
       {
         id: "pagos",
-        title: "Medios de pago",
-        bullets: ["Coordinamos en tienda o por WhatsApp según el caso."],
+        title: "Medios de pago (resumen)",
+        bullets: [
+          "Efectivo en pesos o USD; en pesos al valor del dólar que informa la financiera al momento del pago",
+          "Transferencia en pesos con recargo del 10 % (solo coordinación por WhatsApp)",
+          "Mercado Pago con tarjeta según las cuotas que te ofrezca la app",
+        ],
       },
     ],
     ctaBanner: {
-      title: "¿Necesitás una cotización personalizada?",
-      subtitle: "Envianos un mensaje por WhatsApp con modelo y falla.",
-      buttonLabel: "Contactar por WhatsApp",
-      hoursLine: "Respuesta en menos de 10 min. (Lun – Sáb 10–19 hs)",
+      title: "¿Dudas o algo que no encontrás en la tabla?",
+      subtitle:
+        "Escribinos por WhatsApp con modelo y problema: te cotizamos y coordinamos rápido. También vendemos iPhone, Mac, iPad, Apple Watch y accesorios.",
+      buttonLabel: "Escribir por WhatsApp",
+      hoursLine: "Lun – Sáb 10:00–19:00 · Retiro en oficina Microcentro (coordinado por chat)",
     },
   });
 }

@@ -1,4 +1,6 @@
 import Link from "next/link";
+
+import { getFooterContent } from "@/lib/footer-content-server";
 import { siteConfig } from "@/lib/site-config";
 
 function SocialIcon({ icon }: { icon: string }) {
@@ -28,12 +30,24 @@ function SocialIcon({ icon }: { icon: string }) {
           <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
         </svg>
       );
+    case "link":
+      return (
+        <svg className={common} fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" aria-hidden>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M13.19 8.688a4.5 4.5 0 011.242 7.244l-4.5 4.5a4.5 4.5 0 01-6.364-6.364l1.757-1.757m13.35-5.607a4.5 4.5 0 00-6.364 0l-4.5 4.5a4.5 4.5 0 106.364 6.364l1.757-1.757" />
+        </svg>
+      );
     default:
       return null;
   }
 }
 
-export function SiteFooter() {
+export async function SiteFooter() {
+  const footer = await getFooterContent();
+  const col0 = footer.columns[0]!;
+  const col1 = footer.columns[1]!;
+  const col2 = footer.columns[2]!;
+  const col3 = footer.columns[3]!;
+
   return (
     <footer className="border-t border-[var(--border)] bg-[var(--footer-bg)] text-neutral-600">
       <div className="mx-auto max-w-6xl px-4 py-14 sm:px-8 sm:py-16">
@@ -42,33 +56,27 @@ export function SiteFooter() {
             <p className="font-display text-lg font-semibold tracking-tight text-neutral-950">
               {siteConfig.brandName}
             </p>
-            <p className="mt-4 text-sm leading-relaxed text-neutral-600">
-              {siteConfig.footer.blurb}
-            </p>
+            <p className="mt-4 text-sm leading-relaxed text-neutral-600">{footer.blurb}</p>
             <div id="sedes" className="mt-8 scroll-mt-28">
-              <h3 className="text-sm font-semibold text-neutral-950">Nuestras sedes</h3>
-              <p className="mt-2 text-sm text-neutral-600">
-                Coordinamos retiro y envíos. Consultá horarios y disponibilidad por WhatsApp.
-              </p>
+              <h3 className="text-sm font-semibold text-neutral-950">{footer.sedesTitle}</h3>
+              <p className="mt-2 text-sm text-neutral-600">{footer.sedesBody}</p>
             </div>
             <div id="vende" className="mt-8 scroll-mt-28">
-              <h3 className="text-sm font-semibold text-neutral-950">Vendé tu equipo</h3>
-              <p className="mt-2 text-sm text-neutral-600">
-                Cotización por WhatsApp según modelo, capacidad y estado. Sin vueltas.
-              </p>
+              <h3 className="text-sm font-semibold text-neutral-950">{footer.vendeTitle}</h3>
+              <p className="mt-2 text-sm text-neutral-600">{footer.vendeBody}</p>
               <p className="mt-3">
                 <Link
-                  href="/vende-tu-equipo"
+                  href={footer.vendeLinkHref}
                   className="text-sm font-semibold text-neutral-950 underline decoration-neutral-300 underline-offset-4 transition hover:decoration-neutral-950"
                 >
-                  Ver cómo funciona
+                  {footer.vendeLinkLabel}
                 </Link>
               </p>
             </div>
             <div className="mt-8 flex flex-wrap gap-3">
-              {siteConfig.footer.social.map((s) => (
+              {footer.social.map((s) => (
                 <a
-                  key={s.label}
+                  key={`${s.label}-${s.href}`}
                   href={s.href}
                   target="_blank"
                   rel="noopener noreferrer"
@@ -81,28 +89,11 @@ export function SiteFooter() {
             </div>
           </div>
 
-          {siteConfig.footer.columns.slice(0, 2).map((col) => (
-            <div key={col.title}>
-              <h3 className="text-sm font-semibold text-neutral-950">{col.title}</h3>
-              <ul className="mt-5 space-y-3 text-sm">
-                {col.links.map((link) => (
-                  <li key={link.label}>
-                    <Link
-                      href={link.href}
-                      className="text-neutral-600 transition hover:text-neutral-950"
-                    >
-                      {link.label}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
           <div>
-            <h3 className="text-sm font-semibold text-neutral-950">Soporte</h3>
+            <h3 className="text-sm font-semibold text-neutral-950">{col0.title}</h3>
             <ul className="mt-5 space-y-3 text-sm">
-              {siteConfig.footer.columns[2]?.links.map((link) => (
-                <li key={link.label}>
+              {col0.links.map((link) => (
+                <li key={`${link.label}-${link.href}`}>
                   <Link
                     href={link.href}
                     className="text-neutral-600 transition hover:text-neutral-950"
@@ -111,8 +102,38 @@ export function SiteFooter() {
                   </Link>
                 </li>
               ))}
-              {siteConfig.footer.columns[3]?.links.map((link) => (
-                <li key={link.label}>
+            </ul>
+          </div>
+          <div>
+            <h3 className="text-sm font-semibold text-neutral-950">{col1.title}</h3>
+            <ul className="mt-5 space-y-3 text-sm">
+              {col1.links.map((link) => (
+                <li key={`${link.label}-${link.href}`}>
+                  <Link
+                    href={link.href}
+                    className="text-neutral-600 transition hover:text-neutral-950"
+                  >
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div>
+            <h3 className="text-sm font-semibold text-neutral-950">{footer.supportColumnTitle}</h3>
+            <ul className="mt-5 space-y-3 text-sm">
+              {col2.links.map((link) => (
+                <li key={`${link.label}-${link.href}`}>
+                  <Link
+                    href={link.href}
+                    className="text-neutral-600 transition hover:text-neutral-950"
+                  >
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
+              {col3.links.map((link) => (
+                <li key={`${link.label}-${link.href}-2`}>
                   <Link
                     href={link.href}
                     className="text-neutral-600 transition hover:text-neutral-950"
@@ -130,32 +151,35 @@ export function SiteFooter() {
                 <span className="shrink-0 text-neutral-400" aria-hidden>
                   📍
                 </span>
-                <span>{siteConfig.contact.address}</span>
+                <span>{footer.contact.address}</span>
               </li>
               <li className="flex gap-2">
                 <span className="shrink-0 text-neutral-400" aria-hidden>
                   📞
                 </span>
                 <a
-                  href={`tel:${siteConfig.contact.phone.replace(/\s/g, "")}`}
+                  href={`tel:${footer.contact.phone.replace(/\s/g, "")}`}
                   className="transition hover:text-neutral-950"
                 >
-                  {siteConfig.contact.phone}
+                  {footer.contact.phone}
                 </a>
               </li>
               <li className="flex gap-2">
                 <span className="shrink-0 text-neutral-400" aria-hidden>
                   ✉️
                 </span>
-                <a href={`mailto:${siteConfig.contact.email}`} className="transition hover:text-neutral-950">
-                  {siteConfig.contact.email}
+                <a
+                  href={`mailto:${footer.contact.email}`}
+                  className="transition hover:text-neutral-950"
+                >
+                  {footer.contact.email}
                 </a>
               </li>
               <li className="flex gap-2">
                 <span className="shrink-0 text-neutral-400" aria-hidden>
                   🕐
                 </span>
-                <span>{siteConfig.contact.hours}</span>
+                <span>{footer.contact.hours}</span>
               </li>
             </ul>
           </div>
@@ -166,12 +190,15 @@ export function SiteFooter() {
             © {new Date().getFullYear()} {siteConfig.brandName}. Todos los derechos reservados.
           </p>
           <div className="flex flex-wrap gap-4">
-            <Link href="/#faq" className="transition hover:text-neutral-950">
-              Privacidad
-            </Link>
-            <Link href="/#faq" className="transition hover:text-neutral-950">
-              Términos
-            </Link>
+            {footer.legalLinks.map((link) => (
+              <Link
+                key={`${link.label}-${link.href}`}
+                href={link.href}
+                className="transition hover:text-neutral-950"
+              >
+                {link.label}
+              </Link>
+            ))}
           </div>
         </div>
       </div>

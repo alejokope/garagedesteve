@@ -57,7 +57,7 @@ export const products: Product[] = [];
 export const trustPoints = [
   { title: "Stock verificado", desc: "Equipos nuevos sellados y usados premium revisados." },
   { title: "Servicio técnico", desc: "Especialistas en ecosistema Apple y más marcas." },
-  { title: "Compra guiada", desc: "Te asesoramos por WhatsApp antes de cerrar." },
+  { title: "Compra guiada", desc: "Cerramos precio, pago y retiro por WhatsApp, sin vueltas." },
 ];
 
 /** Por defecto vacío: los destacados se definen en `content_entries` → home.featured. */

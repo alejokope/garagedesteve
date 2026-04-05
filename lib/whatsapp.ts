@@ -1,4 +1,5 @@
 import { cartLineDisplayName, cartLineUnitPrice } from "@/lib/cart-line";
+import { siteConfig } from "@/lib/site-config";
 import type { CartItem } from "@/lib/types";
 
 function formatMoney(n: number, locale = "es-AR") {
@@ -15,9 +16,13 @@ export function buildWhatsAppOrderMessage(
   total: number,
   opts?: { businessName?: string; customerNote?: string },
 ) {
-  const name = opts?.businessName ?? "El Garage de Steve";
+  const name = opts?.businessName ?? siteConfig.brandName;
   const lines: string[] = [
-    `Hola ${name}, quiero consultar / pedir lo siguiente:`,
+    `Hola ${name}, ¿cómo están? 👋`,
+    "",
+    "1) Quiero coordinar la compra de un equipo / producto.",
+    "",
+    "Pedido:",
     "",
   ];
 
@@ -39,11 +44,17 @@ export function buildWhatsAppOrderMessage(
 
   if (opts?.customerNote?.trim()) {
     lines.push("");
-    lines.push(`Nota: ${opts.customerNote.trim()}`);
+    lines.push(`Preferencias / consultas: ${opts.customerNote.trim()}`);
   }
 
   lines.push("");
-  lines.push("¿Me confirmás disponibilidad y formas de pago? ¡Gracias!");
+  lines.push(
+    "¿Me confirman disponibilidad, retiro en oficina (Microcentro) y formas de pago? Si vieron otro precio, lo vemos y lo intentamos mejorar 🙂",
+  );
+  lines.push("");
+  lines.push(`Listado y links: ${siteConfig.publicLinks.linktree}`);
+  lines.push("");
+  lines.push("Gracias.");
 
   return lines.join("\n");
 }

@@ -151,23 +151,23 @@ export function RepairsTrackView({ variant = "page" }: { variant?: "page" | "sec
             </h1>
             <ol className="mt-5 list-decimal space-y-3 pl-5 text-[15px] leading-relaxed text-neutral-600">
               <li>
-                Coordinamos el ingreso de tu equipo y el diagnóstico. Si aún no hablaste con el taller,
-                escribinos por WhatsApp.
+                Si todavía no coordinaste el ingreso o el presupuesto, escribinos por WhatsApp: lo
+                vemos rápido y sin vueltas.
               </li>
               <li>
-                Cuando registramos tu caso en el sistema, recibís un{" "}
+                Cuando damos de alta tu caso, te enviamos un{" "}
                 <strong className="font-semibold text-neutral-800">código de seguimiento</strong> por
-                email.
+                correo.
               </li>
               <li>
-                En esta página, en el panel de la derecha, podés consultar el{" "}
+                En el panel de la derecha podés ver el{" "}
                 <strong className="font-semibold text-neutral-800">estado</strong> y la{" "}
-                <strong className="font-semibold text-neutral-800">fecha estimada</strong> cuando
-                esté cargada.
+                <strong className="font-semibold text-neutral-800">fecha estimada</strong> cuando esté
+                cargada.
               </li>
             </ol>
             <p className="mt-5 text-sm text-neutral-500">
-              Las cotizaciones y la logística fina se resuelven por WhatsApp; acá ves el estado del
+              Presupuesto, pagos y detalle del trámite siguen por WhatsApp; acá el foco es el estado del
               taller.
             </p>
             <div className="mt-6">
@@ -178,7 +178,7 @@ export function RepairsTrackView({ variant = "page" }: { variant?: "page" | "sec
                   rel="noopener noreferrer"
                   className="inline-flex h-12 items-center justify-center rounded-xl bg-[#25D366] px-6 text-sm font-semibold text-white shadow-md transition hover:bg-[#20bd5a]"
                 >
-                  Ir a WhatsApp
+                  Abrir WhatsApp
                 </a>
               ) : (
                 <p className="text-sm text-amber-800">

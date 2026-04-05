@@ -16,10 +16,13 @@ import {
   mergeWhyChoose,
 } from "@/lib/home-public-content";
 
+import { FOOTER_CONTENT_KEY } from "@/lib/footer-content-schema";
+
 import { deleteContentEntryAction } from "./actions";
 import { SiteContentHub } from "./site-content-hub";
 
 const HOME_KEY_SET = new Set<string>(HOME_CONTENT_KEYS);
+const HIDDEN_IN_OTHER_TABLE = new Set<string>([FOOTER_CONTENT_KEY]);
 
 export default async function BackofficeContenidoPage() {
   let rows: Awaited<ReturnType<typeof listContentEntriesAdmin>> = [];
@@ -53,7 +56,9 @@ export default async function BackofficeContenidoPage() {
     ctaFinal: mergeCtaFinal(payloadByKey.get("home.cta_final")),
   };
 
-  const otherRows = rows.filter((r) => !HOME_KEY_SET.has(r.key));
+  const otherRows = rows.filter(
+    (r) => !HOME_KEY_SET.has(r.key) && !HIDDEN_IN_OTHER_TABLE.has(r.key),
+  );
 
   return (
     <div className="space-y-10">
@@ -75,6 +80,25 @@ export default async function BackofficeContenidoPage() {
         <Link href="/backoffice" className="text-sm font-medium text-violet-300/90 hover:text-violet-200">
           ← Inicio del panel
         </Link>
+      </div>
+
+      <div className="rounded-2xl border border-violet-500/25 bg-violet-950/20 p-4 sm:p-5">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-wide text-violet-300/90">
+              Sitio completo
+            </p>
+            <p className="mt-1 text-sm text-slate-300">
+              Pie de página: textos, redes, enlaces y contacto que se ven en todas las páginas.
+            </p>
+          </div>
+          <Link
+            href="/backoffice/contenido/footer"
+            className="inline-flex shrink-0 items-center justify-center rounded-xl bg-white/[0.1] px-4 py-2.5 text-sm font-semibold text-white ring-1 ring-white/15 transition hover:bg-white/[0.14]"
+          >
+            Editar footer
+          </Link>
+        </div>
       </div>
 
       <nav className="rounded-2xl border border-white/[0.08] bg-white/[0.02] px-4 py-4 sm:px-5">

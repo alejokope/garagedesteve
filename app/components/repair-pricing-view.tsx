@@ -99,10 +99,10 @@ export function RepairPricingView({
               href="/servicio-tecnico#seguimiento"
               className="inline-flex h-11 items-center justify-center rounded-xl bg-[#25D366] px-5 text-sm font-semibold text-white shadow-md transition hover:bg-[#20bd5a]"
             >
-              Coordinar por WhatsApp
+              Escribir por WhatsApp
             </a>
             <span className="self-center text-xs text-neutral-500">
-              Cotización final por WhatsApp · sin pago en la web
+              Cerramos precio y turno por chat · sin pago en la web
             </span>
           </div>
         </div>
@@ -255,7 +255,7 @@ export function RepairPricingView({
 
             {visibleCategories.length === 0 ? (
               <p className="rounded-2xl border border-dashed border-neutral-200 bg-white px-6 py-12 text-center text-neutral-500">
-                No hay precios para este filtro. Probá otra categoría o contactanos por WhatsApp.
+                No hay precios para este modelo. Probá otro filtro o escribinos por WhatsApp.
               </p>
             ) : null}
 

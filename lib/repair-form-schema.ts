@@ -144,9 +144,9 @@ export function mergeRepairFormDefaults(partial: unknown): RepairFormPayload {
 
 export function defaultRepairFormPayload(): RepairFormPayload {
   return repairFormPayloadSchema.parse({
-    heroTitle: "Solicitud de servicio técnico",
+    heroTitle: "Servicio técnico Apple",
     heroSubtitle:
-      "Completá el formulario. Te respondemos por WhatsApp con el próximo paso. Diagnóstico sin cargo en la mayoría de los casos.",
+      "Contanos el problema y el modelo: te respondemos por WhatsApp para agilizar la cotización. Si podemos, evaluamos sin cargo al inicio.",
     serviceTypes: [
       {
         id: "pantalla",
@@ -188,8 +188,9 @@ export function defaultRepairFormPayload(): RepairFormPayload {
       { id: "ipad-air", brandId: "apple", label: "iPad Air" },
       { id: "otro-m", brandId: "otro", label: "Otro modelo" },
     ],
-    problemLabel: "Descripción del problema",
-    problemPlaceholder: "Contanos qué pasó, hace cuánto y si hubo golpe o líquido…",
+    problemLabel: "¿Qué reparación necesitás?",
+    problemPlaceholder:
+      "Detallá lo mejor posible: qué falla, desde cuándo, si hubo golpe o líquido, y el modelo exacto si no lo elegiste arriba.",
     priorities: [
       { id: "normal", label: "Normal", description: "3–5 días hábiles" },
       { id: "urgente", label: "Urgente", description: "24–48 hs", default: true },
@@ -198,36 +199,37 @@ export function defaultRepairFormPayload(): RepairFormPayload {
     deliveryOptions: [
       {
         id: "tienda",
-        title: "Llevar a la tienda",
-        description: "Coordinamos turno por WhatsApp.",
-        addressLine: "Av. Corrientes 1234, CABA",
+        title: "Traer el equipo (Microcentro)",
+        description: "Retiro en oficina comercial con seguridad; coordinamos día y horario por WhatsApp. Recordá DNI para recepción.",
+        addressLine: "Microcentro, CABA",
       },
       {
         id: "domicilio",
-        title: "Retiro a domicilio",
-        description: "Solo CABA y GBA según zona.",
+        title: "Otra modalidad",
+        description: "Consultanos por envío u otras opciones según caso.",
       },
     ],
     contactNameLabel: "Nombre completo",
     contactPhoneLabel: "Teléfono (WhatsApp)",
     contactEmailLabel: "Email (opcional)",
     showEmailField: true,
-    fileUploadTitle: "Fotos del equipo",
-    fileUploadHint: "Podés adjuntar imágenes; también las podés enviar luego por WhatsApp.",
+    fileUploadTitle: "Fotos o video del equipo",
+    fileUploadHint:
+      "Si hay rotura o desgaste, las fotos o un video corto ayudan a cotizar sin idas y vueltas. También podés mandarlos por WhatsApp después.",
     sidebarDiagnosis: {
-      title: "Diagnóstico gratis",
+      title: "Diagnóstico claro",
       bullets: [
-        "Evaluación inicial sin costo en muchos casos",
-        "Sin compromiso de reparación",
-        "Especialistas certificados",
+        "Te decimos qué conviene antes de avanzar",
+        "Sin compromiso hasta que apruebes el presupuesto",
+        "Especializados en Apple",
       ],
     },
     sidebarTimes: {
       title: "Tiempos orientativos",
       items: [
-        { label: "Pantalla", time: "2–4 hs" },
-        { label: "Batería", time: "1–2 hs" },
-        { label: "Placa / líquidos", time: "24–72 hs" },
+        { label: "Módulo (pantalla)", time: "2–4 hs" },
+        { label: "Batería", time: "30–60 min" },
+        { label: "Placa / líquidos", time: "Según diagnóstico" },
       ],
     },
     sidebarContact: {
@@ -236,37 +238,37 @@ export function defaultRepairFormPayload(): RepairFormPayload {
       email: "hola@theiphone.example",
     },
     featuresSection: {
-      title: "Tu dispositivo en las mejores manos",
+      title: "Por qué elegirnos",
       items: [
         {
-          title: "Técnicos especializados",
-          description: "Experiencia en Apple y electrónica en general.",
-          iconEmoji: "👷",
-        },
-        {
-          title: "Repuestos de calidad",
-          description: "Según disponibilidad y presupuesto acordado.",
+          title: "Repuestos de primera",
+          description: "Marcas reconocidas y alternativas de igual o mejor calidad cuando hace falta.",
           iconEmoji: "📦",
         },
         {
-          title: "Garantía en el trabajo",
-          description: "Te informamos cobertura antes de avanzar.",
+          title: "Garantía escrita",
+          description: "Sabés qué cubre y por cuánto tiempo antes de dejar el equipo.",
           iconEmoji: "🛡️",
         },
         {
-          title: "Trabajos ágiles",
-          description: "Prioridades express cuando el repuesto está en stock.",
+          title: "Coordinación rápida",
+          description: "Te respondemos por WhatsApp y cerramos día de ingreso y retiro sin vueltas.",
           iconEmoji: "⚡",
+        },
+        {
+          title: "También vendemos Apple",
+          description: "iPhone nuevo o usado, Mac, iPad, Watch y accesorios. Pedinos listado.",
+          iconEmoji: "🍎",
         },
       ],
     },
     howItWorks: {
       title: "Cómo funciona",
       steps: [
-        { title: "Completá el formulario", description: "Detallá marca, modelo y falla." },
-        { title: "Diagnóstico", description: "Te guiamos por WhatsApp." },
-        { title: "Reparación", description: "Presupuesto y autorización." },
-        { title: "Entrega", description: "Retiro en tienda o envío coordinado." },
+        { title: "Escribinos con detalle", description: "Modelo, falla y fotos si aplica." },
+        { title: "Presupuesto", description: "Te pasamos precio y plazo por WhatsApp." },
+        { title: "Reparación", description: "Aprobás y dejás el equipo; probamos al entregar." },
+        { title: "Retiro", description: "Microcentro, con seguridad. Coordinado por chat." },
       ],
     },
     testimonials: {
@@ -293,7 +295,7 @@ export function defaultRepairFormPayload(): RepairFormPayload {
         },
       ],
     },
-    ctaButtonLabel: "Consultar reparación por WhatsApp",
+    ctaButtonLabel: "Enviar consulta por WhatsApp",
   });
 }
 

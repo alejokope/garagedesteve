@@ -3,6 +3,11 @@ export const siteConfig = {
   brandName: "El Garage de Steve",
   tagline:
     "Tecnología premium y soporte técnico con la confianza que buscás en cada compra.",
+  /** Links oficiales (WhatsApp, mensajes prearmados, footer). */
+  publicLinks: {
+    instagram: "https://www.instagram.com/elgaragedesteve/",
+    linktree: "https://linktr.ee/elgaragedesteve",
+  },
   /**
    * Navegación principal: misma en todas las páginas.
    * `shortLabel` en barra desktop; `label` en menú móvil.
@@ -21,14 +26,14 @@ export const siteConfig = {
     { id: "faq", href: "/#faq", label: "FAQ", shortLabel: "FAQ" },
   ] as const,
   contact: {
-    address: "Av. Corrientes 1234, CABA · Argentina",
+    address: "Microcentro, CABA · Retiro en oficina comercial (coordinar por WhatsApp)",
     phone: "+54 11 0000-0000",
     email: "hola@theiphone.example",
     hours: "Lun–Sáb 10:00–19:00",
   },
   footer: {
     blurb:
-      "Equipos originales, asesoramiento honesto y servicio técnico especializado para que compres con tranquilidad.",
+      "Repuestos de primera, garantía escrita y coordinación rápida y sin vueltas. También vendemos productos Apple.",
     columns: [
       {
         title: "Compañía",
@@ -73,6 +78,11 @@ export const siteConfig = {
         label: "Instagram",
         href: "https://www.instagram.com/elgaragedesteve/",
         icon: "instagram",
+      },
+      {
+        label: "Linktree",
+        href: "https://linktr.ee/elgaragedesteve",
+        icon: "link",
       },
       {
         label: "LinkedIn",

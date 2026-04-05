@@ -3,6 +3,7 @@ import { notFound, redirect } from "next/navigation";
 
 import { getContentEntryAdmin } from "@/lib/backoffice/content-db";
 import { SITE_HOME_SECTION_META } from "@/lib/backoffice/site-content-sections-meta";
+import { FOOTER_CONTENT_KEY } from "@/lib/footer-content-schema";
 import { HOME_CONTENT_KEYS, type HomeContentKey } from "@/lib/home-public-content";
 
 import { ContentForm } from "../content-form";
@@ -16,6 +17,10 @@ const HOME_KEYS_SET = new Set<string>(HOME_CONTENT_KEYS);
 export default async function EditarContenidoPage({ params }: PageProps) {
   const { key } = await params;
   const decoded = decodeURIComponent(key);
+
+  if (decoded === FOOTER_CONTENT_KEY) {
+    redirect("/backoffice/contenido/footer");
+  }
 
   if (HOME_KEYS_SET.has(decoded)) {
     const anchor = SITE_HOME_SECTION_META[decoded as HomeContentKey].anchorId;

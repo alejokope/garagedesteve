@@ -1,15 +1,24 @@
 import { siteConfig } from "@/lib/site-config";
 import { whatsappUrl } from "@/lib/whatsapp";
 
+const LINKTREE = siteConfig.publicLinks.linktree;
+const IG_SHORT = "instagram.com/elgaragedesteve";
+
 export function buildRepairPricingWhatsAppMessage(): string {
   const name =
     process.env.NEXT_PUBLIC_WHATSAPP_BUSINESS_NAME ?? siteConfig.brandName;
   return [
-    `Hola ${name},`,
+    `Hola ${name}, ¿cómo están? 👋`,
     "",
-    "Quiero una cotización / más información sobre reparaciones (precios y cobertura).",
+    `Somos ${IG_SHORT}.`,
     "",
-    "Gracias.",
+    "2) Necesito reparar un equipo.",
+    "",
+    "Quiero consultar precios / cobertura de servicio técnico (vi la tabla en la web).",
+    "",
+    `En este link están productos y servicio técnico: ${LINKTREE}`,
+    "",
+    "¡Gracias!",
   ].join("\n");
 }
 
@@ -31,18 +40,20 @@ export function buildRepairFormWhatsAppMessage(input: {
     process.env.NEXT_PUBLIC_WHATSAPP_BUSINESS_NAME ??
     siteConfig.brandName;
   const lines: string[] = [
-    `Hola ${name},`,
+    `Hola ${name}, ¿cómo están?`,
     "",
-    "Solicitud de servicio técnico:",
+    "2) Necesito reparar un equipo.",
     "",
-    `• Tipo de servicio: ${input.serviceTypeLabel}`,
+    "¿Qué reparación quiero hacer? Detalle del problema y modelo:",
+    "",
+    `• Tipo de trabajo: ${input.serviceTypeLabel}`,
     `• Marca: ${input.brandLabel}`,
     `• Modelo: ${input.modelLabel}`,
     `• Prioridad: ${input.priorityLabel}`,
-    `• Entrega: ${input.deliveryLabel}`,
+    `• Entrega / retiro: ${input.deliveryLabel}`,
     "",
-    "Problema:",
-    input.problem.trim() || "(sin detalle)",
+    "Problema (detalle):",
+    input.problem.trim() || "(completo en el próximo mensaje)",
     "",
     `Nombre: ${input.customerName}`,
     `Tel / WhatsApp: ${input.phone}`,
@@ -52,11 +63,13 @@ export function buildRepairFormWhatsAppMessage(input: {
   }
   if (input.fileNames.length > 0) {
     lines.push("");
-    lines.push(`Archivos seleccionados (enviar por chat): ${input.fileNames.join(", ")}`);
+    lines.push(`Adjuntos en el chat: ${input.fileNames.join(", ")}`);
   } else {
     lines.push("");
-    lines.push("Fotos: las envío por este chat si las necesitan.");
+    lines.push("Si hace falta, mando fotos o video por este chat.");
   }
+  lines.push("");
+  lines.push(`Referencia de precios y catálogo: ${LINKTREE}`);
   lines.push("");
   lines.push("¿Me indican próximos pasos? Gracias.");
   return lines.join("\n");
@@ -73,9 +86,13 @@ export function buildRepairsFlowWhatsAppMessage(): string {
   const name =
     process.env.NEXT_PUBLIC_WHATSAPP_BUSINESS_NAME ?? siteConfig.brandName;
   return [
-    `Hola ${name},`,
+    `Hola ${name}, ¿cómo están?`,
     "",
-    "Quiero coordinar o seguir el trámite de una reparación (envío, presupuesto o consulta).",
+    "Quiero coordinar o seguir el trámite de una reparación (presupuesto, ingreso del equipo o consulta).",
+    "",
+    `Si aplica, mi código de seguimiento lo paso en el próximo mensaje.`,
+    "",
+    `Info general: ${LINKTREE}`,
     "",
     "Gracias.",
   ].join("\n");

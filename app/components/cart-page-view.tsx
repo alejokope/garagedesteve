@@ -196,7 +196,7 @@ export function CartPageView() {
                   Notas del pedido
                 </label>
                 <p className="mt-1 text-xs text-neutral-500">
-                  Color, horario de retiro, consultas — lo leemos en WhatsApp.
+                  Capacidad, color, forma de pago o retiro en Microcentro — lo vemos todo por WhatsApp.
                 </p>
                 <textarea
                   id="cart-note"
@@ -257,9 +257,12 @@ export function CartPageView() {
                   Medios de pago
                 </h2>
                 <p className="mt-2 text-sm text-neutral-600">
-                  Coordinamos transferencia, efectivo y opciones vigentes al cerrar el pedido por{" "}
-                  <span className="font-medium text-[#25D366]">WhatsApp</span>. No cobramos por la web:{" "}
-                  <strong className="text-neutral-800">no hay pago con tarjeta en el sitio.</strong>
+                  Efectivo en pesos o USD; en pesos al valor del dólar que informa la financiera al momento
+                  del pago. Transferencia en pesos con recargo del 10 %. También{" "}
+                  <span className="font-medium text-[#25D366]">Mercado Pago</span> con tarjeta según tu
+                  app. Todo se confirma por{" "}
+                  <span className="font-medium text-[#25D366]">WhatsApp</span>. En la web no cobramos ni
+                  tomamos tarjeta.
                 </p>
               </section>
             </div>
@@ -291,7 +294,8 @@ export function CartPageView() {
                       </dd>
                     </div>
                     <p className="mt-2 text-xs text-neutral-500">
-                      Precios orientativos en ARS; confirmación final por WhatsApp.
+                      Precios orientativos en ARS; cerramos valor y retiro en oficina (Microcentro) por
+                      WhatsApp.
                     </p>
                   </div>
                 </dl>
@@ -343,7 +347,7 @@ export function CartPageView() {
                   <p>
                     <span className="font-semibold text-neutral-800">Compra asesorada</span>
                     <br />
-                    Garantía y condiciones las confirmamos por chat antes de pagar.
+                    Equipos premium, garantía y condiciones las cerramos por chat antes de pagar.
                   </p>
                 </div>
               </div>
