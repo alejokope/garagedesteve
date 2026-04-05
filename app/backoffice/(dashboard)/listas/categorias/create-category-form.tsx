@@ -11,8 +11,8 @@ export function CreateCategoryForm() {
     <form action={formAction} className="space-y-4 rounded-2xl border border-white/[0.08] bg-white/[0.03] p-6">
       <h2 className="font-display text-lg font-semibold text-white">Nueva categoría</h2>
       <p className="text-sm text-slate-500">
-        El identificador se usa en la URL y en la base (sin espacios; se normaliza solo minúsculas y
-        guiones).
+        El identificador se usa en la base y en el desplegable de categoría al cargar un producto (sin espacios;
+        minúsculas y guiones).
       </p>
       {state?.error ? (
         <p className="rounded-lg border border-red-500/30 bg-red-500/10 px-3 py-2 text-sm text-red-200/95">

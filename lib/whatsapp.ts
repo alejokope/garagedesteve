@@ -1,14 +1,11 @@
 import { cartLineDisplayName, cartLineUnitPrice } from "@/lib/cart-line";
+import { formatMoneyUsd } from "@/lib/format";
 import { siteConfig } from "@/lib/site-config";
 import type { CartItem } from "@/lib/types";
 
-function formatMoney(n: number, locale = "es-AR") {
+function formatOrderMoney(n: number) {
   if (n <= 0) return "A convenir";
-  return new Intl.NumberFormat(locale, {
-    style: "currency",
-    currency: "ARS",
-    maximumFractionDigits: 0,
-  }).format(n);
+  return formatMoneyUsd(n);
 }
 
 export function buildWhatsAppOrderMessage(
@@ -31,13 +28,13 @@ export function buildWhatsAppOrderMessage(
     const sub = unit * line.qty;
     const label = cartLineDisplayName(line);
     const pricePart =
-      unit > 0 ? ` — ${formatMoney(sub)}` : " — precio a confirmar";
+      unit > 0 ? ` — ${formatOrderMoney(sub)}` : " — precio a confirmar";
     lines.push(`${i + 1}. ${label} × ${line.qty}${pricePart}`);
   });
 
   lines.push("");
   if (total > 0) {
-    lines.push(`Total orientativo: ${formatMoney(total)}`);
+    lines.push(`Total orientativo: ${formatOrderMoney(total)}`);
   } else {
     lines.push("Total orientativo: a convenir (ítems con precio consultar).");
   }

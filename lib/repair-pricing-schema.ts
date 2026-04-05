@@ -56,7 +56,7 @@ export const repairPricingPayloadSchema = z.object({
   title: z.string(),
   subtitle: z.string(),
   /** Moneda por defecto para filas sin `currency` propia. */
-  defaultCurrency: repairCurrencySchema.default("ARS"),
+  defaultCurrency: repairCurrencySchema.default("USD"),
   /**
    * Lista maestra de dispositivos (ej. iPhone 11). Los filtros por categoría y las filas referencian estos ids.
    * @deprecated Usar solo `devices`. Se mantiene vacío al guardar desde el backoffice nuevo.
@@ -321,7 +321,7 @@ export function defaultRepairPricingPayload(): RepairPricingPayload {
     title: "Precios y cobertura de reparaciones",
     subtitle:
       "Valores orientativos en la tabla. La cotización final la cerramos por WhatsApp o en tienda según diagnóstico y stock. Repuestos de calidad y garantía escrita en el trabajo.",
-    defaultCurrency: "ARS",
+    defaultCurrency: "USD",
     deviceFilters: [],
     devices: [
       { id: "iphone-13-pro-max", label: "iPhone 13 Pro Max" },
@@ -462,9 +462,9 @@ export function defaultRepairPricingPayload(): RepairPricingPayload {
         id: "pagos",
         title: "Medios de pago (resumen)",
         bullets: [
-          "Efectivo en pesos o USD; en pesos al valor del dólar que informa la financiera al momento del pago",
-          "Transferencia en pesos con recargo del 10 % (solo coordinación por WhatsApp)",
-          "Mercado Pago con tarjeta según las cuotas que te ofrezca la app",
+          "Precios y presupuestos en USD salvo que indiquemos lo contrario",
+          "Medios de pago y tipo de cambio (si aplica) los coordinamos por WhatsApp o en tienda",
+          "Mercado Pago u otras opciones según lo acordado en cada caso",
         ],
       },
     ],

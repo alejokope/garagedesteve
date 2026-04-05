@@ -89,7 +89,7 @@ export function RepairFormEditor({ initial }: { initial: RepairFormPayload }) {
                     title: "Nuevo",
                     iconEmoji: "🛠️",
                     priceFrom: 0,
-                    currency: "ARS" as RepairCurrency,
+                    currency: "USD" as RepairCurrency,
                   },
                 ],
               }))
@@ -166,8 +166,8 @@ export function RepairFormEditor({ initial }: { initial: RepairFormPayload }) {
                   }}
                   className="rounded border border-white/[0.08] bg-black/40 px-2 py-1 text-xs text-white"
                 >
-                  <option value="ARS">ARS</option>
                   <option value="USD">USD</option>
+                  <option value="ARS">ARS</option>
                 </select>
               </div>
               <input

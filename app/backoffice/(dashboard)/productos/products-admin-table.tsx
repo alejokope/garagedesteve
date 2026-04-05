@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useMemo, useState } from "react";
 
-import { formatMoneyArs } from "@/lib/format";
+import { formatMoneyUsd } from "@/lib/format";
 
 import { deleteProductAdminAction } from "./actions";
 import { ProductPublishedToggle } from "./product-published-toggle";
@@ -121,7 +121,7 @@ export function ProductsAdminTable({ rows }: { rows: ProductListRow[] }) {
                     {p.brand ?? "—"}
                   </td>
                   <td className="whitespace-nowrap px-4 py-3 text-slate-300">
-                    {formatMoneyArs(p.price)}
+                    {formatMoneyUsd(p.price)}
                   </td>
                   <td className="px-4 py-3 text-slate-400">{p.category}</td>
                   <td className="px-4 py-3 text-slate-400">

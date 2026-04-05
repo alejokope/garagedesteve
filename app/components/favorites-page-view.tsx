@@ -10,7 +10,7 @@ import { ProductFavoriteButton } from "@/app/components/product-favorite-button"
 import { useAckFlash } from "@/app/hooks/use-ack-flash";
 import { enrichProduct } from "@/lib/catalog";
 import type { Product } from "@/lib/data";
-import { formatMoneyArs } from "@/lib/format";
+import { formatMoneyUsd } from "@/lib/format";
 
 export function FavoritesPageView() {
   const { items, remove } = useFavorites();
@@ -124,11 +124,11 @@ function FavoriteRow({
         <div className="mt-4 border-t border-[var(--border)] pt-4">
           {showDiscount ? (
             <p className="text-xs text-neutral-400 line-through">
-              {formatMoneyArs(enriched.compareAtPrice!)}
+              {formatMoneyUsd(enriched.compareAtPrice!)}
             </p>
           ) : null}
           <p className="font-display text-lg font-bold tabular-nums text-neutral-900">
-            {formatMoneyArs(product.price)}
+            {formatMoneyUsd(product.price)}
           </p>
         </div>
         <div className="mt-4 flex flex-wrap gap-2">

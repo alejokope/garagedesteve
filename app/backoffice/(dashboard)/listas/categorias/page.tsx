@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 import { listProductCategoriesAdmin } from "@/lib/backoffice/catalog-dictionaries-db";
 
 import { deleteCategory, updateCategory } from "./actions";
@@ -13,6 +15,19 @@ export default async function CategoriasListasPage({
 
   return (
     <div className="space-y-10">
+      <div>
+        <p className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">Listas del catálogo</p>
+        <h1 className="mt-1 font-display text-2xl font-semibold text-white sm:text-3xl">Categorías</h1>
+        <p className="mt-2 max-w-2xl text-sm leading-relaxed text-slate-400">
+          Definís en qué <strong className="text-slate-200">sección del catálogo</strong> cae cada producto (iPhone,
+          iPad, etc.). Esto no reemplaza las variantes (color, almacenamiento): esas se cargan al{" "}
+          <Link href="/backoffice/productos" className="text-violet-300 underline hover:text-violet-200">
+            editar cada producto
+          </Link>
+          , en el bloque &quot;Variantes&quot;.
+        </p>
+      </div>
+
       {q.error ? (
         <div className="rounded-xl border border-amber-500/35 bg-amber-500/10 px-4 py-3 text-sm text-amber-100/95">
           {q.error}

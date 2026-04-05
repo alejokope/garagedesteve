@@ -1,7 +1,7 @@
 "use client";
 
 import type { Product } from "@/lib/data";
-import { formatMoneyArs } from "@/lib/format";
+import { formatMoneyUsd } from "@/lib/format";
 import Image from "next/image";
 import Link from "next/link";
 import { ProductFavoriteButton } from "@/app/components/product-favorite-button";
@@ -65,7 +65,7 @@ export function FeaturedProductCard({ product }: { product: Product }) {
         </Link>
         <p className="mt-1 line-clamp-2 text-sm text-neutral-500 sm:mt-1.5">{product.short}</p>
         <p className="font-display mt-3 text-lg font-bold tabular-nums text-neutral-950 sm:mt-4">
-          {formatMoneyArs(product.price)}
+          {formatMoneyUsd(product.price)}
         </p>
         <div className="mt-auto w-full pt-3 sm:pt-4">
           <button

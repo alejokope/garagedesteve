@@ -9,7 +9,7 @@ import { useAckFlash } from "@/app/hooks/use-ack-flash";
 import { enrichProduct } from "@/lib/catalog";
 import type { Product } from "@/lib/data";
 import { getProductById } from "@/lib/data";
-import { formatMoneyArs } from "@/lib/format";
+import { formatMoneyUsd } from "@/lib/format";
 import {
   buildFallbackDetail,
   getProductDetailExtra,
@@ -116,7 +116,7 @@ function SmallProductCard({
           {p.name}
         </Link>
         <p className="mt-1 line-clamp-2 text-xs text-neutral-500">{p.short}</p>
-        <p className="font-display mt-2 text-sm font-bold">{formatMoneyArs(p.price)}</p>
+        <p className="font-display mt-2 text-sm font-bold">{formatMoneyUsd(p.price)}</p>
         <button
           type="button"
           onClick={() => {
@@ -297,11 +297,11 @@ export function ProductDetailView({
 
             <div className="mt-6 flex flex-wrap items-end gap-3">
               <span className="font-display text-3xl font-bold tabular-nums text-neutral-950">
-                {formatMoneyArs(displayPrice)}
+                {formatMoneyUsd(displayPrice)}
               </span>
               {compareAt && compareAt > displayPrice ? (
                 <span className="text-lg text-neutral-400 line-through">
-                  {formatMoneyArs(compareAt)}
+                  {formatMoneyUsd(compareAt)}
                 </span>
               ) : null}
               {pctOff ? (
@@ -361,7 +361,7 @@ export function ProductDetailView({
                             {opt.label}
                           </span>
                           <span className="mt-1 block text-xs font-medium text-neutral-600">
-                            {formatMoneyArs(showPrice)}
+                            {formatMoneyUsd(showPrice)}
                           </span>
                         </button>
                       );

@@ -71,7 +71,7 @@ export const homeTestimonials: Testimonial[] = [
 export const homeFaq: FaqItem[] = [
   {
     q: "¿Los precios de la web son finales?",
-    a: "Son orientativos en ARS. La confirmación final (disponibilidad, promos y formas de pago) la cerramos por WhatsApp.",
+    a: "Son orientativos en USD. La confirmación final (disponibilidad, promos y formas de pago) la cerramos por WhatsApp.",
   },
   {
     q: "¿Hacen envíos?",

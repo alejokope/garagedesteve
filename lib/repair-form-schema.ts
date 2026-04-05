@@ -8,7 +8,7 @@ export const repairFormServiceTypeSchema = z.object({
   subtitle: z.string().optional(),
   iconEmoji: z.string().default("🛠️"),
   priceFrom: z.number().nonnegative(),
-  currency: repairCurrencySchema.default("ARS"),
+  currency: repairCurrencySchema.default("USD"),
 });
 
 export const repairFormBrandSchema = z.object({
@@ -175,7 +175,7 @@ export function defaultRepairFormPayload(): RepairFormPayload {
         title: "Otro / no estoy seguro",
         iconEmoji: "❓",
         priceFrom: 0,
-        currency: "ARS",
+        currency: "USD",
       },
     ],
     brands: [

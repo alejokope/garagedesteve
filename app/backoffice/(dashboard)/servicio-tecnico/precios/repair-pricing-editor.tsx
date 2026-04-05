@@ -128,11 +128,11 @@ export function RepairPricingEditor({ initial }: { initial: RepairPricingPayload
               }
               className="mt-1 w-full rounded-xl border border-white/[0.1] bg-black/30 px-3 py-2 text-sm text-white"
             >
-              <option value="ARS">Pesos (ARS)</option>
               <option value="USD">Dólares (USD)</option>
+              <option value="ARS">Pesos (ARS) — solo si mantenés datos viejos</option>
             </select>
             <p className="mt-1 text-xs text-slate-500">
-              Las filas pueden fijar ARS/USD individual o heredar esta moneda.
+              Por defecto todo en USD. Cada fila puede fijar moneda propia o heredar esta.
             </p>
           </label>
         </div>
@@ -557,8 +557,8 @@ export function RepairPricingEditor({ initial }: { initial: RepairPricingPayload
                           className="rounded border border-white/[0.08] bg-black/40 px-1 py-1 text-[11px] text-white"
                         >
                           <option value="">Hereda</option>
-                          <option value="ARS">ARS</option>
                           <option value="USD">USD</option>
+                          <option value="ARS">ARS</option>
                         </select>
                         <input
                           placeholder="Tiempo"

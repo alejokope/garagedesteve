@@ -22,7 +22,7 @@ export default async function BackofficeRepairPreciosPage() {
         title="Precios y cobertura"
         description={
           <>
-            Editá tablas, filtros, moneda por defecto (ARS/USD) y moneda por fila. Clave en Supabase:{" "}
+            Editá tablas, filtros, moneda por defecto (USD) y moneda por fila si hace falta. Clave en Supabase:{" "}
             <code className="rounded-md bg-white/[0.08] px-1.5 py-0.5 font-mono text-xs text-violet-200/90">
               {REPAIR_PRICING_KEY}
             </code>

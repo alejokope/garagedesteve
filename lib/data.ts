@@ -20,7 +20,7 @@ export type Product = {
   category: CategoryId;
   /** Marca comercial (ej. Apple, JBL); opcional. */
   brand?: string;
-  /** Precio orientativo en ARS — el cliente confirma por WhatsApp */
+  /** Precio orientativo en USD — el cliente confirma por WhatsApp */
   price: number;
   /** Nuevo o usado; se persiste como `stock_condition` en Supabase. */
   condition?: ProductStockCondition;

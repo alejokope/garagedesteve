@@ -28,6 +28,14 @@ export default async function NuevoProductoPage() {
           <h1 className="mt-1 font-display text-2xl font-semibold text-white sm:text-3xl">
             Nuevo producto
           </h1>
+          <p className="mt-3 max-w-2xl text-sm leading-relaxed text-slate-400">
+            Primero completá nombre, categoría y precio (Paso 1). Las variantes y la ficha larga son opcionales: solo
+            si tu producto lo necesita. La categoría se gestiona en{" "}
+            <Link href="/backoffice/listas/categorias" className="text-violet-300 underline hover:text-violet-200">
+              Listas → Categorías
+            </Link>
+            ; no hace falta ir a &quot;Tipos de opción&quot; salvo que quieras otro tipo de control (color, etc.).
+          </p>
         </div>
         <Link
           href="/backoffice/productos"

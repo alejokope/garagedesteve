@@ -18,14 +18,14 @@ const cards = [
   {
     title: "Servicio técnico — Precios",
     description:
-      "Tablas de precios, filtros por dispositivo, moneda ARS/USD global o por fila, acordeón y banner a WhatsApp.",
+      "Tablas de precios, filtros por dispositivo, moneda USD (u otra por fila), acordeón y banner a WhatsApp.",
     href: "/backoffice/servicio-tecnico/precios",
     tag: "Reparaciones",
   },
   {
     title: "Servicio técnico — Solicitud",
     description:
-      "Formulario público: tipos de servicio con precios en pesos o dólares, marcas, modelos, prioridad, entrega y textos.",
+      "Formulario público: tipos de servicio con precios en USD, marcas, modelos, prioridad, entrega y textos.",
     href: "/backoffice/servicio-tecnico/solicitud",
     tag: "Formulario",
   },

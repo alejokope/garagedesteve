@@ -166,8 +166,10 @@ export function VariantGroupsEditor({
       <input type="hidden" name="variant_groups" value={json} readOnly />
 
       {groups.length === 0 ? (
-        <p className="rounded-xl border border-white/[0.08] bg-black/20 px-4 py-6 text-sm text-slate-400">
-          Sin opciones configurables. Agregá un grupo o dejá vacío si el producto es de precio único.
+        <p className="rounded-xl border border-white/[0.08] bg-black/20 px-4 py-6 text-sm leading-relaxed text-slate-400">
+          <span className="font-medium text-slate-200">Nada cargado.</span> Es lo normal para productos de un solo
+          precio: no hace falta hacer nada. Si necesitás color o memoria, tocá{" "}
+          <span className="text-violet-200/95">+ Agregar grupo de opciones</span> abajo.
         </p>
       ) : null}
 
@@ -212,7 +214,9 @@ export function VariantGroupsEditor({
             </label>
 
             <label className="block">
-              <span className="mb-1.5 block text-xs font-medium text-slate-300">Tipo de opción</span>
+              <span className="mb-1.5 block text-xs font-medium text-slate-300">
+                Cómo se muestra al cliente (lista, color, etc.)
+              </span>
               <select
                 value={defs.some((d) => d.id === g.kind) ? g.kind : g.kind}
                 onChange={(e) => onKindChange(gi, e.target.value)}
@@ -233,7 +237,7 @@ export function VariantGroupsEditor({
             </label>
 
             <label className="block">
-              <span className="mb-1.5 block text-xs font-medium text-slate-300">Cómo afecta al precio</span>
+              <span className="mb-1.5 block text-xs font-medium text-slate-300">Precio de cada opción</span>
               <select
                 value={g.pricingMode}
                 onChange={(e) =>
@@ -286,7 +290,7 @@ export function VariantGroupsEditor({
 
                 {g.pricingMode === "absolute" ? (
                   <label className="min-w-[140px]">
-                    <span className="mb-1 block text-[11px] text-slate-500">Precio final (ARS)</span>
+                    <span className="mb-1 block text-[11px] text-slate-500">Precio final (USD)</span>
                     <input
                       type="text"
                       inputMode="numeric"
@@ -300,7 +304,7 @@ export function VariantGroupsEditor({
                   </label>
                 ) : (
                   <label className="min-w-[140px]">
-                    <span className="mb-1 block text-[11px] text-slate-500">Suma al precio base (ARS)</span>
+                    <span className="mb-1 block text-[11px] text-slate-500">Suma al precio base (USD)</span>
                     <input
                       type="text"
                       inputMode="numeric"

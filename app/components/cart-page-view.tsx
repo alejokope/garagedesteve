@@ -8,19 +8,16 @@ import { useCart } from "@/app/context/cart-context";
 import { cartLineDisplayName, cartLineUnitPrice } from "@/lib/cart-line";
 import { enrichProduct } from "@/lib/catalog";
 import { siteConfig } from "@/lib/site-config";
+import { formatMoneyUsd } from "@/lib/format";
 import { buildWhatsAppOrderMessage, whatsappUrl } from "@/lib/whatsapp";
 
-function formatMoney(n: number) {
+function formatCartMoney(n: number) {
   if (n <= 0) return "A convenir";
-  return new Intl.NumberFormat("es-AR", {
-    style: "currency",
-    currency: "ARS",
-    maximumFractionDigits: 0,
-  }).format(n);
+  return formatMoneyUsd(n);
 }
 
-/** Umbral orientativo para mensaje de envío (ARS). */
-const FREE_SHIPPING_THRESHOLD = 500_000;
+/** Umbral orientativo para mensaje de envío gratis (USD). */
+const FREE_SHIPPING_THRESHOLD = 800;
 
 export function CartPageView() {
   const { items, remove, setQty, total, clear } = useCart();
@@ -94,9 +91,9 @@ export function CartPageView() {
               </span>
               {hasFreeShipping
                 ? "¡Envío gratis en este pedido!"
-                : `Envío gratis en compras desde ${formatMoney(FREE_SHIPPING_THRESHOLD)}${
+                : `Envío gratis en compras desde ${formatCartMoney(FREE_SHIPPING_THRESHOLD)}${
                     subtotal > 0
-                      ? ` · Te faltan ${formatMoney(untilFree)}`
+                      ? ` · Te faltan ${formatCartMoney(untilFree)}`
                       : ""
                   }`}
             </div>
@@ -171,7 +168,7 @@ export function CartPageView() {
                           </div>
                           <div className="flex items-center gap-4">
                             <p className="font-display text-base font-bold tabular-nums text-neutral-900 sm:text-lg">
-                              {lineTotal > 0 ? formatMoney(lineTotal) : "A convenir"}
+                              {lineTotal > 0 ? formatCartMoney(lineTotal) : "A convenir"}
                             </p>
                             <button
                               type="button"
@@ -238,7 +235,7 @@ export function CartPageView() {
                           {p.name}
                         </p>
                         <p className="mt-1 font-display text-sm font-bold tabular-nums text-neutral-900">
-                          {formatMoney(p.price)}
+                          {formatCartMoney(p.price)}
                         </p>
                         <Link
                           href={`/tienda/${p.id}`}
@@ -257,12 +254,11 @@ export function CartPageView() {
                   Medios de pago
                 </h2>
                 <p className="mt-2 text-sm text-neutral-600">
-                  Efectivo en pesos o USD; en pesos al valor del dólar que informa la financiera al momento
-                  del pago. Transferencia en pesos con recargo del 10 %. También{" "}
-                  <span className="font-medium text-[#25D366]">Mercado Pago</span> con tarjeta según tu
-                  app. Todo se confirma por{" "}
-                  <span className="font-medium text-[#25D366]">WhatsApp</span>. En la web no cobramos ni
-                  tomamos tarjeta.
+                  Los precios de la tienda están en <span className="font-medium text-neutral-800">USD</span>. Las
+                  formas de pago y el tipo de cambio (si pagás en otra moneda) las coordinamos por{" "}
+                  <span className="font-medium text-[#25D366]">WhatsApp</span>. También podés usar{" "}
+                  <span className="font-medium text-[#25D366]">Mercado Pago</span> u otros medios según lo que
+                  acordemos. En la web no cobramos ni tomamos tarjeta.
                 </p>
               </section>
             </div>
@@ -277,7 +273,7 @@ export function CartPageView() {
                   <div className="flex justify-between gap-4 text-neutral-600">
                     <dt>Subtotal</dt>
                     <dd className="font-medium tabular-nums text-neutral-900">
-                      {subtotal > 0 ? formatMoney(subtotal) : "A convenir"}
+                      {subtotal > 0 ? formatCartMoney(subtotal) : "A convenir"}
                     </dd>
                   </div>
                   <div className="flex justify-between gap-4 text-neutral-600">
@@ -290,12 +286,11 @@ export function CartPageView() {
                     <div className="flex justify-between gap-4">
                       <dt className="font-display text-base font-semibold text-neutral-900">Total</dt>
                       <dd className="font-display text-xl font-bold tabular-nums text-neutral-900">
-                        {subtotal > 0 ? formatMoney(subtotal) : "A convenir"}
+                        {subtotal > 0 ? formatCartMoney(subtotal) : "A convenir"}
                       </dd>
                     </div>
                     <p className="mt-2 text-xs text-neutral-500">
-                      Precios orientativos en ARS; cerramos valor y retiro en oficina (Microcentro) por
-                      WhatsApp.
+                      Precios orientativos en USD; cerramos valor y retiro en oficina (Microcentro) por WhatsApp.
                     </p>
                   </div>
                 </dl>
@@ -363,7 +358,7 @@ export function CartPageView() {
             <div>
               <p className="text-[11px] font-medium uppercase tracking-wide text-neutral-500">Total</p>
               <p className="font-display text-lg font-bold tabular-nums text-neutral-900">
-                {subtotal > 0 ? formatMoney(subtotal) : "A convenir"}
+                {subtotal > 0 ? formatCartMoney(subtotal) : "A convenir"}
               </p>
             </div>
             <a

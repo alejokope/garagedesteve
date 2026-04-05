@@ -27,14 +27,14 @@ import {
 import type { CategoryId } from "@/lib/data";
 import { categories } from "@/lib/data";
 import { useCatalogProducts } from "@/app/context/catalog-products-context";
-import { formatMoneyArs } from "@/lib/format";
+import { formatMoneyUsd } from "@/lib/format";
 
 function parseList(s: string | null): string[] {
   if (!s?.trim()) return [];
   return s.split(",").map((x) => x.trim()).filter(Boolean);
 }
 
-/** ~80 pasos útiles entre min y max sin pasos gigantes ni de 1 peso innecesarios. */
+/** ~80 pasos útiles entre min y max sin pasos de 1 USD innecesarios. */
 function priceSliderStep(min: number, max: number): number {
   const span = max - min;
   if (span <= 0) return 1;
@@ -119,11 +119,11 @@ function CatalogCard({ p }: { p: EnrichedProduct }) {
           <div>
             {showDiscount ? (
               <p className="text-xs text-neutral-400 line-through">
-                {formatMoneyArs(p.compareAtPrice!)}
+                {formatMoneyUsd(p.compareAtPrice!)}
               </p>
             ) : null}
             <p className="font-display text-lg font-bold tabular-nums text-neutral-900">
-              {formatMoneyArs(p.price)}
+              {formatMoneyUsd(p.price)}
             </p>
           </div>
           <button
@@ -584,11 +584,11 @@ export function CatalogView() {
                     aria-valuenow={clampedPrecioMax}
                   />
                   <div className="mt-2 flex justify-between gap-2 text-xs text-neutral-500">
-                    <span className="min-w-0 shrink truncate">{formatMoneyArs(minCatalogPrice)}</span>
+                    <span className="min-w-0 shrink truncate">{formatMoneyUsd(minCatalogPrice)}</span>
                     <span className="shrink-0 text-center font-semibold text-neutral-800">
-                      Hasta {formatMoneyArs(clampedPrecioMax)}
+                      Hasta {formatMoneyUsd(clampedPrecioMax)}
                     </span>
-                    <span className="min-w-0 shrink truncate text-right">{formatMoneyArs(maxCatalogPrice)}</span>
+                    <span className="min-w-0 shrink truncate text-right">{formatMoneyUsd(maxCatalogPrice)}</span>
                   </div>
                 </div>
               </div>

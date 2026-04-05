@@ -19,7 +19,7 @@ export default async function BackofficeRepairSolicitudPage() {
         title="Formulario de solicitud"
         description={
           <>
-            Tipos de servicio (precios ARS/USD), marcas, modelos, prioridades, entrega, textos y
+            Tipos de servicio (precios en USD por defecto), marcas, modelos, prioridades, entrega, textos y
             testimonios. Clave en Supabase:{" "}
             <code className="rounded-md bg-white/[0.08] px-1.5 py-0.5 font-mono text-xs text-violet-200/90">
               {REPAIR_FORM_KEY}

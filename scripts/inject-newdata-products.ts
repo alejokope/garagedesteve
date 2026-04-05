@@ -9,7 +9,7 @@
  *   npx tsx scripts/inject-newdata-products.ts           # upsert real
  *   npx tsx scripts/inject-newdata-products.ts --dry-run
  *
- * Los precios del JSON son referenciales en USD (la tienda hoy formatea como ARS;
+ * Los precios del JSON son referenciales en USD (la tienda formatea en USD;
  * ajustá cotización o formato si hace falta). El campo stock del JSON se ignora.
  */
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
