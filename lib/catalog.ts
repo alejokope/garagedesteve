@@ -97,7 +97,18 @@ const categoryLabels: Record<CategoryId, string> = {
   otros: "ACCESORIOS",
 };
 
-function shopTipoFromCategory(c: CategoryId): ShopTipo {
+function categoryLabelForProduct(category: string): string {
+  const known = categoryLabels[category as CategoryId];
+  if (known) return known;
+  return category
+    .split(/[-_]/)
+    .filter(Boolean)
+    .map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
+    .join(" ");
+}
+
+/** Derivado de la categoría del producto (backoffice); usado para orden “relevancia” y datos enriquecidos. */
+export function shopTipoFromCategory(c: CategoryId): ShopTipo {
   switch (c) {
     case "iphone":
       return "smartphones";
@@ -131,7 +142,7 @@ export function enrichProduct(p: Product): EnrichedProduct {
   const seed = hashSeed(p.id);
   const shopBrand = shopBrandKeyFromProduct(p);
   const shopTipo = shopTipoFromCategory(p.category);
-  const categoryLabel = categoryLabels[p.category];
+  const categoryLabel = categoryLabelForProduct(p.category);
 
   let compareAtPrice: number | null = null;
   let discountPercent: number | null = null;
@@ -185,6 +196,63 @@ export const shopTipos: { id: ShopTipo; label: string }[] = [
   { id: "otro", label: "Otros" },
 ];
 
+const shopTipoIds = new Set(shopTipos.map((t) => t.id));
+
+export const CATALOG_FILTER_CATEGORY_IDS: CategoryId[] = [
+  "mac",
+  "ipad",
+  "iphone",
+  "watch",
+  "audio",
+  "desktop",
+  "servicio",
+  "otros",
+];
+
+function categoryIdFromLegacyShopTipo(t: ShopTipo): CategoryId | null {
+  const m: Record<ShopTipo, CategoryId | null> = {
+    smartphones: "iphone",
+    accessories: "otros",
+    smartwatch: "watch",
+    audio: "audio",
+    mac: "mac",
+    tablet: "ipad",
+    desktop: "desktop",
+    servicio: "servicio",
+    otro: null,
+  };
+  return m[t] ?? null;
+}
+
+/**
+ * Categorías seleccionadas al cargar el catálogo: `cat` (ids separados por coma, ej. iphone,ipad)
+ * o compatibilidad con URLs viejas `tipos` (smartphones, tablet, …).
+ */
+export function catalogCategoriesFromUrl(searchParams: {
+  get: (key: string) => string | null;
+}): CategoryId[] {
+  const rawCat = searchParams.get("cat");
+  if (rawCat?.trim()) {
+    const parts = rawCat.split(",").map((x) => x.trim().toLowerCase()).filter(Boolean);
+    const out = parts.filter((p): p is CategoryId =>
+      CATALOG_FILTER_CATEGORY_IDS.includes(p as CategoryId),
+    );
+    if (out.length) return [...new Set(out)];
+  }
+  const rawTipos = searchParams.get("tipos");
+  if (rawTipos?.trim()) {
+    const parts = rawTipos.split(",").map((x) => x.trim()).filter(Boolean);
+    const fromTipos: CategoryId[] = [];
+    for (const part of parts) {
+      if (!shopTipoIds.has(part as ShopTipo)) continue;
+      const cid = categoryIdFromLegacyShopTipo(part as ShopTipo);
+      if (cid) fromTipos.push(cid);
+    }
+    if (fromTipos.length) return [...new Set(fromTipos)];
+  }
+  return [];
+}
+
 export const shopEstados: { id: CatalogEstado; label: string }[] = [
   { id: "nuevo", label: "Nuevo" },
   { id: "oferta", label: "Oferta" },
@@ -203,7 +271,8 @@ export function filterEnriched(
   opts: {
     q: string;
     marcas: ShopBrandFilterId[];
-    tipos: ShopTipo[];
+    /** Filtro por categoría de producto (misma clave que en la tienda / backoffice). */
+    categorias: CategoryId[];
     estados: CatalogEstado[];
     stockConditions: ProductStockCondition[];
     precioMax: number;
@@ -216,7 +285,7 @@ export function filterEnriched(
       if (!blob.includes(q)) return false;
     }
     if (opts.marcas.length > 0 && !opts.marcas.includes(p.shopBrand)) return false;
-    if (opts.tipos.length && !opts.tipos.includes(p.shopTipo)) return false;
+    if (opts.categorias.length > 0 && !opts.categorias.includes(p.category)) return false;
     if (opts.estados.length) {
       const matchEstado = opts.estados.some((e) => {
         if (e === "nuevo") return p.estado === "nuevo" && p.condition !== "used";

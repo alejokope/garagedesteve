@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useState, type ReactNode } from "react";
+import { useActionState, useMemo, useState, type ReactNode } from "react";
 
 import { categories } from "@/lib/data";
 import type { ProductRow } from "@/lib/backoffice/products-db";
@@ -56,13 +56,30 @@ export function ProductForm({
   const productIdForUploads = mode === "create" ? draftId.trim() : (initial?.id ?? "");
 
   const categoryOptions = categoryOptionsProp.length ? categoryOptionsProp : fallbackCategories;
+
+  /** Incluye la categoría persistida aunque no esté en la lista activa (evita mostrar otra y pisar al guardar). */
+  const selectCategoryOptions = useMemo(() => {
+    const c = initial?.category?.trim();
+    if (mode === "edit" && c && !categoryOptions.some((o) => o.id === c)) {
+      return [
+        { id: c, label: `${c} (revisá Listas → Categorías: inactiva o no coincide)` },
+        ...categoryOptions,
+      ];
+    }
+    return categoryOptions;
+  }, [mode, initial?.category, categoryOptions]);
+
   const defaultCategory =
-    initial?.category && categoryOptions.some((c) => c.id === initial.category)
-      ? initial.category
-      : (categoryOptions[0]?.id ?? "iphone");
+    mode === "edit" && initial?.category?.trim()
+      ? initial.category.trim()
+      : (selectCategoryOptions[0]?.id ?? "iphone");
 
   return (
-    <form action={formAction} className="pb-28">
+    <form
+      key={mode === "edit" ? (initial?.id ?? "edit") : "create"}
+      action={formAction}
+      className="pb-28"
+    >
       <input type="hidden" name="mode" value={mode} />
 
       {state?.error ? (
@@ -170,7 +187,7 @@ export function ProductForm({
                       defaultValue={defaultCategory}
                       className="w-full rounded-xl border border-white/[0.1] bg-black/30 px-3 py-2.5 text-sm text-white outline-none focus:ring-2 focus:ring-violet-500/40"
                     >
-                      {categoryOptions.map((c) => (
+                      {selectCategoryOptions.map((c) => (
                         <option key={c.id} value={c.id}>
                           {c.label}
                         </option>

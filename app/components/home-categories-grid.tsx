@@ -20,6 +20,10 @@ function ArrowLink() {
   );
 }
 
+function productCategoryHref(tile: HomeCategoryTile & { kind: "product" }): string {
+  return `/tienda?cat=${encodeURIComponent(tile.category)}#catalogo`;
+}
+
 function HomeCategoryTileCard({ tile }: { tile: HomeCategoryTile }) {
   if (tile.kind === "service") {
     return (
@@ -66,7 +70,7 @@ function HomeCategoryTileCard({ tile }: { tile: HomeCategoryTile }) {
 
   return (
     <Link
-      href={tile.href}
+      href={productCategoryHref(tile)}
       className="group flex min-h-0 flex-1 flex-col overflow-hidden rounded-2xl border border-[var(--border)] bg-white shadow-[0_1px_0_rgba(0,0,0,0.04)] transition hover:-translate-y-0.5 hover:shadow-[var(--glow)] sm:h-full sm:flex-none"
     >
       <div className="relative aspect-[4/3] bg-neutral-100">

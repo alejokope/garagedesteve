@@ -8,20 +8,22 @@ import { useCart } from "@/app/context/cart-context";
 import {
   PAGE_SIZE,
   brandFilterOptionsFromProducts,
+  catalogCategoriesFromUrl,
+  CATALOG_FILTER_CATEGORY_IDS,
   type CatalogEstado,
   type EnrichedProduct,
   parseBrandFilterKeysFromUrlParam,
   type ProductStockCondition,
   type ShopBrandFilterId,
-  type ShopTipo,
   type SortKey,
   enrichProduct,
   filterEnriched,
   shopEstados,
   shopStockConditions,
-  shopTipos,
   sortEnriched,
 } from "@/lib/catalog";
+import type { CategoryId } from "@/lib/data";
+import { categories } from "@/lib/data";
 import { useCatalogProducts } from "@/app/context/catalog-products-context";
 import { formatMoneyArs } from "@/lib/format";
 
@@ -239,6 +241,13 @@ export function CatalogView() {
     [catalogProducts],
   );
 
+  const catalogCategoryOptions = useMemo(() => {
+    const allowed = new Set<CategoryId>(CATALOG_FILTER_CATEGORY_IDS);
+    return categories.filter(
+      (c): c is { id: CategoryId; label: string } => c.id !== "all" && allowed.has(c.id),
+    );
+  }, []);
+
   /** Filtros solo en memoria: no usar router (evita navegaciones /tienda en cada tecla). */
   const [q, setQ] = useState(() => searchParams.get("q") ?? "");
   const [sort, setSort] = useState<SortKey>(
@@ -250,8 +259,8 @@ export function CatalogView() {
   const [marcas, setMarcas] = useState<ShopBrandFilterId[]>(() =>
     parseBrandFilterKeysFromUrlParam(searchParams.get("marcas")),
   );
-  const [tipos, setTipos] = useState<ShopTipo[]>(
-    () => parseList(searchParams.get("tipos")) as ShopTipo[],
+  const [categorias, setCategorias] = useState<CategoryId[]>(() =>
+    catalogCategoriesFromUrl(searchParams),
   );
   const [estados, setEstados] = useState<CatalogEstado[]>(
     () => parseList(searchParams.get("estados")) as CatalogEstado[],
@@ -277,7 +286,7 @@ export function CatalogView() {
     const withoutPrice = filterEnriched(enriched, {
       q,
       marcas: effectiveMarcas,
-      tipos,
+      categorias,
       estados,
       stockConditions,
       precioMax: Number.POSITIVE_INFINITY,
@@ -286,7 +295,7 @@ export function CatalogView() {
     const prices = basis.map((p) => p.price).filter((n) => typeof n === "number" && !Number.isNaN(n));
     if (prices.length === 0) return { min: 0, max: 1 };
     return { min: Math.min(...prices), max: Math.max(...prices) };
-  }, [enriched, q, effectiveMarcas, tipos, estados, stockConditions]);
+  }, [enriched, q, effectiveMarcas, categorias, estados, stockConditions]);
 
   const minCatalogPrice = priceScope.min;
   const maxCatalogPrice = priceScope.max;
@@ -319,13 +328,13 @@ export function CatalogView() {
     const f = filterEnriched(enriched, {
       q,
       marcas: effectiveMarcas,
-      tipos,
+      categorias,
       estados,
       stockConditions,
       precioMax: clampedPrecioMax,
     });
     return sortEnriched(f, sort);
-  }, [enriched, q, effectiveMarcas, tipos, estados, stockConditions, clampedPrecioMax, sort]);
+  }, [enriched, q, effectiveMarcas, categorias, estados, stockConditions, clampedPrecioMax, sort]);
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
   const currentPage = Math.min(page, totalPages);
@@ -344,12 +353,12 @@ export function CatalogView() {
     setPage(1);
   };
 
-  const toggleTipos = (id: ShopTipo) => {
-    setTipos((prev) => {
+  const toggleCategoria = (id: CategoryId) => {
+    setCategorias((prev) => {
       const set = new Set(prev);
       if (set.has(id)) set.delete(id);
       else set.add(id);
-      return [...set] as ShopTipo[];
+      return [...set] as CategoryId[];
     });
     setPage(1);
   };
@@ -379,7 +388,7 @@ export function CatalogView() {
     setSort("relevancia");
     setPage(1);
     setMarcas([]);
-    setTipos([]);
+    setCategorias([]);
     setEstados([]);
     setStockConditions([]);
     setPrecioMax(maxCatalogPrice);
@@ -517,16 +526,16 @@ export function CatalogView() {
 
               <div className="mt-6">
                 <p className="text-[11px] font-bold uppercase tracking-wider text-neutral-500">
-                  Tipo de producto
+                  Categoría
                 </p>
                 <div className="mt-2 flex flex-col gap-2">
-                  {shopTipos.map((t) => {
-                    const on = tipos.includes(t.id);
+                  {catalogCategoryOptions.map((t) => {
+                    const on = categorias.includes(t.id);
                     return (
                       <button
                         key={t.id}
                         type="button"
-                        onClick={() => toggleTipos(t.id)}
+                        onClick={() => toggleCategoria(t.id)}
                         className={`rounded-lg border px-3 py-2 text-left text-xs font-medium transition ${
                           on
                             ? "border-[var(--brand-from)] bg-[var(--brand-from)]/10 text-[var(--brand-from)]"

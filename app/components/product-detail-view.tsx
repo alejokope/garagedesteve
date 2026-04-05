@@ -479,7 +479,7 @@ export function ProductDetailView({
           <section className="mt-16">
             <div className="flex items-center justify-between gap-4">
               <h2 className="font-display text-2xl font-bold text-neutral-900">Accesorios recomendados</h2>
-              <Link href="/tienda?tipos=accessories" className="text-sm font-semibold text-[var(--brand-from)] hover:underline">
+              <Link href="/tienda?cat=otros#catalogo" className="text-sm font-semibold text-[var(--brand-from)] hover:underline">
                 Ver todos
               </Link>
             </div>
