@@ -11,8 +11,15 @@ export default function NuevaEntradaContenidoPage() {
             Contenido
           </p>
           <h1 className="mt-1 font-display text-2xl font-semibold text-white sm:text-3xl">
-            Nueva entrada
+            Nueva entrada (técnica)
           </h1>
+          <p className="mt-2 max-w-lg text-sm text-slate-500">
+            La home se edita con formularios en{" "}
+            <Link href="/backoffice/contenido" className="text-violet-300 hover:text-violet-200">
+              Contenido
+            </Link>
+            . Esta pantalla es solo si necesitás crear una clave nueva a mano.
+          </p>
         </div>
         <Link
           href="/backoffice/contenido"

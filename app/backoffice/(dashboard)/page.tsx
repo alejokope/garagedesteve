@@ -4,7 +4,7 @@ const cards = [
   {
     title: "Contenido",
     description:
-      "Textos de la home, testimonios, FAQ, bloques editables y lo que vayamos sumando.",
+      "Página de inicio: formularios por sección (hero, categorías, destacados, FAQ, etc.), sin JSON.",
     href: "/backoffice/contenido",
     tag: "CMS",
   },

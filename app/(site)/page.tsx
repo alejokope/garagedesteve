@@ -18,28 +18,42 @@ export default async function HomePage() {
 
   return (
     <main className="min-h-screen pt-[calc(3.25rem+env(safe-area-inset-top))] sm:pt-16">
-      <HomeHero data={home.hero} />
-      <ScrollReveal>
-        <HomeCategoriesGrid data={home.categories} />
-      </ScrollReveal>
-      <ScrollReveal delayMs={40} className="w-full min-w-0">
-        <HomeFeaturedGrid products={home.featured} />
-      </ScrollReveal>
-      <ScrollReveal delayMs={20}>
-        <HomeServiceTech data={home.serviceTech} />
-      </ScrollReveal>
-      <ScrollReveal>
-        <HomeWhyChoose data={home.whyChoose} />
-      </ScrollReveal>
-      <ScrollReveal delayMs={30}>
-        <HomeTestimonials data={home.testimonials} />
-      </ScrollReveal>
-      <ScrollReveal>
-        <HomeFaq data={home.faq} />
-      </ScrollReveal>
-      <ScrollReveal delayMs={50}>
-        <HomeCtaFinal data={home.ctaFinal} />
-      </ScrollReveal>
+      {home.hero.visible ? <HomeHero data={home.hero} /> : null}
+      {home.categories.visible ? (
+        <ScrollReveal>
+          <HomeCategoriesGrid data={home.categories} />
+        </ScrollReveal>
+      ) : null}
+      {home.featured.visible ? (
+        <ScrollReveal delayMs={40} className="w-full min-w-0">
+          <HomeFeaturedGrid products={home.featured.products} />
+        </ScrollReveal>
+      ) : null}
+      {home.serviceTech.visible ? (
+        <ScrollReveal delayMs={20}>
+          <HomeServiceTech data={home.serviceTech} />
+        </ScrollReveal>
+      ) : null}
+      {home.whyChoose.visible ? (
+        <ScrollReveal>
+          <HomeWhyChoose data={home.whyChoose} />
+        </ScrollReveal>
+      ) : null}
+      {home.testimonials.visible ? (
+        <ScrollReveal delayMs={30}>
+          <HomeTestimonials data={home.testimonials} />
+        </ScrollReveal>
+      ) : null}
+      {home.faq.visible ? (
+        <ScrollReveal>
+          <HomeFaq data={home.faq} />
+        </ScrollReveal>
+      ) : null}
+      {home.ctaFinal.visible ? (
+        <ScrollReveal delayMs={50}>
+          <HomeCtaFinal data={home.ctaFinal} />
+        </ScrollReveal>
+      ) : null}
       <SiteFooter />
     </main>
   );

@@ -11,6 +11,20 @@ const carouselTrack =
 const carouselSlide =
   "flex h-auto min-h-0 w-[min(19rem,calc(100vw-2.75rem))] shrink-0 snap-start flex-col";
 
+/** Acepta `Product[]` o, por si se pasa por error el bloque `{ visible, products }` de la home. */
+function normalizeFeaturedProductsList(products: unknown): Product[] {
+  if (Array.isArray(products)) return products as Product[];
+  if (
+    products &&
+    typeof products === "object" &&
+    "products" in products &&
+    Array.isArray((products as { products: unknown }).products)
+  ) {
+    return (products as { products: Product[] }).products;
+  }
+  return [];
+}
+
 /**
  * Iguala alturas en la grilla desktop: mide la card más alta y aplica min-height al resto.
  */
@@ -69,9 +83,10 @@ function useEqualFeaturedCardHeights(
  * Dos layouts independientes: en el mismo nodo, mezclar flex + grid rompe el ancho en desktop.
  * Móvil: carrusel horizontal. sm+: grilla clásica (sin wrapper intermedio raro).
  */
-export function FeaturedProductCardsGrid({ products }: { products: Product[] }) {
+export function FeaturedProductCardsGrid({ products }: { products: Product[] | unknown }) {
+  const items = normalizeFeaturedProductsList(products);
   const desktopGridRef = useRef<HTMLDivElement>(null);
-  useEqualFeaturedCardHeights(desktopGridRef, products.length);
+  useEqualFeaturedCardHeights(desktopGridRef, items.length);
 
   return (
     <>
@@ -81,7 +96,7 @@ export function FeaturedProductCardsGrid({ products }: { products: Product[] }) 
         aria-roledescription="carrusel"
         aria-label="Productos destacados, deslizá para ver más"
       >
-        {products.map((p) => (
+        {items.map((p) => (
           <div key={p.id} className={carouselSlide}>
             <FeaturedProductCard product={p} />
           </div>
@@ -94,7 +109,7 @@ export function FeaturedProductCardsGrid({ products }: { products: Product[] }) 
         role="region"
         aria-label="Productos destacados"
       >
-        {products.map((p) => (
+        {items.map((p) => (
           <FeaturedProductCard key={p.id} product={p} />
         ))}
       </div>

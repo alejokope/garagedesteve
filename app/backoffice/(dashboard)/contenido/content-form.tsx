@@ -74,9 +74,10 @@ export function ContentForm({
       </section>
 
       <section className="rounded-2xl border border-white/[0.08] bg-white/[0.03] p-6">
-        <h2 className="font-display text-lg font-semibold text-white">Payload JSON</h2>
+        <h2 className="font-display text-lg font-semibold text-white">Datos (formato JSON)</h2>
         <p className="mt-1 text-sm text-slate-500">
-          Estructura libre según el bloque (array de testimonios, FAQ, etc.).
+          Uso avanzado. Para la página de inicio usá los formularios en{" "}
+          <span className="text-slate-400">Contenido</span>.
         </p>
         <textarea
           name="payload"
