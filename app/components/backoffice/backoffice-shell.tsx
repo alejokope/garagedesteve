@@ -40,7 +40,6 @@ const nav = [
   { href: "/backoffice/productos", label: "Productos", icon: BoxIcon },
   { href: "/backoffice/reparaciones", label: "Reparaciones", icon: ClipboardIcon },
   { href: "/backoffice/servicio-tecnico/precios", label: "Servicio — Precios", icon: WrenchIcon },
-  { href: "/backoffice/servicio-tecnico/solicitud", label: "Servicio — Solicitud", icon: WrenchIcon },
   { href: "/backoffice/listas/categorias", label: "Listas", icon: ListIcon },
 ] as const;
 

@@ -7,11 +7,14 @@ export function ProductImageSection({
   productId,
   initialUrl,
   initialAlt,
+  /** Asistente por pasos: sin `required` nativo; validación al avanzar / servidor. */
+  skipNativeValidation = false,
 }: {
   mode: "create" | "edit";
   productId: string;
   initialUrl?: string;
   initialAlt?: string;
+  skipNativeValidation?: boolean;
 }) {
   const [filePreview, setFilePreview] = useState<string | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
@@ -57,7 +60,7 @@ export function ProductImageSection({
               name="image_file"
               accept="image/jpeg,image/png,image/webp,image/gif"
               disabled={!canUpload}
-              required={mode === "create" && canUpload}
+              required={mode === "create" && canUpload && !skipNativeValidation}
               className="block w-full text-sm text-slate-300 file:mr-3 file:rounded-lg file:border-0 file:bg-white/[0.08] file:px-3 file:py-2 file:text-sm file:font-medium file:text-white hover:file:bg-white/[0.12] disabled:opacity-40"
               onChange={(e) => {
                 const f = e.target.files?.[0];
@@ -78,7 +81,7 @@ export function ProductImageSection({
             <span className="mb-1.5 block text-xs font-medium text-slate-400">Texto alternativo</span>
             <input
               name="image_alt"
-              required
+              required={!skipNativeValidation}
               defaultValue={initialAlt ?? ""}
               className="w-full rounded-xl border border-white/[0.1] bg-black/30 px-3 py-2.5 text-sm text-white outline-none focus:ring-2 focus:ring-violet-500/40"
               placeholder="Ej. iPhone 16 Pro en color titanio"

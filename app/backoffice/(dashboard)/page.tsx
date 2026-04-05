@@ -22,13 +22,6 @@ const cards = [
     href: "/backoffice/servicio-tecnico/precios",
     tag: "Reparaciones",
   },
-  {
-    title: "Servicio técnico — Solicitud",
-    description:
-      "Formulario público: tipos de servicio con precios en USD, marcas, modelos, prioridad, entrega y textos.",
-    href: "/backoffice/servicio-tecnico/solicitud",
-    tag: "Formulario",
-  },
 ] as const;
 
 export default function BackofficeHomePage() {
