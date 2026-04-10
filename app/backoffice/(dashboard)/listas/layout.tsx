@@ -1,10 +1,4 @@
-import Link from "next/link";
-
-const links = [
-  { href: "/backoffice/listas/categorias", label: "Categorías" },
-  { href: "/backoffice/listas/tipos-opcion", label: "Tipos de opción" },
-  { href: "/backoffice/listas/modos-precio", label: "Modos de precio" },
-] as const;
+import { ListasTabsNav } from "./listas-tabs-nav";
 
 export default function ListasLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -21,17 +15,7 @@ export default function ListasLayout({ children }: { children: React.ReactNode }
           variante y textos de los modos de precio.
         </p>
       </div>
-      <nav className="flex flex-wrap gap-2 border-b border-white/[0.08] pb-4">
-        {links.map((l) => (
-          <Link
-            key={l.href}
-            href={l.href}
-            className="rounded-lg px-3 py-2 text-sm font-medium text-slate-400 transition-colors hover:bg-white/[0.06] hover:text-white"
-          >
-            {l.label}
-          </Link>
-        ))}
-      </nav>
+      <ListasTabsNav />
       {children}
     </div>
   );

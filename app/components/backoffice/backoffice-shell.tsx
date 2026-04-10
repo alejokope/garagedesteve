@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { type ReactNode, useState } from "react";
 
+import { LinkPendingGlyph } from "@/app/components/backoffice/link-pending-glyph";
 import { LogoutButton } from "@/app/components/backoffice/logout-button";
 
 function WrenchIcon({ className }: { className?: string }) {
@@ -138,14 +139,15 @@ export function BackofficeShell({ children }: { children: ReactNode }) {
               <Link
                 key={item.href}
                 href={item.href}
-                className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors ${
+                className={`flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors ${
                   active
                     ? "bg-white/[0.08] text-white shadow-[inset_0_0_0_1px_rgba(255,255,255,0.06)]"
                     : "text-slate-400 hover:bg-white/[0.04] hover:text-slate-200"
                 }`}
               >
                 <item.icon className="h-5 w-5 shrink-0 opacity-90" />
-                {item.label}
+                <span className="min-w-0 flex-1 text-left">{item.label}</span>
+                <LinkPendingGlyph />
               </Link>
             );
           })}
@@ -210,14 +212,15 @@ export function BackofficeShell({ children }: { children: ReactNode }) {
                       key={item.href}
                       href={item.href}
                       onClick={() => setMobileOpen(false)}
-                      className={`flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium ${
+                      className={`flex w-full items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium ${
                         active
                           ? "bg-white/[0.08] text-white"
                           : "text-slate-400 hover:bg-white/[0.04]"
                       }`}
                     >
-                      <item.icon className="h-5 w-5" />
-                      {item.label}
+                      <item.icon className="h-5 w-5 shrink-0" />
+                      <span className="min-w-0 flex-1 text-left">{item.label}</span>
+                      <LinkPendingGlyph />
                     </Link>
                   );
                 })}
