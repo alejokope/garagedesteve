@@ -1,8 +1,16 @@
 "use client";
 
 import Link from "next/link";
-import { useActionState, useMemo, useState, type FormEvent, type ReactNode } from "react";
+import {
+  useActionState,
+  useEffect,
+  useMemo,
+  useState,
+  type FormEvent,
+  type ReactNode,
+} from "react";
 
+import { useBackofficeSaveBarReporter } from "@/app/components/backoffice/backoffice-save-bar";
 import { categories } from "@/lib/data";
 import type { ProductRow } from "@/lib/backoffice/products-db";
 import type { VariantKindDefinitionRow, VariantPricingModeLabelRow } from "@/lib/catalog-dictionary-types";
@@ -83,6 +91,29 @@ export function ProductForm({
   const [draftId, setDraftId] = useState(initial?.id ?? "");
   const [wizardMode, setWizardMode] = useState(mode === "create");
   const [wizardStep, setWizardStep] = useState(0);
+  const [formDirty, setFormDirty] = useState(false);
+
+  const showClassicProductBar = !(mode === "create" && wizardMode);
+
+  useEffect(() => {
+    setFormDirty(false);
+  }, [mode, initial?.id, wizardMode]);
+
+  const productSaveBarSnapshot = useMemo(() => {
+    if (!showClassicProductBar) return null;
+    if (!formDirty && !pending && !state?.error) return null;
+    return {
+      isDirty: formDirty || Boolean(state?.error),
+      isSaving: pending,
+      error: state?.error ?? null,
+      onSave: async () => {
+        const el = document.getElementById("bo-product-form");
+        if (el instanceof HTMLFormElement) el.requestSubmit();
+      },
+    };
+  }, [showClassicProductBar, formDirty, pending, state?.error]);
+
+  useBackofficeSaveBarReporter(productSaveBarSnapshot);
 
   const productIdForUploads = mode === "create" ? draftId.trim() : (initial?.id ?? "");
   const categoryOptions = categoryOptionsProp.length ? categoryOptionsProp : fallbackCategories;
@@ -400,6 +431,7 @@ export function ProductForm({
       key={mode === "edit" ? (initial?.id ?? "edit") : "create"}
       action={formAction}
       onSubmit={onFormSubmit}
+      onChange={() => setFormDirty(true)}
       className="pb-28"
     >
       <input type="hidden" name="mode" value={mode} />
@@ -506,20 +538,10 @@ export function ProductForm({
             ]}
           />
 
-          <div className="pointer-events-none fixed inset-x-0 bottom-0 z-40 flex justify-center px-4 pb-4 pt-2 [padding-bottom:max(1rem,env(safe-area-inset-bottom))]">
-            <div className="pointer-events-auto flex w-full max-w-3xl flex-col gap-2 rounded-2xl border border-white/[0.12] bg-slate-950/90 px-4 py-3 shadow-2xl shadow-black/50 backdrop-blur-xl sm:flex-row sm:items-center sm:justify-between sm:px-5">
-              <p className="text-xs text-slate-500 sm:text-sm sm:text-slate-400">
-                Un clic guarda <span className="text-slate-300">todo el producto</span>.
-              </p>
-              <button
-                type="submit"
-                disabled={pending}
-                className="w-full min-w-[160px] rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 px-6 py-2.5 text-sm font-semibold text-white shadow-lg shadow-violet-900/30 disabled:opacity-60 sm:w-auto"
-              >
-                {pending ? "Guardando…" : "Guardar producto"}
-              </button>
-            </div>
-          </div>
+          <p className="rounded-xl border border-violet-500/20 bg-violet-950/20 px-4 py-3 text-sm text-slate-300">
+            Los cambios quedan en el navegador hasta que pulses <strong className="text-white">Guardar cambios</strong>{" "}
+            en la barra inferior (guarda todo el producto de una vez).
+          </p>
         </>
       )}
     </form>

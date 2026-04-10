@@ -55,7 +55,7 @@ export default async function EditarContenidoPage({ params }: PageProps) {
           ← Volver
         </Link>
       </div>
-      <ContentForm mode="edit" initial={entry} />
+      <ContentForm mode="edit" initial={entry} revision={entry.updated_at} />
     </div>
   );
 }

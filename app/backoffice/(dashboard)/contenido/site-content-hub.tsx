@@ -1,8 +1,9 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useMemo, useState, useTransition } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
+import { useBackofficeSaveBarReporter } from "@/app/components/backoffice/backoffice-save-bar";
 import type { ProductRow } from "@/lib/backoffice/products-db";
 import { SITE_HOME_SECTION_META } from "@/lib/backoffice/site-content-sections-meta";
 import { categories as categoryNav } from "@/lib/data";
@@ -26,13 +27,11 @@ import type {
 import type { HomeContentKey } from "@/lib/home-public-content";
 
 import { HomeCategoryTileImageUpload } from "./home-category-tile-image-upload";
-import { saveHomeSection, type SaveHomeSectionResult } from "./home-section-actions";
+import { saveHomeSection } from "./home-section-actions";
 
 const inputClass =
   "w-full rounded-xl border border-white/[0.1] bg-black/30 px-3 py-2.5 text-sm text-white outline-none placeholder:text-slate-600 focus:ring-2 focus:ring-violet-500/40";
 const labelClass = "mb-1.5 block text-xs font-medium uppercase tracking-wide text-slate-500";
-const btnPrimary =
-  "rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-violet-900/25 disabled:opacity-50";
 const btnGhost =
   "rounded-xl border border-white/15 bg-white/5 px-4 py-2 text-sm font-medium text-slate-200 hover:bg-white/10 disabled:opacity-50";
 
@@ -70,21 +69,6 @@ function ModuleVisibilityToggle({
   );
 }
 
-function Message({ type, text }: { type: "ok" | "err"; text: string }) {
-  if (!text) return null;
-  return (
-    <p
-      className={
-        type === "ok"
-          ? "text-sm font-medium text-emerald-300/95"
-          : "text-sm font-medium text-red-200/95"
-      }
-    >
-      {text}
-    </p>
-  );
-}
-
 function SectionCard({
   anchorId,
   title,
@@ -92,8 +76,6 @@ function SectionCard({
   hasCustomInDb,
   visibleOnSite = true,
   children,
-  onSave,
-  saveLabel,
 }: {
   anchorId: string;
   title: string;
@@ -102,23 +84,7 @@ function SectionCard({
   /** Si es false, el módulo está oculto en la home pública */
   visibleOnSite?: boolean;
   children: React.ReactNode;
-  onSave: () => Promise<SaveHomeSectionResult>;
-  saveLabel?: string;
 }) {
-  const [pending, startTransition] = useTransition();
-  const [msgOk, setMsgOk] = useState("");
-  const [msgErr, setMsgErr] = useState("");
-
-  const run = (fn: () => Promise<void>) => {
-    setMsgOk("");
-    setMsgErr("");
-    startTransition(() => {
-      void fn().catch((e: unknown) => {
-        setMsgErr(e instanceof Error ? e.message : "Error");
-      });
-    });
-  };
-
   return (
     <details
       id={anchorId}
@@ -128,7 +94,7 @@ function SectionCard({
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div className="min-w-0 flex-1">
             <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-slate-500">
-              {hasCustomInDb ? "Guardado en la base de datos" : "Aún no guardaste cambios (se ven los textos por defecto)"}
+              {hasCustomInDb ? "Guardado en la base de datos" : "Aún no guardaste en BD (se ven valores por defecto)"}
             </p>
             <h2 className="mt-1 font-display text-lg font-semibold text-white sm:text-xl">{title}</h2>
             <p className="mt-2 max-w-3xl text-sm leading-relaxed text-slate-400">{description}</p>
@@ -145,24 +111,6 @@ function SectionCard({
       </summary>
       <div className="border-t border-white/[0.06] px-5 py-5 sm:px-6 sm:py-6">
         {children}
-        <div className="mt-6 flex flex-wrap items-center gap-3 border-t border-white/[0.06] pt-5">
-          <button
-            type="button"
-            disabled={pending}
-            onClick={() =>
-              run(async () => {
-                const r = await onSave();
-                if (r.ok) setMsgOk("Listo. Los cambios ya están en la web.");
-                else setMsgErr(r.error);
-              })
-            }
-            className={btnPrimary}
-          >
-            {pending ? "Guardando…" : saveLabel ?? "Guardar esta sección"}
-          </button>
-          <Message type="ok" text={msgOk} />
-          <Message type="err" text={msgErr} />
-        </div>
       </div>
     </details>
   );
@@ -244,14 +192,116 @@ export function SiteContentHub({ revision, homeKeys, merged, hasRow, products }:
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [revision]);
 
-  const wrapSave = async (fn: () => Promise<SaveHomeSectionResult>) => {
-    const r = await fn();
-    if (r.ok) refresh();
-    return r;
-  };
+  const isDirty = useMemo(() => {
+    if (JSON.stringify(hero) !== JSON.stringify(merged.hero)) return true;
+    if (JSON.stringify(categories) !== JSON.stringify(merged.categories)) return true;
+    if (JSON.stringify(featuredIds) !== JSON.stringify(merged.featuredIds)) return true;
+    if (featuredVisible !== merged.featuredVisible) return true;
+    if (JSON.stringify(serviceTech) !== JSON.stringify(merged.serviceTech)) return true;
+    if (JSON.stringify(whyChoose) !== JSON.stringify(merged.whyChoose)) return true;
+    if (JSON.stringify(testimonials) !== JSON.stringify(merged.testimonials)) return true;
+    if (JSON.stringify(faq) !== JSON.stringify(merged.faq)) return true;
+    if (JSON.stringify(ctaFinal) !== JSON.stringify(merged.ctaFinal)) return true;
+    return false;
+  }, [
+    hero,
+    categories,
+    featuredIds,
+    featuredVisible,
+    serviceTech,
+    whyChoose,
+    testimonials,
+    faq,
+    ctaFinal,
+    merged,
+  ]);
+
+  const [saveErr, setSaveErr] = useState<string | null>(null);
+  const [saving, setSaving] = useState(false);
+
+  const discard = useCallback(() => {
+    setSaveErr(null);
+    setHero(merged.hero);
+    setCategories(merged.categories);
+    setFeaturedIds(merged.featuredIds);
+    setFeaturedVisible(merged.featuredVisible);
+    setServiceTech(merged.serviceTech);
+    setWhyChoose(merged.whyChoose);
+    setTestimonials(merged.testimonials);
+    setFaq(merged.faq);
+    setCtaFinal(merged.ctaFinal);
+  }, [merged]);
+
+  const saveAll = useCallback(async () => {
+    setSaveErr(null);
+    setSaving(true);
+    try {
+      const run = async (key: HomeContentKey, payload: unknown) => {
+        const r = await saveHomeSection(key, payload);
+        if (!r.ok) throw new Error(r.error);
+      };
+      if (JSON.stringify(hero) !== JSON.stringify(merged.hero)) await run("home.hero", hero);
+      if (JSON.stringify(categories) !== JSON.stringify(merged.categories)) {
+        await run("home.categories", categories);
+      }
+      if (
+        JSON.stringify(featuredIds) !== JSON.stringify(merged.featuredIds) ||
+        featuredVisible !== merged.featuredVisible
+      ) {
+        await run("home.featured", { ids: featuredIds, visible: featuredVisible });
+      }
+      if (JSON.stringify(serviceTech) !== JSON.stringify(merged.serviceTech)) {
+        await run("home.service_tech", serviceTech);
+      }
+      if (JSON.stringify(whyChoose) !== JSON.stringify(merged.whyChoose)) {
+        await run("home.why_choose", whyChoose);
+      }
+      if (JSON.stringify(testimonials) !== JSON.stringify(merged.testimonials)) {
+        await run("home.testimonials", testimonials);
+      }
+      if (JSON.stringify(faq) !== JSON.stringify(merged.faq)) await run("home.faq", faq);
+      if (JSON.stringify(ctaFinal) !== JSON.stringify(merged.ctaFinal)) {
+        await run("home.cta_final", ctaFinal);
+      }
+      await refresh();
+    } catch (e) {
+      setSaveErr(e instanceof Error ? e.message : "No se pudo guardar");
+    } finally {
+      setSaving(false);
+    }
+  }, [
+    hero,
+    categories,
+    featuredIds,
+    featuredVisible,
+    serviceTech,
+    whyChoose,
+    testimonials,
+    faq,
+    ctaFinal,
+    merged,
+    refresh,
+  ]);
+
+  const saveBarSnapshot = useMemo(() => {
+    if (!isDirty && !saving && !saveErr) return null;
+    return {
+      isDirty,
+      isSaving: saving,
+      error: saveErr,
+      onSave: saveAll,
+      onDiscard: discard,
+    };
+  }, [isDirty, saving, saveErr, saveAll, discard]);
+
+  useBackofficeSaveBarReporter(saveBarSnapshot);
 
   return (
     <div className="space-y-4">
+      <p className="rounded-xl border border-violet-500/20 bg-violet-950/20 px-4 py-3 text-sm text-slate-300">
+        Los cambios en esta página quedan en borrador hasta que pulses{" "}
+        <strong className="text-white">Guardar cambios</strong> en la barra inferior.
+      </p>
       {homeKeys.map((key) => {
         const meta = SITE_HOME_SECTION_META[key];
         const hasCustom = Boolean(hasRow[key]);
@@ -265,7 +315,6 @@ export function SiteContentHub({ revision, homeKeys, merged, hasRow, products }:
               description={meta.description}
               hasCustomInDb={hasCustom}
               visibleOnSite={hero.visible}
-              onSave={() => wrapSave(async () => saveHomeSection("home.hero", hero))}
             >
               <ModuleVisibilityToggle checked={hero.visible} onChange={(v) => setHero({ ...hero, visible: v })} />
               <div className="grid gap-5 sm:grid-cols-2">
@@ -368,7 +417,6 @@ export function SiteContentHub({ revision, homeKeys, merged, hasRow, products }:
               description={meta.description}
               hasCustomInDb={hasCustom}
               visibleOnSite={categories.visible}
-              onSave={() => wrapSave(async () => saveHomeSection("home.categories", categories))}
             >
               <ModuleVisibilityToggle
                 checked={categories.visible}
@@ -539,9 +587,6 @@ export function SiteContentHub({ revision, homeKeys, merged, hasRow, products }:
               description={meta.description}
               hasCustomInDb={hasCustom}
               visibleOnSite={featuredVisible}
-              onSave={() =>
-                wrapSave(async () => saveHomeSection("home.featured", { ids: featuredIds, visible: featuredVisible }))
-              }
             >
               <ModuleVisibilityToggle checked={featuredVisible} onChange={setFeaturedVisible} />
               <p className="text-sm text-slate-400">
@@ -597,7 +642,6 @@ export function SiteContentHub({ revision, homeKeys, merged, hasRow, products }:
               description={meta.description}
               hasCustomInDb={hasCustom}
               visibleOnSite={serviceTech.visible}
-              onSave={() => wrapSave(async () => saveHomeSection("home.service_tech", serviceTech))}
             >
               <ModuleVisibilityToggle
                 checked={serviceTech.visible}
@@ -691,7 +735,6 @@ export function SiteContentHub({ revision, homeKeys, merged, hasRow, products }:
               description={meta.description}
               hasCustomInDb={hasCustom}
               visibleOnSite={whyChoose.visible}
-              onSave={() => wrapSave(async () => saveHomeSection("home.why_choose", whyChoose))}
             >
               <ModuleVisibilityToggle
                 checked={whyChoose.visible}
@@ -754,7 +797,6 @@ export function SiteContentHub({ revision, homeKeys, merged, hasRow, products }:
               description={meta.description}
               hasCustomInDb={hasCustom}
               visibleOnSite={testimonials.visible}
-              onSave={() => wrapSave(async () => saveHomeSection("home.testimonials", testimonials))}
             >
               <ModuleVisibilityToggle
                 checked={testimonials.visible}
@@ -835,7 +877,6 @@ export function SiteContentHub({ revision, homeKeys, merged, hasRow, products }:
               description={meta.description}
               hasCustomInDb={hasCustom}
               visibleOnSite={faq.visible}
-              onSave={() => wrapSave(async () => saveHomeSection("home.faq", faq))}
             >
               <ModuleVisibilityToggle checked={faq.visible} onChange={(v) => setFaq({ ...faq, visible: v })} />
               <label className="block">
@@ -887,7 +928,6 @@ export function SiteContentHub({ revision, homeKeys, merged, hasRow, products }:
               description={meta.description}
               hasCustomInDb={hasCustom}
               visibleOnSite={ctaFinal.visible}
-              onSave={() => wrapSave(async () => saveHomeSection("home.cta_final", ctaFinal))}
             >
               <ModuleVisibilityToggle
                 checked={ctaFinal.visible}

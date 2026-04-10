@@ -2,7 +2,8 @@ import Link from "next/link";
 
 import { listProductCategoriesAdmin } from "@/lib/backoffice/catalog-dictionaries-db";
 
-import { deleteCategory, updateCategory } from "./actions";
+import { deleteCategory } from "./actions";
+import { CategoriasRowsEditor } from "./categorias-rows-editor";
 import { CreateCategoryForm } from "./create-category-form";
 
 export default async function CategoriasListasPage({
@@ -12,6 +13,7 @@ export default async function CategoriasListasPage({
 }) {
   const q = await searchParams;
   const rows = await listProductCategoriesAdmin();
+  const revision = rows.map((c) => `${c.id}:${c.label}:${c.sort_order}:${c.active}`).join("|");
 
   return (
     <div className="space-y-10">
@@ -42,50 +44,7 @@ export default async function CategoriasListasPage({
           Editá el nombre o el orden; el identificador no se puede cambiar. Solo podés eliminar si
           ningún producto la usa.
         </p>
-        <div className="mt-4 space-y-4">
-          {rows.map((c) => (
-            <form
-              key={c.id}
-              action={updateCategory}
-              className="flex flex-col gap-4 rounded-2xl border border-white/[0.08] bg-black/20 p-4 sm:flex-row sm:flex-wrap sm:items-end"
-            >
-              <input type="hidden" name="id" value={c.id} />
-              <div className="font-mono text-xs text-slate-500 sm:w-28">{c.id}</div>
-              <label className="min-w-[160px] flex-1">
-                <span className="mb-1 block text-[11px] text-slate-500">Nombre</span>
-                <input
-                  name="label"
-                  defaultValue={c.label}
-                  className="w-full rounded-lg border border-white/[0.1] bg-black/40 px-3 py-2 text-sm text-white"
-                />
-              </label>
-              <label className="w-24">
-                <span className="mb-1 block text-[11px] text-slate-500">Orden</span>
-                <input
-                  name="sort_order"
-                  type="number"
-                  defaultValue={c.sort_order}
-                  className="w-full rounded-lg border border-white/[0.1] bg-black/40 px-3 py-2 text-sm text-white"
-                />
-              </label>
-              <label className="flex items-center gap-2 pb-2">
-                <input
-                  name="active"
-                  type="checkbox"
-                  defaultChecked={c.active}
-                  className="h-4 w-4 rounded"
-                />
-                <span className="text-xs text-slate-400">Activa</span>
-              </label>
-              <button
-                type="submit"
-                className="rounded-lg bg-white/[0.08] px-4 py-2 text-sm font-medium text-white hover:bg-white/[0.12]"
-              >
-                Guardar
-              </button>
-            </form>
-          ))}
-        </div>
+        <CategoriasRowsEditor rows={rows} revision={revision} />
       </div>
 
       <div>

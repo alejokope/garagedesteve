@@ -28,7 +28,7 @@ export default function NuevaEntradaContenidoPage() {
           ← Volver al listado
         </Link>
       </div>
-      <ContentForm mode="create" />
+      <ContentForm mode="create" revision="nuevo" />
     </div>
   );
 }

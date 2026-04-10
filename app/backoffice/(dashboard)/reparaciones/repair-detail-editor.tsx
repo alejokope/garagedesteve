@@ -2,7 +2,9 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useState, useTransition } from "react";
+import { useCallback, useEffect, useMemo, useState, useTransition } from "react";
+
+import { useBackofficeSaveBarReporter } from "@/app/components/backoffice/backoffice-save-bar";
 
 import {
   addRepairTrackingMessageAction,
@@ -103,6 +105,7 @@ export function RepairDetailEditor({
   const [msg, setMsg] = useState<string | null>(null);
   const [err, setErr] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
+  const [pendingDetails, startDetailsSave] = useTransition();
   const [pendingResend, startResend] = useTransition();
   const [messages, setMessages] = useState(initialMessages);
   const [messageDraft, setMessageDraft] = useState("");
@@ -118,24 +121,61 @@ export function RepairDetailEditor({
     setStatus(initial.status);
   }, [initial, initialHistory, initialMessages]);
 
-  function saveDetails() {
+  const contactBaseline = useMemo(() => {
+    const dt = isoToArDateAndTime(initial.estimated_ready_at);
+    return { email: initial.email, estDate: dt.date, estTime: dt.time };
+  }, [initial]);
+
+  const detailsDirty =
+    email.trim() !== contactBaseline.email.trim() ||
+    estDate !== contactBaseline.estDate ||
+    estTime !== contactBaseline.estTime;
+
+  const discardContact = useCallback(() => {
     setErr(null);
-    setMsg(null);
-    startTransition(async () => {
-      try {
-        const fd = new FormData();
-        fd.set("id", repair.id);
-        fd.set("email", email);
-        fd.set("estimated_date", estDate);
-        fd.set("estimated_time", estTime);
-        await updateRepairDetailsAction(fd);
-        setMsg("Datos guardados.");
-        router.refresh();
-      } catch (e) {
-        setErr(e instanceof Error ? e.message : "No se pudo guardar");
-      }
-    });
-  }
+    setEmail(contactBaseline.email);
+    setEstDate(contactBaseline.estDate);
+    setEstTime(contactBaseline.estTime);
+  }, [contactBaseline]);
+
+  const saveDetailsAsync = useCallback(
+    () =>
+      new Promise<void>((resolve, reject) => {
+        setErr(null);
+        setMsg(null);
+        startDetailsSave(async () => {
+          try {
+            const fd = new FormData();
+            fd.set("id", repair.id);
+            fd.set("email", email);
+            fd.set("estimated_date", estDate);
+            fd.set("estimated_time", estTime);
+            await updateRepairDetailsAction(fd);
+            setMsg("Datos guardados.");
+            router.refresh();
+            resolve();
+          } catch (e) {
+            const m = e instanceof Error ? e.message : "No se pudo guardar";
+            setErr(m);
+            reject(new Error(m));
+          }
+        });
+      }),
+    [repair.id, email, estDate, estTime, router],
+  );
+
+  const contactSaveBar = useMemo(() => {
+    if (!detailsDirty && !pendingDetails) return null;
+    return {
+      isDirty: detailsDirty,
+      isSaving: pendingDetails,
+      error: null,
+      onSave: saveDetailsAsync,
+      onDiscard: discardContact,
+    };
+  }, [detailsDirty, pendingDetails, saveDetailsAsync, discardContact]);
+
+  useBackofficeSaveBarReporter(contactSaveBar);
 
   function applyStatus(next: RepairStatus) {
     setErr(null);
@@ -235,6 +275,10 @@ export function RepairDetailEditor({
         <section className="space-y-6">
           <div className="rounded-2xl border border-white/[0.08] bg-white/[0.02] p-6">
             <h2 className="font-display text-lg font-semibold text-white">Contacto y plazo</h2>
+            <p className="mt-2 text-xs text-slate-500">
+              Email y fecha estimada se guardan con <strong className="text-slate-400">Guardar cambios</strong> en la
+              barra inferior. Estado del trámite y mensajes al cliente se aplican al instante con sus botones.
+            </p>
             <div className="mt-4 space-y-4">
               <label className="block">
                 <span className="text-xs text-slate-500">Email del cliente</span>
@@ -295,14 +339,6 @@ export function RepairDetailEditor({
                   </button>
                 </div>
               </div>
-              <button
-                type="button"
-                disabled={pending}
-                onClick={saveDetails}
-                className="rounded-xl bg-white/[0.08] px-4 py-2 text-sm font-semibold text-white ring-1 ring-white/10 hover:bg-white/[0.12] disabled:opacity-50"
-              >
-                {pending ? "Guardando…" : "Guardar email y fecha estimada"}
-              </button>
             </div>
             <div className="mt-6 border-t border-white/[0.06] pt-6">
               <button

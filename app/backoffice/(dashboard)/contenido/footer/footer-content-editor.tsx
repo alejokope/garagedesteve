@@ -1,11 +1,12 @@
 "use client";
 
-import { useMemo, useState, useTransition } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 
+import { useBackofficeSaveBarReporter } from "@/app/components/backoffice/backoffice-save-bar";
 import {
   boEditorH2,
   boEditorSection,
-  boEditorToolbar,
 } from "@/app/components/backoffice/bo-editor-styles";
 import {
   defaultFooterContentPayload,
@@ -35,34 +36,70 @@ const COLUMN_HINTS = [
   "Columna 4 (bajo «Soporte», segunda lista)",
 ];
 
-export function FooterContentEditor({ initial }: { initial: FooterContentPayload }) {
+export function FooterContentEditor({
+  initial,
+  revision,
+}: {
+  initial: FooterContentPayload;
+  revision: string;
+}) {
+  const router = useRouter();
   const [data, setData] = useState<FooterContentPayload>(initial);
   const [err, setErr] = useState<string | null>(null);
-  const [ok, setOk] = useState<string | null>(null);
-  const [pending, startTransition] = useTransition();
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    setData(initial);
+  }, [revision, initial]);
 
   const jsonPreview = useMemo(() => JSON.stringify(data, null, 2), [data]);
 
-  function save() {
+  const isDirty = JSON.stringify(data) !== JSON.stringify(initial);
+
+  const discard = useCallback(() => {
     setErr(null);
-    setOk(null);
-    startTransition(async () => {
+    setData(structuredClone(initial));
+  }, [initial]);
+
+  const performSave = useCallback(async () => {
+    setErr(null);
+    setSaving(true);
+    try {
       const r = await saveFooterContentAction(data);
-      if (r.ok) setOk("Guardado. El sitio público se actualizó.");
-      else setErr(r.error);
-    });
-  }
+      if (!r.ok) {
+        setErr(r.error);
+        return;
+      }
+      router.refresh();
+    } catch (e) {
+      setErr(e instanceof Error ? e.message : "No se pudo guardar");
+    } finally {
+      setSaving(false);
+    }
+  }, [data, router]);
+
+  const saveBarSnapshot = useMemo(() => {
+    if (!isDirty && !saving && !err) return null;
+    return {
+      isDirty,
+      isSaving: saving,
+      error: err,
+      onSave: performSave,
+      onDiscard: discard,
+    };
+  }, [isDirty, saving, err, performSave, discard]);
+
+  useBackofficeSaveBarReporter(saveBarSnapshot);
 
   return (
     <div className="min-w-0 space-y-6 pb-28 sm:space-y-8 sm:pb-10 lg:pb-8">
+      <p className="rounded-xl border border-violet-500/20 bg-violet-950/20 px-4 py-3 text-sm text-slate-300">
+        Los cambios son borrador hasta que pulses <strong className="text-white">Guardar cambios</strong> en la barra
+        inferior.
+      </p>
       {err ? (
         <div className="rounded-xl border border-red-500/35 bg-red-500/10 px-4 py-3 text-sm text-red-100/95">
           {err}
-        </div>
-      ) : null}
-      {ok ? (
-        <div className="rounded-xl border border-emerald-500/35 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-100/95">
-          {ok}
         </div>
       ) : null}
 
@@ -461,34 +498,23 @@ export function FooterContentEditor({ initial }: { initial: FooterContentPayload
 
       <section className={boEditorSection}>
         <h2 className={boEditorH2}>JSON (solo lectura)</h2>
+        <p className="mt-2 text-xs text-slate-500">
+          Cargá la plantilla del código en el editor (borrador local hasta que guardes).
+        </p>
+        <button
+          type="button"
+          className="mt-3 rounded-xl border border-white/15 bg-white/5 px-4 py-2 text-sm font-medium text-slate-200 hover:bg-white/10"
+          onClick={() => {
+            setData(defaultFooterContentPayload());
+            setErr(null);
+          }}
+        >
+          Cargar plantilla por defecto
+        </button>
         <pre className="mt-3 max-h-48 overflow-auto rounded-xl border border-white/[0.06] bg-black/55 p-3 text-[10px] text-slate-400 sm:text-[11px]">
           {jsonPreview}
         </pre>
       </section>
-
-      <div className={boEditorToolbar}>
-        <div className="mx-auto flex w-full max-w-6xl flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-stretch sm:gap-3">
-          <button
-            type="button"
-            disabled={pending}
-            onClick={save}
-            className="inline-flex min-h-12 flex-1 items-center justify-center rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 px-5 text-sm font-semibold text-white shadow-lg shadow-violet-900/25 disabled:opacity-60 sm:flex-none sm:min-w-[10rem] sm:px-8"
-          >
-            {pending ? "Guardando…" : "Guardar footer"}
-          </button>
-          <button
-            type="button"
-            className="inline-flex min-h-12 flex-1 items-center justify-center rounded-xl border border-white/[0.14] bg-white/[0.06] px-4 text-sm font-medium text-slate-200 hover:bg-white/[0.1] sm:flex-none"
-            onClick={() => {
-              setData(defaultFooterContentPayload());
-              setOk(null);
-              setErr(null);
-            }}
-          >
-            Restaurar valores del código (site-config)
-          </button>
-        </div>
-      </div>
     </div>
   );
 }

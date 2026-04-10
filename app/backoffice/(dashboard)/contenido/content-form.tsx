@@ -1,7 +1,8 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useEffect, useMemo, useRef, useState } from "react";
 
+import { useBackofficeSaveBarReporter } from "@/app/components/backoffice/backoffice-save-bar";
 import type { ContentEntryRow } from "@/lib/backoffice/content-db";
 
 import { saveContentEntry } from "./actions";
@@ -17,14 +18,62 @@ function stringifyPayload(payload: unknown): string {
 export function ContentForm({
   mode,
   initial,
+  revision,
 }: {
   mode: "create" | "edit";
   initial?: ContentEntryRow | null;
+  revision: string;
 }) {
   const [state, formAction, pending] = useActionState(saveContentEntry, null);
+  const formRef = useRef<HTMLFormElement>(null);
+
+  const baselineKey = mode === "create" ? "" : (initial?.key ?? "");
+  const baselineLabel = initial?.label ?? "";
+  const baselinePayload = useMemo(
+    () => stringifyPayload(initial?.payload),
+    [initial?.payload, revision],
+  );
+
+  const [keyValue, setKeyValue] = useState(baselineKey);
+  const [label, setLabel] = useState(baselineLabel);
+  const [payloadText, setPayloadText] = useState(baselinePayload);
+
+  useEffect(() => {
+    setKeyValue(baselineKey);
+    setLabel(baselineLabel);
+    setPayloadText(baselinePayload);
+  }, [revision, baselineKey, baselineLabel, baselinePayload]);
+
+  const isDirty =
+    (mode === "create" ? keyValue !== baselineKey : false) ||
+    label !== baselineLabel ||
+    payloadText !== baselinePayload;
+
+  const snap = useMemo(() => {
+    if (!isDirty && !pending && !state?.error) return null;
+    return {
+      isDirty: isDirty || Boolean(state?.error),
+      isSaving: pending,
+      error: state?.error ?? null,
+      onSave: async () => {
+        const el = formRef.current;
+        if (el instanceof HTMLFormElement) el.requestSubmit();
+      },
+      onDiscard: () => {
+        setKeyValue(baselineKey);
+        setLabel(baselineLabel);
+        setPayloadText(baselinePayload);
+      },
+    };
+  }, [isDirty, pending, state?.error, baselineKey, baselineLabel, baselinePayload]);
+
+  useBackofficeSaveBarReporter(snap);
+
+  const fieldClass =
+    "w-full rounded-xl border border-white/[0.1] bg-black/30 px-3 py-2.5 text-sm text-white outline-none focus:ring-2 focus:ring-violet-500/40";
 
   return (
-    <form action={formAction} className="space-y-8">
+    <form ref={formRef} action={formAction} className="space-y-8">
       <input type="hidden" name="mode" value={mode} />
 
       {state?.error ? (
@@ -32,6 +81,11 @@ export function ContentForm({
           {state.error}
         </div>
       ) : null}
+
+      <p className="rounded-xl border border-violet-500/20 bg-violet-950/20 px-4 py-3 text-sm text-slate-300">
+        Los cambios quedan en borrador hasta que pulses <strong className="text-white">Guardar cambios</strong> en la
+        barra inferior.
+      </p>
 
       <section className="rounded-2xl border border-white/[0.08] bg-white/[0.03] p-6">
         <h2 className="font-display text-lg font-semibold text-white">Clave y etiqueta</h2>
@@ -44,8 +98,9 @@ export function ContentForm({
               <input
                 name="key"
                 required
-                defaultValue={initial?.key ?? ""}
-                className="w-full rounded-xl border border-white/[0.1] bg-black/30 px-3 py-2.5 font-mono text-sm text-white outline-none focus:ring-2 focus:ring-violet-500/40"
+                value={keyValue}
+                onChange={(e) => setKeyValue(e.target.value)}
+                className={`${fieldClass} font-mono`}
               />
             </label>
           ) : (
@@ -65,8 +120,9 @@ export function ContentForm({
             </span>
             <input
               name="label"
-              defaultValue={initial?.label ?? ""}
-              className="w-full rounded-xl border border-white/[0.1] bg-black/30 px-3 py-2.5 text-sm text-white outline-none focus:ring-2 focus:ring-violet-500/40"
+              value={label}
+              onChange={(e) => setLabel(e.target.value)}
+              className={fieldClass}
               placeholder="Testimonios home"
             />
           </label>
@@ -83,19 +139,12 @@ export function ContentForm({
           name="payload"
           required
           rows={18}
-          defaultValue={stringifyPayload(initial?.payload)}
+          value={payloadText}
+          onChange={(e) => setPayloadText(e.target.value)}
           className="mt-4 w-full resize-y rounded-xl border border-white/[0.1] bg-black/40 px-3 py-2.5 font-mono text-xs leading-relaxed text-slate-200 outline-none focus:ring-2 focus:ring-violet-500/40"
           spellCheck={false}
         />
       </section>
-
-      <button
-        type="submit"
-        disabled={pending}
-        className="rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-violet-900/25 disabled:opacity-60"
-      >
-        {pending ? "Guardando…" : "Guardar contenido"}
-      </button>
     </form>
   );
 }

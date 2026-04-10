@@ -1,5 +1,6 @@
 import { BackofficeShell } from "@/app/components/backoffice/backoffice-shell";
 import { BackofficeEnvBanner } from "@/app/components/backoffice/env-banner";
+import { BackofficeSaveBarProvider } from "@/app/components/backoffice/backoffice-save-bar";
 
 /** Evita prerender en build cuando Supabase aún no tiene migraciones aplicadas. */
 export const dynamic = "force-dynamic";
@@ -12,9 +13,11 @@ export default function BackofficeDashboardLayout({
   return (
     <BackofficeShell>
       <BackofficeEnvBanner />
-      <div className="mx-auto w-full min-w-0 max-w-6xl px-4 py-8 sm:px-6 lg:px-8 lg:py-10">
-        {children}
-      </div>
+      <BackofficeSaveBarProvider>
+        <div className="mx-auto w-full min-w-0 max-w-6xl px-4 py-8 sm:px-6 lg:px-8 lg:py-10">
+          {children}
+        </div>
+      </BackofficeSaveBarProvider>
     </BackofficeShell>
   );
 }

@@ -10,9 +10,11 @@ import { FooterContentEditor } from "./footer-content-editor";
 
 export default async function BackofficeFooterContentPage() {
   let initial = mergeFooterContentDefaults(null);
+  let revision = "default";
   try {
     const row = await getContentEntryAdmin(FOOTER_CONTENT_KEY);
     if (row?.payload) initial = mergeFooterContentDefaults(row.payload);
+    revision = row?.updated_at ?? "default";
   } catch {
     /* sin supabase */
   }
@@ -49,7 +51,7 @@ export default async function BackofficeFooterContentPage() {
           </Link>
         </div>
       </div>
-      <FooterContentEditor initial={initial} />
+      <FooterContentEditor initial={initial} revision={revision} />
     </div>
   );
 }

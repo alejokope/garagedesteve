@@ -1,31 +1,309 @@
 "use client";
 
-import { useMemo, useState, useTransition } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 
 import { saveRepairPricingAction } from "@/app/backoffice/(dashboard)/servicio-tecnico/actions";
+import { useBackofficeSaveBarReporter } from "@/app/components/backoffice/backoffice-save-bar";
 import {
   boEditorH2,
   boEditorSection,
-  boEditorToolbar,
 } from "@/app/components/backoffice/bo-editor-styles";
 import {
   defaultRepairPricingPayload,
   repairRowMatchesDeviceFilter,
   repairUniqueDeviceId,
   type RepairCurrency,
+  type RepairDeviceEntry,
   type RepairPricingPayload,
 } from "@/lib/repair-pricing-schema";
+
+function normalizeRepairPricingForPersist(p: RepairPricingPayload): RepairPricingPayload {
+  return {
+    ...p,
+    deviceFilters: p.devices.length > 0 ? [] : p.deviceFilters,
+  };
+}
+
+function repairPricingSnapshot(p: RepairPricingPayload): string {
+  return JSON.stringify(normalizeRepairPricingForPersist(p));
+}
 
 function uid() {
   return `id-${Math.random().toString(36).slice(2, 9)}`;
 }
 
-export function RepairPricingEditor({ initial }: { initial: RepairPricingPayload }) {
+type RepairTableRow = RepairPricingPayload["categories"][number]["tableRows"][number];
+
+const modalFieldClass =
+  "mt-1 w-full rounded-lg border border-white/[0.08] bg-black/40 px-3 py-2 text-sm text-white";
+const modalLabelClass = "text-xs font-medium uppercase tracking-wide text-slate-500";
+
+function AddTableRowModal({
+  categoryTitle,
+  devices,
+  onClose,
+  onAdd,
+}: {
+  categoryTitle: string;
+  devices: RepairDeviceEntry[];
+  onClose: () => void;
+  onAdd: (row: RepairTableRow) => void;
+}) {
+  const [deviceId, setDeviceId] = useState("");
+  const [model, setModel] = useState("");
+  const [partBrand, setPartBrand] = useState("");
+  const [price, setPrice] = useState(0);
+  const [currency, setCurrency] = useState<RepairCurrency | "">("");
+  const [priceLabel, setPriceLabel] = useState("");
+  const [time, setTime] = useState("");
+  const [warrantyLabel, setWarrantyLabel] = useState("6 meses");
+
+  useEffect(() => {
+    function onKey(e: KeyboardEvent) {
+      if (e.key === "Escape") onClose();
+    }
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [onClose]);
+
+  function submit() {
+    const dev = devices.find((d) => d.id === deviceId);
+    onAdd({
+      deviceId,
+      model: model.trim() || dev?.label || "",
+      price: Number.isFinite(price) ? price : 0,
+      currency: currency === "" ? null : currency,
+      priceLabel: priceLabel.trim(),
+      partBrand: partBrand.trim(),
+      time: time.trim(),
+      warrantyLabel: warrantyLabel.trim() || "6 meses",
+    });
+  }
+
+  return (
+    <div className="fixed inset-0 z-[120] flex items-center justify-center p-4">
+      <button
+        type="button"
+        className="absolute inset-0 bg-black/75 backdrop-blur-[2px]"
+        aria-label="Cerrar"
+        onClick={onClose}
+      />
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="add-table-row-title"
+        className="relative z-10 max-h-[85vh] w-full max-w-lg overflow-y-auto rounded-2xl border border-white/10 bg-neutral-950 p-5 shadow-2xl shadow-black/50"
+        onMouseDown={(e) => e.stopPropagation()}
+      >
+        <h2 id="add-table-row-title" className="font-display text-lg font-semibold text-white">
+          Agregar elemento
+        </h2>
+        <p className="mt-1 text-sm text-slate-400">
+          Categoría:{" "}
+          <span className="font-medium text-slate-200">{categoryTitle.trim() || "(sin título)"}</span>
+        </p>
+        <p className="mt-2 text-xs text-slate-500">
+          Se agrega una fila a la tabla. Después podés editarla en la grilla de abajo como siempre.
+        </p>
+        <div className="mt-5 grid gap-4 sm:grid-cols-2">
+          <label className="block sm:col-span-2">
+            <span className={modalLabelClass}>Dispositivo</span>
+            <select
+              value={deviceId}
+              onChange={(e) => {
+                const id = e.target.value;
+                setDeviceId(id);
+                const d = devices.find((x) => x.id === id);
+                if (d) setModel(d.label);
+              }}
+              className={modalFieldClass}
+            >
+              <option value="">— Elegir modelo —</option>
+              {devices.map((d) => (
+                <option key={d.id} value={d.id}>
+                  {d.label}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label className="block sm:col-span-2">
+            <span className={modalLabelClass}>Modelo (texto en tabla)</span>
+            <input
+              value={model}
+              onChange={(e) => setModel(e.target.value)}
+              placeholder="Se completa al elegir dispositivo; podés corregirlo"
+              className={modalFieldClass}
+            />
+          </label>
+          <label className="block">
+            <span className={modalLabelClass}>Marca repuesto</span>
+            <input
+              value={partBrand}
+              onChange={(e) => setPartBrand(e.target.value)}
+              className={modalFieldClass}
+            />
+          </label>
+          <label className="block">
+            <span className={modalLabelClass}>Precio</span>
+            <input
+              type="number"
+              min={0}
+              step={0.01}
+              value={price}
+              onChange={(e) => setPrice(Number(e.target.value))}
+              className={modalFieldClass}
+            />
+          </label>
+          <label className="block sm:col-span-2">
+            <span className={modalLabelClass}>Texto en lugar de precio (ej. Consultar)</span>
+            <input
+              value={priceLabel}
+              onChange={(e) => setPriceLabel(e.target.value)}
+              className={modalFieldClass}
+            />
+          </label>
+          <label className="block">
+            <span className={modalLabelClass}>Moneda</span>
+            <select
+              value={currency}
+              onChange={(e) => setCurrency(e.target.value as RepairCurrency | "")}
+              className={modalFieldClass}
+            >
+              <option value="">Hereda de la página</option>
+              <option value="USD">USD</option>
+              <option value="ARS">ARS</option>
+            </select>
+          </label>
+          <label className="block">
+            <span className={modalLabelClass}>Tiempo</span>
+            <input value={time} onChange={(e) => setTime(e.target.value)} className={modalFieldClass} />
+          </label>
+          <label className="block sm:col-span-2">
+            <span className={modalLabelClass}>Garantía</span>
+            <input
+              value={warrantyLabel}
+              onChange={(e) => setWarrantyLabel(e.target.value)}
+              className={modalFieldClass}
+            />
+          </label>
+        </div>
+        <div className="mt-6 flex flex-wrap justify-end gap-2 border-t border-white/10 pt-4">
+          <button
+            type="button"
+            onClick={onClose}
+            className="rounded-xl border border-white/15 bg-white/5 px-4 py-2 text-sm font-medium text-slate-200 hover:bg-white/10"
+          >
+            Cancelar
+          </button>
+          <button
+            type="button"
+            onClick={submit}
+            className="rounded-xl bg-violet-600 px-4 py-2 text-sm font-semibold text-white hover:bg-violet-500"
+          >
+            Agregar a la categoría
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function AddHighlightModal({
+  categoryTitle,
+  onClose,
+  onAdd,
+}: {
+  categoryTitle: string;
+  onClose: () => void;
+  onAdd: (item: { label: string; value: string }) => void;
+}) {
+  const [label, setLabel] = useState("");
+  const [value, setValue] = useState("");
+
+  useEffect(() => {
+    function onKey(e: KeyboardEvent) {
+      if (e.key === "Escape") onClose();
+    }
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [onClose]);
+
+  return (
+    <div className="fixed inset-0 z-[120] flex items-center justify-center p-4">
+      <button
+        type="button"
+        className="absolute inset-0 bg-black/75 backdrop-blur-[2px]"
+        aria-label="Cerrar"
+        onClick={onClose}
+      />
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="add-highlight-title"
+        className="relative z-10 w-full max-w-md rounded-2xl border border-white/10 bg-neutral-950 p-5 shadow-2xl shadow-black/50"
+        onMouseDown={(e) => e.stopPropagation()}
+      >
+        <h2 id="add-highlight-title" className="font-display text-lg font-semibold text-white">
+          Agregar elemento
+        </h2>
+        <p className="mt-1 text-sm text-slate-400">
+          Categoría:{" "}
+          <span className="font-medium text-slate-200">{categoryTitle.trim() || "(sin título)"}</span>
+        </p>
+        <p className="mt-2 text-xs text-slate-500">
+          Caja destacada (ej. etiqueta + valor). Podés editarla abajo a mano.
+        </p>
+        <div className="mt-5 space-y-4">
+          <label className="block">
+            <span className={modalLabelClass}>Etiqueta</span>
+            <input value={label} onChange={(e) => setLabel(e.target.value)} className={modalFieldClass} />
+          </label>
+          <label className="block">
+            <span className={modalLabelClass}>Valor</span>
+            <input value={value} onChange={(e) => setValue(e.target.value)} className={modalFieldClass} />
+          </label>
+        </div>
+        <div className="mt-6 flex flex-wrap justify-end gap-2 border-t border-white/10 pt-4">
+          <button
+            type="button"
+            onClick={onClose}
+            className="rounded-xl border border-white/15 bg-white/5 px-4 py-2 text-sm font-medium text-slate-200 hover:bg-white/10"
+          >
+            Cancelar
+          </button>
+          <button
+            type="button"
+            onClick={() => onAdd({ label: label.trim(), value: value.trim() })}
+            className="rounded-xl bg-violet-600 px-4 py-2 text-sm font-semibold text-white hover:bg-violet-500"
+          >
+            Agregar a la categoría
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export function RepairPricingEditor({
+  initial,
+  revision,
+}: {
+  initial: RepairPricingPayload;
+  revision: string;
+}) {
+  const router = useRouter();
   const [data, setData] = useState<RepairPricingPayload>(initial);
   const [err, setErr] = useState<string | null>(null);
-  const [pending, startTransition] = useTransition();
+  const [saving, setSaving] = useState(false);
   const [newDeviceLabel, setNewDeviceLabel] = useState("");
   const [previewDeviceId, setPreviewDeviceId] = useState<string | "all">("all");
+  const [tableRowModalCi, setTableRowModalCi] = useState<number | null>(null);
+  const [highlightModalCi, setHighlightModalCi] = useState<number | null>(null);
+
+  useEffect(() => {
+    setData(initial);
+  }, [revision, initial]);
 
   const jsonPreview = useMemo(() => JSON.stringify(data, null, 2), [data]);
 
@@ -35,20 +313,38 @@ export function RepairPricingEditor({ initial }: { initial: RepairPricingPayload
     );
   }, [data.devices]);
 
-  function save() {
+  const isDirty = repairPricingSnapshot(data) !== repairPricingSnapshot(initial);
+
+  const discard = useCallback(() => {
     setErr(null);
-    startTransition(async () => {
-      try {
-        const payload: RepairPricingPayload = {
-          ...data,
-          deviceFilters: data.devices.length > 0 ? [] : data.deviceFilters,
-        };
-        await saveRepairPricingAction(payload);
-      } catch (e) {
-        setErr(e instanceof Error ? e.message : "Error al guardar");
-      }
-    });
-  }
+    setData(structuredClone(initial));
+  }, [initial]);
+
+  const performSave = useCallback(async () => {
+    setErr(null);
+    setSaving(true);
+    try {
+      await saveRepairPricingAction(normalizeRepairPricingForPersist(data));
+      router.refresh();
+    } catch (e) {
+      setErr(e instanceof Error ? e.message : "Error al guardar");
+    } finally {
+      setSaving(false);
+    }
+  }, [data, router]);
+
+  const saveBarSnapshot = useMemo(() => {
+    if (!isDirty && !saving && !err) return null;
+    return {
+      isDirty,
+      isSaving: saving,
+      error: err,
+      onSave: performSave,
+      onDiscard: discard,
+    };
+  }, [isDirty, saving, err, performSave, discard]);
+
+  useBackofficeSaveBarReporter(saveBarSnapshot);
 
   function addDevice() {
     const label = newDeviceLabel.trim();
@@ -80,6 +376,10 @@ export function RepairPricingEditor({ initial }: { initial: RepairPricingPayload
 
   return (
     <div className="min-w-0 space-y-6 pb-28 sm:space-y-8 sm:pb-10 lg:pb-8">
+      <p className="rounded-xl border border-violet-500/20 bg-violet-950/20 px-4 py-3 text-sm text-slate-300">
+        Los cambios son borrador hasta que pulses <strong className="text-white">Guardar cambios</strong> en la barra
+        inferior.
+      </p>
       {err ? (
         <div className="rounded-xl border border-red-500/35 bg-red-500/10 px-4 py-3 text-sm text-red-100/95">
           {err}
@@ -421,32 +721,18 @@ export function RepairPricingEditor({ initial }: { initial: RepairPricingPayload
               {cat.layout === "table" ? (
                 <div className="mt-6 min-w-0 max-w-full">
                   <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                    <span className="text-sm font-medium text-slate-300">Filas</span>
+                    <div>
+                      <span className="text-sm font-medium text-slate-300">Filas</span>
+                      <p className="mt-1 max-w-xl text-xs text-slate-500">
+                        Agregá con el botón (modal) o editá cada campo directamente en la grilla.
+                      </p>
+                    </div>
                     <button
                       type="button"
-                      className="text-xs text-violet-300 hover:text-violet-200"
-                      onClick={() =>
-                        setData((d) => {
-                          const c = [...d.categories];
-                          const rows = [
-                            ...c[ci]!.tableRows,
-                            {
-                              deviceId: "",
-                              model: "",
-                              price: 0,
-                              currency: null as RepairCurrency | null,
-                              priceLabel: "",
-                              partBrand: "",
-                              time: "",
-                              warrantyLabel: "6 meses",
-                            },
-                          ];
-                          c[ci] = { ...c[ci]!, tableRows: rows };
-                          return { ...d, categories: c };
-                        })
-                      }
+                      className="shrink-0 rounded-lg bg-violet-600/50 px-3 py-2 text-xs font-semibold text-white hover:bg-violet-600/65"
+                      onClick={() => setTableRowModalCi(ci)}
                     >
-                      + Fila
+                      Agregar elemento
                     </button>
                   </div>
                   <div className="mt-3 w-full min-w-0 max-w-full touch-pan-x overflow-x-auto overscroll-x-contain rounded-xl border border-white/[0.08] bg-black/25 p-2 [-webkit-overflow-scrolling:touch]">
@@ -626,7 +912,19 @@ export function RepairPricingEditor({ initial }: { initial: RepairPricingPayload
                   </label>
                 </div>
               ) : (
-                <div className="mt-4 space-y-2">
+                <div className="mt-4 space-y-3">
+                  <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                    <p className="text-xs text-slate-500">
+                      Agregá cajas con el botón o editá el texto en la lista de abajo.
+                    </p>
+                    <button
+                      type="button"
+                      className="shrink-0 rounded-lg bg-violet-600/50 px-3 py-2 text-xs font-semibold text-white hover:bg-violet-600/65"
+                      onClick={() => setHighlightModalCi(ci)}
+                    >
+                      Agregar elemento
+                    </button>
+                  </div>
                   {cat.highlights.map((h, hi) => (
                     <div key={hi} className="flex gap-2">
                       <input
@@ -673,22 +971,6 @@ export function RepairPricingEditor({ initial }: { initial: RepairPricingPayload
                       </button>
                     </div>
                   ))}
-                  <button
-                    type="button"
-                    className="text-xs text-violet-300"
-                    onClick={() =>
-                      setData((d) => {
-                        const c = [...d.categories];
-                        c[ci] = {
-                          ...c[ci]!,
-                          highlights: [...c[ci]!.highlights, { label: "", value: "" }],
-                        };
-                        return { ...d, categories: c };
-                      })
-                    }
-                  >
-                    + Caja
-                  </button>
                 </div>
               )}
             </div>
@@ -925,30 +1207,57 @@ export function RepairPricingEditor({ initial }: { initial: RepairPricingPayload
 
       <section className={boEditorSection}>
         <h2 className={boEditorH2}>JSON (solo lectura)</h2>
+        <p className="mt-2 text-xs text-slate-500">
+          Reemplaza el formulario por la plantilla del código (solo en pantalla; no afecta la web hasta guardar).
+        </p>
+        <button
+          type="button"
+          className="mt-3 rounded-xl border border-white/15 bg-white/5 px-4 py-2 text-sm font-medium text-slate-200 hover:bg-white/10"
+          onClick={() => {
+            setData(defaultRepairPricingPayload());
+            setErr(null);
+          }}
+        >
+          Cargar plantilla por defecto
+        </button>
         <pre className="mt-3 max-h-48 overflow-x-auto overflow-y-auto rounded-xl border border-white/[0.06] bg-black/55 p-3 text-[10px] leading-relaxed text-slate-400 sm:max-h-64 sm:p-4 sm:text-[11px]">
           {jsonPreview}
         </pre>
       </section>
 
-      <div className={boEditorToolbar}>
-        <div className="mx-auto flex w-full max-w-6xl flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-stretch sm:gap-3">
-          <button
-            type="button"
-            disabled={pending}
-            onClick={save}
-            className="inline-flex min-h-12 flex-1 items-center justify-center rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 px-5 text-sm font-semibold text-white shadow-lg shadow-violet-900/25 disabled:opacity-60 sm:flex-none sm:min-w-[10rem] sm:px-8"
-          >
-            {pending ? "Guardando…" : "Guardar precios"}
-          </button>
-          <button
-            type="button"
-            className="inline-flex min-h-12 flex-1 items-center justify-center rounded-xl border border-white/[0.14] bg-white/[0.06] px-4 text-sm font-medium text-slate-200 hover:bg-white/[0.1] sm:flex-none"
-            onClick={() => setData(defaultRepairPricingPayload())}
-          >
-            Valores por defecto
-          </button>
-        </div>
-      </div>
+      {tableRowModalCi !== null ? (
+        <AddTableRowModal
+          key={`table-${tableRowModalCi}`}
+          categoryTitle={data.categories[tableRowModalCi]?.title ?? ""}
+          devices={sortedEditorDevices}
+          onClose={() => setTableRowModalCi(null)}
+          onAdd={(row) => {
+            const idx = tableRowModalCi;
+            setData((d) => {
+              const c = [...d.categories];
+              c[idx] = { ...c[idx]!, tableRows: [...c[idx]!.tableRows, row] };
+              return { ...d, categories: c };
+            });
+            setTableRowModalCi(null);
+          }}
+        />
+      ) : null}
+      {highlightModalCi !== null ? (
+        <AddHighlightModal
+          key={`hl-${highlightModalCi}`}
+          categoryTitle={data.categories[highlightModalCi]?.title ?? ""}
+          onClose={() => setHighlightModalCi(null)}
+          onAdd={(item) => {
+            const idx = highlightModalCi;
+            setData((d) => {
+              const c = [...d.categories];
+              c[idx] = { ...c[idx]!, highlights: [...c[idx]!.highlights, item] };
+              return { ...d, categories: c };
+            });
+            setHighlightModalCi(null);
+          }}
+        />
+      ) : null}
     </div>
   );
 }

@@ -8,9 +8,11 @@ import {
 
 export default async function BackofficeRepairPreciosPage() {
   let initial = mergeRepairPricingDefaults({});
+  let revision = "default";
   try {
     const row = await getContentEntryAdmin(REPAIR_PRICING_KEY);
     if (row?.payload) initial = mergeRepairPricingDefaults(row.payload);
+    revision = row?.updated_at ?? "default";
   } catch {
     /* sin supabase */
   }
@@ -31,7 +33,7 @@ export default async function BackofficeRepairPreciosPage() {
         publicHref="/servicio-tecnico#precios"
         publicLabel="Ver precios en la web"
       />
-      <RepairPricingEditor initial={initial} />
+      <RepairPricingEditor initial={initial} revision={revision} />
     </div>
   );
 }
