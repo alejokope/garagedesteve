@@ -25,56 +25,154 @@ function matchesQuery(row: ProductListRow, q: string): boolean {
   return blob.includes(t);
 }
 
+type ConditionFilter = "all" | "new" | "used" | "unset";
+type PublishedFilter = "all" | "yes" | "no";
+
+function matchesCondition(row: ProductListRow, f: ConditionFilter): boolean {
+  if (f === "all") return true;
+  if (f === "new") return row.stock_condition === "new";
+  if (f === "used") return row.stock_condition === "used";
+  return row.stock_condition !== "new" && row.stock_condition !== "used";
+}
+
+function matchesPublished(row: ProductListRow, f: PublishedFilter): boolean {
+  if (f === "all") return true;
+  if (f === "yes") return row.published;
+  return !row.published;
+}
+
+const selectClass =
+  "min-w-0 flex-1 rounded-xl border border-white/[0.1] bg-black/30 px-3 py-2.5 text-sm text-white outline-none focus:ring-2 focus:ring-violet-500/40";
+
 export function ProductsAdminTable({ rows }: { rows: ProductListRow[] }) {
   const [query, setQuery] = useState("");
+  const [category, setCategory] = useState<string>("");
+  const [condition, setCondition] = useState<ConditionFilter>("all");
+  const [published, setPublished] = useState<PublishedFilter>("all");
+
+  const categoryOptions = useMemo(() => {
+    const set = new Set(rows.map((r) => r.category).filter((c) => c.trim()));
+    return [...set].sort((a, b) => a.localeCompare(b, "es"));
+  }, [rows]);
+
+  const hasActiveFilters =
+    Boolean(query.trim()) || Boolean(category) || condition !== "all" || published !== "all";
 
   const filtered = useMemo(() => {
-    return rows.filter((r) => matchesQuery(r, query));
-  }, [rows, query]);
+    return rows.filter(
+      (r) =>
+        matchesQuery(r, query) &&
+        (!category || r.category === category) &&
+        matchesCondition(r, condition) &&
+        matchesPublished(r, published),
+    );
+  }, [rows, query, category, condition, published]);
+
+  const resetFilters = () => {
+    setQuery("");
+    setCategory("");
+    setCondition("all");
+    setPublished("all");
+  };
 
   return (
     <div className="space-y-4">
-      <div className="relative max-w-xl">
-        <label htmlFor="bo-product-search" className="sr-only">
-          Buscar productos
-        </label>
-        <svg
-          className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-          strokeWidth={2}
-          aria-hidden
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+      <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:gap-6">
+        <div className="relative min-w-0 flex-1 lg:max-w-xl">
+          <label htmlFor="bo-product-search" className="sr-only">
+            Buscar productos
+          </label>
+          <svg
+            className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth={2}
+            aria-hidden
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+            />
+          </svg>
+          <input
+            id="bo-product-search"
+            type="search"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Buscar por nombre, ID, marca o categoría…"
+            autoComplete="off"
+            className="w-full rounded-xl border border-white/[0.1] bg-black/30 py-2.5 pl-10 pr-10 text-sm text-white placeholder:text-slate-500 outline-none focus:ring-2 focus:ring-violet-500/40"
           />
-        </svg>
-        <input
-          id="bo-product-search"
-          type="search"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          placeholder="Buscar por nombre, ID, marca o categoría…"
-          autoComplete="off"
-          className="w-full rounded-xl border border-white/[0.1] bg-black/30 py-2.5 pl-10 pr-10 text-sm text-white placeholder:text-slate-500 outline-none focus:ring-2 focus:ring-violet-500/40"
-        />
-        {query.trim() ? (
+          {query.trim() ? (
+            <button
+              type="button"
+              onClick={() => setQuery("")}
+              className="absolute right-2 top-1/2 -translate-y-1/2 rounded-lg px-2 py-1 text-xs text-slate-400 hover:bg-white/[0.08] hover:text-white"
+              aria-label="Limpiar búsqueda"
+            >
+              Limpiar
+            </button>
+          ) : null}
+        </div>
+
+        <div className="grid flex-1 grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 lg:gap-3">
+          <label className="flex min-w-0 flex-col gap-1.5 text-xs font-medium text-slate-500">
+            Categoría
+            <select
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+              className={selectClass}
+            >
+              <option value="">Todas</option>
+              {categoryOptions.map((c) => (
+                <option key={c} value={c}>
+                  {c}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label className="flex min-w-0 flex-col gap-1.5 text-xs font-medium text-slate-500">
+            Condición
+            <select
+              value={condition}
+              onChange={(e) => setCondition(e.target.value as ConditionFilter)}
+              className={selectClass}
+            >
+              <option value="all">Todas</option>
+              <option value="new">Nuevo</option>
+              <option value="used">Usado</option>
+              <option value="unset">Sin definir</option>
+            </select>
+          </label>
+          <label className="flex min-w-0 flex-col gap-1.5 text-xs font-medium text-slate-500 sm:col-span-2 lg:col-span-1">
+            En la web
+            <select
+              value={published}
+              onChange={(e) => setPublished(e.target.value as PublishedFilter)}
+              className={selectClass}
+            >
+              <option value="all">Todos</option>
+              <option value="yes">Visibles</option>
+              <option value="no">Ocultos</option>
+            </select>
+          </label>
+        </div>
+
+        {hasActiveFilters ? (
           <button
             type="button"
-            onClick={() => setQuery("")}
-            className="absolute right-2 top-1/2 -translate-y-1/2 rounded-lg px-2 py-1 text-xs text-slate-400 hover:bg-white/[0.08] hover:text-white"
-            aria-label="Limpiar búsqueda"
+            onClick={resetFilters}
+            className="shrink-0 rounded-xl border border-white/[0.12] px-4 py-2.5 text-sm font-medium text-slate-300 hover:bg-white/[0.06] lg:self-end"
           >
-            Limpiar
+            Limpiar filtros
           </button>
         ) : null}
       </div>
 
       <p className="text-xs text-slate-500">
-        {query.trim() ? (
+        {hasActiveFilters ? (
           <>
             <span className="font-medium text-slate-300">{filtered.length}</span> de {rows.length}{" "}
             productos
@@ -105,10 +203,10 @@ export function ProductsAdminTable({ rows }: { rows: ProductListRow[] }) {
                   No hay coincidencias.{" "}
                   <button
                     type="button"
-                    onClick={() => setQuery("")}
+                    onClick={resetFilters}
                     className="font-medium text-violet-300 hover:text-violet-200"
                   >
-                    Borrar búsqueda
+                    Limpiar filtros
                   </button>
                 </td>
               </tr>
