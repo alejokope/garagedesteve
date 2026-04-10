@@ -13,6 +13,13 @@ function hasSupabaseEnv(): boolean {
 }
 
 /**
+ * Listado tienda / API / lookup PDP: todo lo que usa grilla y carrito, sin `detail` (JSON grande).
+ * La ficha carga `detail` con {@link getPublishedProductForSite}.
+ */
+export const PUBLISHED_CATALOG_LIST_COLUMNS =
+  "id,name,short,category,brand,price,stock_condition,badge,image,image_alt,variant_groups,compare_at_price,discount_percent,published,sort_order" as const;
+
+/**
  * Catálogo público: solo productos publicados en Supabase (sort_order, name).
  */
 export async function loadPublishedProductsForSite(): Promise<Product[]> {
@@ -22,7 +29,7 @@ export async function loadPublishedProductsForSite(): Promise<Product[]> {
     const supabase = await createSupabaseServerClient();
     const { data, error } = await supabase
       .from("products")
-      .select("*")
+      .select(PUBLISHED_CATALOG_LIST_COLUMNS)
       .eq("published", true)
       .order("sort_order", { ascending: true })
       .order("name", { ascending: true });
@@ -68,7 +75,22 @@ export async function getPublishedProductForSite(id: string): Promise<Product | 
   return undefined;
 }
 
+/** Solo IDs publicados: evita cargar el catálogo entero (p. ej. `generateStaticParams`). */
 export async function listPublishedProductIdsForSite(): Promise<string[]> {
-  const list = await cachedPublishedProductsForSite();
-  return list.map((p) => p.id);
+  if (!hasSupabaseEnv()) return [];
+
+  try {
+    const supabase = await createSupabaseServerClient();
+    const { data, error } = await supabase
+      .from("products")
+      .select("id")
+      .eq("published", true)
+      .order("sort_order", { ascending: true })
+      .order("name", { ascending: true });
+
+    if (error || !data?.length) return [];
+    return data.map((row) => String((row as { id: string }).id));
+  } catch {
+    return [];
+  }
 }

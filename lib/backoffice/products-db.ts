@@ -44,14 +44,14 @@ function mapRow(r: Record<string, unknown>): ProductRow {
   return {
     id: String(r.id),
     name: String(r.name),
-    short: String(r.short),
-    category: String(r.category),
+    short: r.short != null && r.short !== "" ? String(r.short) : "",
+    category: String(r.category ?? ""),
     brand: r.brand != null && String(r.brand).trim() !== "" ? String(r.brand).trim() : null,
     price: num(r.price),
     stock_condition: parseStockCondition(r.stock_condition),
     badge: r.badge != null ? String(r.badge) : null,
-    image: String(r.image),
-    image_alt: String(r.image_alt),
+    image: r.image != null && String(r.image) !== "" ? String(r.image) : "",
+    image_alt: r.image_alt != null ? String(r.image_alt) : "",
     variant_groups: r.variant_groups,
     detail: r.detail ?? null,
     compare_at_price: r.compare_at_price != null ? num(r.compare_at_price) : null,
@@ -59,21 +59,41 @@ function mapRow(r: Record<string, unknown>): ProductRow {
       r.discount_percent != null ? Number.parseInt(String(r.discount_percent), 10) : null,
     published: Boolean(r.published),
     sort_order: Number(r.sort_order) || 0,
-    created_at: String(r.created_at),
-    updated_at: String(r.updated_at),
+    created_at: r.created_at != null ? String(r.created_at) : "",
+    updated_at: r.updated_at != null ? String(r.updated_at) : "",
   };
 }
 
-export async function listProductsAdmin(): Promise<ProductRow[]> {
+/** Columnas para tabla del BO / picker de contenido: sin `detail` ni `variant_groups` (JSON pesado). */
+const PRODUCT_ADMIN_LIST_COLUMNS =
+  "id,name,brand,price,category,stock_condition,published,sort_order" as const;
+
+export type ProductAdminCatalogRow = Pick<
+  ProductRow,
+  "id" | "name" | "brand" | "price" | "category" | "stock_condition" | "published"
+>;
+
+export async function listProductsAdmin(): Promise<ProductAdminCatalogRow[]> {
   const supabase = createSupabaseServiceClient();
   const { data, error } = await supabase
     .from("products")
-    .select("*")
+    .select(PRODUCT_ADMIN_LIST_COLUMNS)
     .order("sort_order", { ascending: true })
     .order("name", { ascending: true });
 
   if (error) throw new Error(error.message);
-  return (data ?? []).map((r) => mapRow(r as Record<string, unknown>));
+  return (data ?? []).map((raw) => {
+    const r = raw as Record<string, unknown>;
+    return {
+      id: String(r.id),
+      name: String(r.name),
+      brand: r.brand != null && String(r.brand).trim() !== "" ? String(r.brand).trim() : null,
+      price: num(r.price),
+      category: String(r.category ?? ""),
+      stock_condition: parseStockCondition(r.stock_condition),
+      published: Boolean(r.published),
+    };
+  });
 }
 
 export async function getProductAdmin(id: string): Promise<ProductRow | null> {

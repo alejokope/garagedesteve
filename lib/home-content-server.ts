@@ -2,6 +2,7 @@ import "server-only";
 
 import { productRowFromRecord, productRowToProduct } from "@/lib/backoffice/products-db";
 import type { Product } from "@/lib/data";
+import { PUBLISHED_CATALOG_LIST_COLUMNS } from "@/lib/site-products";
 import {
   HOME_CONTENT_KEYS,
   mergeCategories,
@@ -52,7 +53,7 @@ async function resolveFeaturedProducts(ids: string[]): Promise<Product[]> {
     const supabase = await createSupabaseServerClient();
     const { data, error } = await supabase
       .from("products")
-      .select("*")
+      .select(PUBLISHED_CATALOG_LIST_COLUMNS)
       .in("id", ids)
       .eq("published", true);
     if (error || !data?.length) return [];

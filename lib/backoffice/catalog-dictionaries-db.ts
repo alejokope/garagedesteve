@@ -51,7 +51,7 @@ export async function listVariantPricingModeLabelsAdmin(): Promise<VariantPricin
 export async function countProductsByCategory(categoryId: string): Promise<number> {
   const { count, error } = await createSupabaseServiceClient()
     .from("products")
-    .select("*", { count: "exact", head: true })
+    .select("id", { count: "exact", head: true })
     .eq("category", categoryId);
   if (error) throw new Error(error.message);
   return count ?? 0;
