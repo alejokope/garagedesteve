@@ -51,9 +51,9 @@ const CREATE_STEPS: ProductWizardStepMeta[] = [
   },
   {
     id: "detail",
-    label: "Ficha",
-    title: "Página detallada",
-    hint: "Galería, specs y relacionados. Opcional.",
+    label: "Texto",
+    title: "Ficha y relacionados",
+    hint: "Filas etiqueta + valor en la ficha, garantía y productos sugeridos. Opcional.",
     optional: true,
   },
   {
@@ -151,7 +151,7 @@ function ProductWizardReview({ formId }: { formId: string }) {
         </button>
       </div>
       <p className="mt-1 text-xs text-slate-400">
-        Variantes y ficha se incluyen si las cargaste. El servidor valida categoría e imagen.
+        Variantes y texto extra se incluyen si los cargaste. El servidor valida categoría e imagen.
       </p>
       <dl className="mt-4 grid gap-2 text-sm sm:grid-cols-2">
         {lines.map((row) => (

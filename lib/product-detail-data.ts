@@ -1,5 +1,11 @@
 import type { Product } from "@/lib/data";
 
+/** Fila clave → valor en la ficha del producto (BO y tienda). */
+export type ProductDetailPair = {
+  key: string;
+  value: string;
+};
+
 export type ProductSpec = {
   key: string;
   title: string;
@@ -10,9 +16,11 @@ export type ProductSpec = {
 
 export type ProductDetailBlock = {
   images: string[];
-  /** Texto corrido; si hay `descriptionItems`, la tienda prioriza la lista. */
+  /** Texto corrido; respaldo si no hay `detailPairs` / `descriptionItems`. */
   longDescription: string;
-  /** Párrafos o ítems mostrados como lista en la ficha. */
+  /** Filas etiqueta + valor (preferido en BO actual). */
+  detailPairs?: ProductDetailPair[];
+  /** Legado: lista de textos sin clave. */
   descriptionItems?: string[];
   /** Garantía destacada en la ficha (backoffice: campo propio). */
   warranty?: string;
@@ -112,20 +120,31 @@ export function getProductDetailExtra(id: string): ProductDetailBlock | null {
   return productDetailById[id] ?? null;
 }
 
+/** Pares a mostrar en la tienda: `detailPairs` o, si no hay, datos viejos. */
+export function getDetailPairs(block: ProductDetailBlock): ProductDetailPair[] {
+  const raw = block.detailPairs?.filter((p) => p.key?.trim() || p.value?.trim()) ?? [];
+  if (raw.length > 0) return raw.map((p) => ({ key: p.key.trim(), value: p.value.trim() }));
+
+  if (block.descriptionItems?.length) {
+    return block.descriptionItems
+      .map((s) => s.replace(/\r\n/g, "\n").trim())
+      .filter(Boolean)
+      .map((s) => ({ key: "", value: s }));
+  }
+
+  const ld = block.longDescription.trim();
+  if (ld) return [{ key: "", value: ld }];
+
+  return [];
+}
+
 export function buildFallbackDetail(p: Product): ProductDetailBlock {
+  const short = p.short.trim();
   return {
     images: [p.image],
     longDescription: p.short,
-    descriptionItems: p.short.trim() ? [p.short.trim()] : [],
-    specs: [
-      {
-        key: "info",
-        icon: "chip",
-        title: "DESCRIPCIÓN",
-        value: p.name,
-        desc: p.short,
-      },
-    ],
+    detailPairs: short ? [{ key: "", value: short }] : [],
+    specs: [],
     relatedIds: [],
     accessoryIds: [],
     reviews: [],

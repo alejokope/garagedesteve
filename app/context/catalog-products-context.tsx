@@ -1,5 +1,6 @@
 "use client";
 
+import { usePathname } from "next/navigation";
 import type { ReactNode } from "react";
 import {
   createContext,
@@ -7,6 +8,7 @@ import {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from "react";
 
@@ -24,37 +26,50 @@ type CatalogProductsValue = {
 
 const CatalogProductsContext = createContext<CatalogProductsValue | null>(null);
 
-/** Una sola petición en vuelo / resultado cacheado para toda la SPA. */
-let catalogPromise: Promise<Product[]> | null = null;
+/** Solo deduplica peticiones en vuelo; no guarda el resultado (evita catálogo viejo al navegar o recargar). */
+let catalogInflight: Promise<Product[]> | null = null;
 
-function getCatalogPromise(forceNew: boolean): Promise<Product[]> {
-  if (forceNew) catalogPromise = null;
-  if (!catalogPromise) {
-    catalogPromise = fetch("/api/catalog/products")
-      .then(async (r) => {
-        if (!r.ok) {
-          const body = (await r.json().catch(() => ({}))) as { error?: string };
-          throw new Error(body.error ?? "No se pudo cargar el catálogo");
-        }
-        return r.json() as Promise<Product[]>;
-      })
-      .catch((e) => {
-        catalogPromise = null;
-        throw e;
-      });
-  }
-  return catalogPromise;
+function fetchCatalogOnce(forceNew: boolean): Promise<Product[]> {
+  if (forceNew) catalogInflight = null;
+  if (catalogInflight) return catalogInflight;
+
+  // Cada carga nueva = URL distinta → el navegador no puede servir un GET cacheado (F5, volver a la tienda).
+  const url = `/api/catalog/products?_=${Date.now()}`;
+  const p = fetch(url, {
+    cache: "no-store",
+    headers: {
+      "Cache-Control": "no-cache",
+      Pragma: "no-cache",
+    },
+  })
+    .then(async (r) => {
+      if (!r.ok) {
+        const body = (await r.json().catch(() => ({}))) as { error?: string };
+        throw new Error(body.error ?? "No se pudo cargar el catálogo");
+      }
+      return r.json() as Promise<Product[]>;
+    })
+    .finally(() => {
+      if (catalogInflight === p) catalogInflight = null;
+    });
+
+  catalogInflight = p;
+  return p;
 }
 
+const SHOP_CATALOG_PATH = /^\/(tienda(\/.*)?|carrito|favoritos)$/;
+
 export function CatalogProductsProvider({ children }: { children: ReactNode }) {
+  const pathname = usePathname();
   const [products, setProducts] = useState<Product[]>([]);
   const [status, setStatus] = useState<Status>("idle");
   const [error, setError] = useState<string | null>(null);
+  const isFirstPathEffect = useRef(true);
 
   const runLoad = useCallback((forceNew: boolean) => {
     setError(null);
     setStatus("loading");
-    getCatalogPromise(forceNew)
+    fetchCatalogOnce(forceNew)
       .then((data) => {
         setProducts(data);
         setStatus("ready");
@@ -67,8 +82,15 @@ export function CatalogProductsProvider({ children }: { children: ReactNode }) {
   }, []);
 
   useEffect(() => {
-    runLoad(false);
-  }, [runLoad]);
+    if (isFirstPathEffect.current) {
+      isFirstPathEffect.current = false;
+      runLoad(true);
+      return;
+    }
+    if (SHOP_CATALOG_PATH.test(pathname)) {
+      runLoad(true);
+    }
+  }, [pathname, runLoad]);
 
   const reload = useCallback(() => {
     runLoad(true);

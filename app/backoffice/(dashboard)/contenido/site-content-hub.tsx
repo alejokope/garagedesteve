@@ -265,7 +265,9 @@ export function SiteContentHub({ revision, homeKeys, merged, hasRow, products }:
       }
       await refresh();
     } catch (e) {
-      setSaveErr(e instanceof Error ? e.message : "No se pudo guardar");
+      const msg = e instanceof Error ? e.message : "No se pudo guardar";
+      setSaveErr(msg);
+      throw new Error(msg);
     } finally {
       setSaving(false);
     }

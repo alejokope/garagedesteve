@@ -12,6 +12,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
+import { toast } from "sonner";
 
 export type BackofficeSaveBarSnapshot = {
   isDirty: boolean;
@@ -83,7 +84,25 @@ function FloatingSaveBar({ snapshot }: { snapshot: BackofficeSaveBarSnapshot | n
           <button
             type="button"
             disabled={snapshot.isSaving || !canSave}
-            onClick={() => void snapshot.onSave()}
+            onClick={() => {
+              void (async () => {
+                const id = toast.loading("Guardando…", {
+                  description: "Enviando datos al servidor.",
+                });
+                try {
+                  await snapshot.onSave();
+                  toast.success("Listo", {
+                    id,
+                    description: "Los cambios se guardaron correctamente.",
+                  });
+                } catch (e) {
+                  toast.error("No se pudo guardar", {
+                    id,
+                    description: e instanceof Error ? e.message : "Probá de nuevo en unos segundos.",
+                  });
+                }
+              })();
+            }}
             className="min-w-[160px] rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 px-6 py-2.5 text-sm font-semibold text-white shadow-lg shadow-violet-900/30 disabled:opacity-50"
           >
             {snapshot.isSaving ? "Guardando…" : "Guardar cambios"}

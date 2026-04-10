@@ -10,7 +10,6 @@ import type {
   VariantUiKind,
 } from "@/lib/product-variants";
 import { getVariantUiKind } from "@/lib/product-variants";
-import { slugifyLabel } from "@/lib/slug";
 
 function newOptionId(): string {
   return `opt-${crypto.randomUUID().slice(0, 8)}`;
@@ -202,13 +201,7 @@ export function VariantGroupsEditor({
               <input
                 type="text"
                 value={g.label}
-                onChange={(e) => {
-                  const label = e.target.value;
-                  updateGroup(gi, {
-                    label,
-                    id: slugifyLabel(label) || g.id,
-                  });
-                }}
+                onChange={(e) => updateGroup(gi, { label: e.target.value })}
                 className="w-full rounded-xl border border-white/[0.1] bg-black/40 px-3 py-2.5 text-sm text-white outline-none focus:ring-2 focus:ring-violet-500/40"
               />
             </label>

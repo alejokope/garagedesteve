@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState, useEffect, useMemo, useRef, useState } from "react";
+import { toast } from "sonner";
 
 import { useBackofficeSaveBarReporter } from "@/app/components/backoffice/backoffice-save-bar";
 import type { ContentEntryRow } from "@/lib/backoffice/content-db";
@@ -26,6 +27,12 @@ export function ContentForm({
 }) {
   const [state, formAction, pending] = useActionState(saveContentEntry, null);
   const formRef = useRef<HTMLFormElement>(null);
+
+  useEffect(() => {
+    if (state?.error) {
+      toast.error("No se pudo guardar", { description: state.error });
+    }
+  }, [state?.error]);
 
   const baselineKey = mode === "create" ? "" : (initial?.key ?? "");
   const baselineLabel = initial?.label ?? "";

@@ -1,64 +1,50 @@
 "use client";
 
-import { useMemo, useState, useTransition, type ReactNode } from "react";
+import { useMemo, useState, type ReactNode } from "react";
 
-import type { ProductDetailBlock, ProductSpec } from "@/lib/product-detail-data";
+import type { ProductDetailBlock, ProductDetailPair } from "@/lib/product-detail-data";
 
-import { uploadGalleryImageAction } from "./upload-actions";
+function parsePairsFromRaw(raw: unknown): ProductDetailPair[] {
+  if (!raw || typeof raw !== "object") return [{ key: "", value: "" }];
+  const r = raw as Record<string, unknown>;
 
-const SPEC_ICONS: { value: ProductSpec["icon"]; label: string }[] = [
-  { value: "chip", label: "Procesador / chip" },
-  { value: "camera", label: "Cámara" },
-  { value: "display", label: "Pantalla" },
-  { value: "battery", label: "Batería" },
-  { value: "memory", label: "Memoria" },
-  { value: "water", label: "Resistencia / agua" },
-];
+  if (Array.isArray(r.detailPairs) && r.detailPairs.length > 0) {
+    const rows = r.detailPairs
+      .map((x) => {
+        if (!x || typeof x !== "object") return null;
+        const o = x as Record<string, unknown>;
+        return {
+          key: String(o.key ?? "").trim(),
+          value: String(o.value ?? "").trim(),
+        };
+      })
+      .filter((x): x is ProductDetailPair => x != null && (Boolean(x.key) || Boolean(x.value)));
+    if (rows.length > 0) return rows;
+  }
 
-function emptySpec(): ProductSpec {
-  return {
-    key: `spec-${crypto.randomUUID().slice(0, 8)}`,
-    title: "TÍTULO",
-    value: "—",
-    desc: "",
-    icon: "chip",
-  };
+  if (Array.isArray(r.descriptionItems) && r.descriptionItems.length > 0) {
+    const lines = (r.descriptionItems as unknown[])
+      .filter((x): x is string => typeof x === "string")
+      .map((s) => s.replace(/\r\n/g, "\n").trimEnd())
+      .filter(Boolean);
+    if (lines.length > 0) return lines.map((value) => ({ key: "", value }));
+  }
+
+  const longDescription = String(r.longDescription ?? "").trim();
+  if (longDescription) return [{ key: "", value: longDescription }];
+
+  return [{ key: "", value: "" }];
 }
 
-function parseDetail(raw: unknown): ProductDetailBlock {
+function parseDetailMeta(raw: unknown): Pick<ProductDetailBlock, "warranty" | "relatedIds" | "accessoryIds"> {
   if (!raw || typeof raw !== "object") {
-    return {
-      images: [],
-      longDescription: "",
-      descriptionItems: [""],
-      warranty: "",
-      specs: [],
-      relatedIds: [],
-      accessoryIds: [],
-      reviews: [],
-    };
+    return { warranty: "", relatedIds: [], accessoryIds: [] };
   }
   const r = raw as Record<string, unknown>;
-  const longDescription = String(r.longDescription ?? "");
-  let descriptionItems: string[];
-  if (Array.isArray(r.descriptionItems) && r.descriptionItems.length > 0) {
-    descriptionItems = (r.descriptionItems as unknown[])
-      .filter((x): x is string => typeof x === "string")
-      .map((s) => s.replace(/\r\n/g, "\n").trimEnd());
-  } else if (longDescription.trim()) {
-    descriptionItems = [longDescription.trim()];
-  } else {
-    descriptionItems = [""];
-  }
   return {
-    images: Array.isArray(r.images) ? (r.images as string[]).filter(Boolean) : [],
-    longDescription,
-    descriptionItems,
     warranty: typeof r.warranty === "string" ? r.warranty : "",
-    specs: Array.isArray(r.specs) ? (r.specs as ProductSpec[]) : [],
     relatedIds: Array.isArray(r.relatedIds) ? (r.relatedIds as string[]) : [],
     accessoryIds: Array.isArray(r.accessoryIds) ? (r.accessoryIds as string[]) : [],
-    reviews: Array.isArray(r.reviews) ? (r.reviews as ProductDetailBlock["reviews"]) : [],
   };
 }
 
@@ -178,63 +164,54 @@ function ProductIdPicker({
   );
 }
 
+const fieldClass =
+  "w-full rounded-xl border border-white/[0.1] bg-black/30 px-3 py-2.5 text-sm text-white outline-none placeholder:text-slate-600 focus:ring-2 focus:ring-violet-500/40";
+
 export function ProductDetailEditor({
-  productId,
   initialDetail,
   catalogProductOptions,
   currentProductId,
 }: {
-  productId: string;
   initialDetail: unknown;
   catalogProductOptions: { id: string; name: string }[];
   currentProductId?: string;
 }) {
-  const base = useMemo(() => parseDetail(initialDetail), [initialDetail]);
+  const basePairs = useMemo(() => parsePairsFromRaw(initialDetail), [initialDetail]);
+  const baseMeta = useMemo(() => parseDetailMeta(initialDetail), [initialDetail]);
 
-  const [descriptionItems, setDescriptionItems] = useState<string[]>(base.descriptionItems ?? [""]);
-  const [warranty, setWarranty] = useState(base.warranty ?? "");
-  const [gallery, setGallery] = useState<string[]>(base.images);
-  const [specs, setSpecs] = useState<ProductSpec[]>(base.specs.length ? base.specs : []);
-  const [relatedIds, setRelatedIds] = useState<string[]>(base.relatedIds);
-  const [accessoryIds, setAccessoryIds] = useState<string[]>(base.accessoryIds);
-  const [galleryError, setGalleryError] = useState<string | null>(null);
-  const [pending, startTransition] = useTransition();
+  const [pairs, setPairs] = useState<ProductDetailPair[]>(() => basePairs);
+  const [warranty, setWarranty] = useState(baseMeta.warranty ?? "");
+  const [relatedIds, setRelatedIds] = useState<string[]>(baseMeta.relatedIds);
+  const [accessoryIds, setAccessoryIds] = useState<string[]>(baseMeta.accessoryIds);
 
   const detailJson = useMemo(() => {
-    const trimmed = descriptionItems.map((s) => s.trim()).filter(Boolean);
+    const cleaned = pairs
+      .map((p) => ({ key: p.key.trim(), value: p.value.trim() }))
+      .filter((p) => p.key || p.value);
+
+    const longDescription = cleaned.map((p) => (p.key ? `${p.key}: ${p.value}` : p.value)).join("\n\n");
+
     const block: ProductDetailBlock = {
-      images: gallery,
-      longDescription: trimmed.join("\n\n"),
-      specs,
+      images: [],
+      longDescription,
+      specs: [],
       relatedIds,
       accessoryIds,
       reviews: [],
     };
-    if (trimmed.length > 0) block.descriptionItems = trimmed;
+    if (cleaned.length > 0) block.detailPairs = cleaned;
+
     const w = warranty.trim();
     if (w) block.warranty = w;
-    return JSON.stringify(block);
-  }, [gallery, descriptionItems, warranty, specs, relatedIds, accessoryIds]);
 
-  function addGalleryFromFile(file: File) {
-    setGalleryError(null);
-    if (!productId.trim()) {
-      setGalleryError("Definí el ID del producto antes de subir fotos a la galería.");
-      return;
-    }
-    const fd = new FormData();
-    fd.append("productId", productId.trim());
-    fd.append("file", file);
-    startTransition(async () => {
-      const r = await uploadGalleryImageAction(null, fd);
-      if (r.error) {
-        setGalleryError(r.error);
-        return;
-      }
-      const url = r.url;
-      if (url) {
-        setGallery((g) => [...g, url]);
-      }
+    return JSON.stringify(block);
+  }, [pairs, warranty, relatedIds, accessoryIds]);
+
+  function updatePair(i: number, patch: Partial<ProductDetailPair>) {
+    setPairs((prev) => {
+      const next = [...prev];
+      next[i] = { ...next[i]!, ...patch };
+      return next;
     });
   }
 
@@ -244,8 +221,8 @@ export function ProductDetailEditor({
 
       <DetailAccordion
         title="Garantía"
-        subtitle="Texto destacado en verde en la ficha. Vacío = no se muestra."
-        defaultOpen={Boolean(base.warranty?.trim())}
+        subtitle="Texto destacado en verde en la página del producto. Vacío = no se muestra."
+        defaultOpen={Boolean(baseMeta.warranty?.trim())}
         badge="Opcional"
       >
         <textarea
@@ -258,8 +235,8 @@ export function ProductDetailEditor({
       </DetailAccordion>
 
       <DetailAccordion
-        title="Descripción con viñetas"
-        subtitle="Cada bloque es un ítem en la lista de la tienda."
+        title="Datos en la ficha"
+        subtitle="Cada fila: etiqueta (ej. Pantalla) y valor (ej. 6,1″ OLED). Podés dejar solo valor si querés una línea suelta."
         defaultOpen
       >
         <div className="space-y-3">
@@ -267,190 +244,51 @@ export function ProductDetailEditor({
             <button
               type="button"
               className="rounded-lg bg-white/[0.08] px-3 py-2 text-xs font-medium text-white hover:bg-white/[0.12]"
-              onClick={() => setDescriptionItems((rows) => [...rows, ""])}
-            >
-              + Agregar ítem
-            </button>
-          </div>
-          {descriptionItems.map((line, i) => (
-            <div key={i} className="flex gap-2">
-              <span className="mt-3 flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-violet-500/20 text-xs font-bold text-violet-200">
-                {i + 1}
-              </span>
-              <textarea
-                value={line}
-                onChange={(e) => {
-                  const v = e.target.value;
-                  setDescriptionItems((rows) => {
-                    const next = [...rows];
-                    next[i] = v;
-                    return next;
-                  });
-                }}
-                rows={2}
-                className="min-h-[3.25rem] flex-1 resize-y rounded-xl border border-white/[0.1] bg-black/30 px-3 py-2.5 text-sm leading-relaxed text-white outline-none focus:ring-2 focus:ring-violet-500/40"
-                placeholder="Ej. Incluye cable y caja original."
-              />
-              <button
-                type="button"
-                className="mt-1 shrink-0 self-start rounded-lg border border-white/[0.1] px-2 py-2 text-xs text-slate-400 hover:border-red-500/40 hover:text-red-300"
-                onClick={() =>
-                  setDescriptionItems((rows) => {
-                    if (rows.length <= 1) return [""];
-                    return rows.filter((_, j) => j !== i);
-                  })
-                }
-                aria-label="Quitar ítem"
-              >
-                Quitar
-              </button>
-            </div>
-          ))}
-        </div>
-      </DetailAccordion>
-
-      <DetailAccordion
-        title="Galería de fotos"
-        subtitle="Imágenes extra en Supabase Storage."
-        defaultOpen={base.images.length > 0}
-      >
-        {galleryError ? <p className="mb-3 text-sm text-amber-200/95">{galleryError}</p> : null}
-        <div className="space-y-3">
-          {gallery.map((url, i) => (
-            <div
-              key={`${url}-${i}`}
-              className="flex flex-wrap items-center gap-3 rounded-xl border border-white/[0.06] bg-black/25 px-3 py-2"
-            >
-              <div className="h-14 w-14 shrink-0 overflow-hidden rounded-lg border border-white/10 bg-black/40">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={url} alt="" className="h-full w-full object-cover" />
-              </div>
-              <p className="min-w-0 flex-1 truncate font-mono text-[11px] text-slate-400">{url}</p>
-              <button
-                type="button"
-                className="rounded-lg border border-white/[0.1] px-2 py-1 text-xs text-slate-300 hover:bg-white/[0.06]"
-                onClick={() => setGallery((g) => g.filter((_, j) => j !== i))}
-              >
-                Quitar
-              </button>
-            </div>
-          ))}
-          <label className="inline-flex cursor-pointer flex-wrap items-center gap-2 rounded-xl border border-dashed border-white/[0.15] bg-black/20 px-4 py-3 text-sm text-violet-200/95 hover:bg-white/[0.04]">
-            <input
-              type="file"
-              accept="image/jpeg,image/png,image/webp,image/gif"
-              className="hidden"
-              disabled={pending || !productId.trim()}
-              onChange={(e) => {
-                const f = e.target.files?.[0];
-                e.target.value = "";
-                if (f) addGalleryFromFile(f);
-              }}
-            />
-            {pending ? "Subiendo…" : "+ Agregar foto"}
-          </label>
-        </div>
-      </DetailAccordion>
-
-      <DetailAccordion
-        title="Ficha técnica"
-        subtitle="Icono, título, valor y detalle por fila."
-        defaultOpen={base.specs.length > 0}
-      >
-        <div className="space-y-4">
-          <div className="flex justify-end">
-            <button
-              type="button"
-              className="rounded-lg bg-white/[0.08] px-3 py-2 text-xs font-medium text-white hover:bg-white/[0.12]"
-              onClick={() => setSpecs((s) => [...s, emptySpec()])}
+              onClick={() => setPairs((rows) => [...rows, { key: "", value: "" }])}
             >
               + Agregar fila
             </button>
           </div>
-          {specs.map((sp, i) => (
+          <div className="hidden gap-3 text-[11px] font-medium uppercase tracking-wide text-slate-500 sm:grid sm:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)_auto] sm:px-1">
+            <span>Etiqueta</span>
+            <span className="sm:col-span-1">Valor</span>
+            <span className="w-16 text-center"> </span>
+          </div>
+          {pairs.map((row, i) => (
             <div
-              key={sp.key}
-              className="grid gap-3 rounded-xl border border-white/[0.06] bg-black/25 p-4 sm:grid-cols-2 lg:grid-cols-3"
+              key={i}
+              className="flex flex-col gap-2 rounded-xl border border-white/[0.06] bg-black/20 p-3 sm:grid sm:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)_auto] sm:items-center sm:gap-3"
             >
-              <label className="block sm:col-span-2 lg:col-span-1">
-                <span className="mb-1 block text-[11px] text-slate-500">Icono</span>
-                <select
-                  value={sp.icon}
-                  onChange={(e) => {
-                    const icon = e.target.value as ProductSpec["icon"];
-                    setSpecs((prev) => {
-                      const n = [...prev];
-                      n[i] = { ...n[i], icon };
-                      return n;
-                    });
-                  }}
-                  className="w-full rounded-lg border border-white/[0.1] bg-black/40 px-2 py-2 text-sm text-white"
-                >
-                  {SPEC_ICONS.map((o) => (
-                    <option key={o.value} value={o.value}>
-                      {o.label}
-                    </option>
-                  ))}
-                </select>
-              </label>
-              <label className="block">
-                <span className="mb-1 block text-[11px] text-slate-500">Título</span>
+              <label className="block min-w-0 sm:mb-0">
+                <span className="mb-1 block text-[11px] text-slate-500 sm:hidden">Etiqueta</span>
                 <input
-                  value={sp.title}
-                  onChange={(e) => {
-                    const title = e.target.value;
-                    setSpecs((prev) => {
-                      const n = [...prev];
-                      n[i] = {
-                        ...n[i],
-                        title,
-                        key: n[i].key || `spec-${title}`,
-                      };
-                      return n;
-                    });
-                  }}
-                  className="w-full rounded-lg border border-white/[0.1] bg-black/40 px-2 py-2 text-sm text-white"
+                  className={fieldClass}
+                  value={row.key}
+                  onChange={(e) => updatePair(i, { key: e.target.value })}
+                  placeholder="Ej. Memoria"
                 />
               </label>
-              <label className="block">
-                <span className="mb-1 block text-[11px] text-slate-500">Valor</span>
+              <label className="block min-w-0 sm:mb-0">
+                <span className="mb-1 block text-[11px] text-slate-500 sm:hidden">Valor</span>
                 <input
-                  value={sp.value}
-                  onChange={(e) => {
-                    const value = e.target.value;
-                    setSpecs((prev) => {
-                      const n = [...prev];
-                      n[i] = { ...n[i], value };
-                      return n;
-                    });
-                  }}
-                  className="w-full rounded-lg border border-white/[0.1] bg-black/40 px-2 py-2 text-sm text-white"
+                  className={fieldClass}
+                  value={row.value}
+                  onChange={(e) => updatePair(i, { value: e.target.value })}
+                  placeholder="Ej. 256 GB"
                 />
               </label>
-              <label className="block sm:col-span-2 lg:col-span-3">
-                <span className="mb-1 block text-[11px] text-slate-500">Descripción</span>
-                <input
-                  value={sp.desc}
-                  onChange={(e) => {
-                    const desc = e.target.value;
-                    setSpecs((prev) => {
-                      const n = [...prev];
-                      n[i] = { ...n[i], desc };
-                      return n;
-                    });
-                  }}
-                  className="w-full rounded-lg border border-white/[0.1] bg-black/40 px-2 py-2 text-sm text-white"
-                />
-              </label>
-              <div className="sm:col-span-2 lg:col-span-3">
-                <button
-                  type="button"
-                  className="text-xs text-red-300/90 hover:text-red-200"
-                  onClick={() => setSpecs((prev) => prev.filter((_, j) => j !== i))}
-                >
-                  Quitar fila
-                </button>
-              </div>
+              <button
+                type="button"
+                className="shrink-0 rounded-lg border border-white/[0.1] px-3 py-2 text-xs text-slate-400 hover:border-red-500/40 hover:text-red-300 sm:justify-self-end"
+                onClick={() =>
+                  setPairs((rows) => {
+                    if (rows.length <= 1) return [{ key: "", value: "" }];
+                    return rows.filter((_, j) => j !== i);
+                  })
+                }
+              >
+                Quitar
+              </button>
             </div>
           ))}
         </div>
@@ -458,8 +296,8 @@ export function ProductDetailEditor({
 
       <DetailAccordion
         title="Productos relacionados"
-        subtitle="Sugerencias al final de la ficha."
-        defaultOpen={base.relatedIds.length > 0}
+        subtitle="Sugerencias al final de la ficha en la tienda."
+        defaultOpen={baseMeta.relatedIds.length > 0}
       >
         <ProductIdPicker
           selectedIds={relatedIds}
@@ -472,7 +310,7 @@ export function ProductDetailEditor({
       <DetailAccordion
         title="Accesorios sugeridos"
         subtitle="Misma lista del catálogo, sin escribir IDs a mano."
-        defaultOpen={base.accessoryIds.length > 0}
+        defaultOpen={baseMeta.accessoryIds.length > 0}
       >
         <ProductIdPicker
           selectedIds={accessoryIds}

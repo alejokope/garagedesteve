@@ -2,7 +2,7 @@
 
 import { useCallback, type ReactNode } from "react";
 
-export type ProductFormSectionId = "datos" | "variantes" | "ficha";
+export type ProductFormSectionId = "datos" | "variantes" | "texto";
 
 export type ProductFormSection = {
   id: ProductFormSectionId;

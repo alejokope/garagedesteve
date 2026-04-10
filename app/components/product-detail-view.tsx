@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useMemo, useState } from "react";
+
 import { ProductFavoriteButton } from "@/app/components/product-favorite-button";
 import { useCart } from "@/app/context/cart-context";
 import { useAckFlash } from "@/app/hooks/use-ack-flash";
@@ -12,9 +13,19 @@ import { getProductById } from "@/lib/data";
 import { formatMoneyUsd } from "@/lib/format";
 import {
   buildFallbackDetail,
+  getDetailPairs,
   getProductDetailExtra,
   type ProductDetailBlock,
+  type ProductDetailPair,
 } from "@/lib/product-detail-data";
+import {
+  defaultVariantSelections,
+  describeVariantSelections,
+  getVariantUiKind,
+  resolveVariantPrice,
+  type VariantSelections,
+} from "@/lib/product-variants";
+import { whatsappUrl } from "@/lib/whatsapp";
 
 function isProductDetailBlock(v: unknown): v is ProductDetailBlock {
   if (!v || typeof v !== "object") return false;
@@ -28,57 +39,37 @@ function resolveProductDetail(product: Product): ProductDetailBlock {
   if (isProductDetailBlock(product.detail)) return product.detail;
   return getProductDetailExtra(product.id) ?? buildFallbackDetail(product);
 }
-import {
-  defaultVariantSelections,
-  describeVariantSelections,
-  getVariantUiKind,
-  resolveVariantPrice,
-  type VariantSelections,
-} from "@/lib/product-variants";
-import { whatsappUrl } from "@/lib/whatsapp";
 
-function SpecIcon({ kind }: { kind: ProductDetailBlock["specs"][0]["icon"] }) {
-  const c = "h-6 w-6 text-[var(--brand-from)]";
-  switch (kind) {
-    case "chip":
-      return (
-        <svg className={c} fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" aria-hidden>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 3v1.5M4.5 8.25H3m18 0h-1.5M4.5 12H3m18 0h-1.5m-15 3.75H3m18 0h-1.5M8.25 19.5V21M12 3v1.5m0 15V21m3.75-18v1.5m0 15V21m-9-1.5h10.5a2.25 2.25 0 002.25-2.25V6.75a2.25 2.25 0 00-2.25-2.25H6.75A2.25 2.25 0 004.5 6.75v10.5a2.25 2.25 0 002.25 2.25z" />
-        </svg>
-      );
-    case "camera":
-      return (
-        <svg className={c} fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" aria-hidden>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M6.827 6.175C6.088 5.695 5.647 4.89 5.647 4.012c0-1.105.895-2 2-2h8.706c1.105 0 2 .895 2 2 0 .878-.441 1.683-1.179 2.163l-4.646 3.098a2 2 0 01-2.354 0L6.827 6.175zM15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-        </svg>
-      );
-    case "display":
-      return (
-        <svg className={c} fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" aria-hidden>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 1.5H8.25A2.25 2.25 0 006 3.75v16.5a2.25 2.25 0 002.25 2.25h7.5A2.25 2.25 0 0018 20.25V3.75a2.25 2.25 0 00-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3m-3 18.75h3" />
-        </svg>
-      );
-    case "battery":
-      return (
-        <svg className={c} fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" aria-hidden>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M21 10.5h.375c.621 0 1.125.504 1.125 1.125v2.25c0 .621-.504 1.125-1.125 1.125H21M4.5 10.5H18V21a2.25 2.25 0 01-2.25 2.25H6.75A2.25 2.25 0 014.5 21V10.5zM18 10.5V6.75a2.25 2.25 0 00-2.25-2.25H6.75A2.25 2.25 0 004.5 6.75v3.75" />
-        </svg>
-      );
-    case "memory":
-      return (
-        <svg className={c} fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" aria-hidden>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 7.5V6.108c0-1.135.845-2.098 1.976-2.192.373-.03.748-.057 1.123-.08M15.75 18H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08M15.75 18.75v-1.875a3.375 3.375 0 00-3.375-3.375h-1.5a3.375 3.375 0 00-3.375 3.375V18.75M12 8.25h.008v.008H12V8.25z" />
-        </svg>
-      );
-    case "water":
-      return (
-        <svg className={c} fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" aria-hidden>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M12 3c2.755 0 5.455.232 8.083.678.533.09.917.556.917 1.096v5.448a9 9 0 11-18 0V4.774c0-.54.384-1.006.917-1.096A48.32 48.32 0 0112 3z" />
-        </svg>
-      );
-    default:
-      return null;
-  }
+function DetailKvList({ pairs }: { pairs: ProductDetailPair[] }) {
+  if (!pairs.length) return null;
+  return (
+    <section className="mt-4" aria-labelledby="product-detail-kv-heading">
+      <h2
+        id="product-detail-kv-heading"
+        className="text-[10px] font-medium uppercase tracking-[0.2em] text-neutral-500/70"
+      >
+        Detalles
+      </h2>
+      <dl className="mt-2 space-y-1.5 border-l border-neutral-200/50 pl-3.5 text-[13px] leading-[1.45]">
+        {pairs.map((row, i) =>
+          row.key ? (
+            <div key={i} className="flex flex-wrap items-baseline gap-x-1.5 gap-y-0.5">
+              <dt className="shrink-0 text-[12px] font-normal text-neutral-500">{row.key}</dt>
+              <span className="translate-y-px text-[10px] text-neutral-300/80 select-none" aria-hidden>
+                ·
+              </span>
+              <dd className="m-0 min-w-0 font-normal text-neutral-600">{row.value}</dd>
+            </div>
+          ) : (
+            <div key={i}>
+              <dt className="sr-only">Descripción</dt>
+              <dd className="m-0 font-normal text-neutral-600">{row.value}</dd>
+            </div>
+          ),
+        )}
+      </dl>
+    </section>
+  );
 }
 
 function SmallProductCard({
@@ -144,7 +135,6 @@ export function ProductDetailView({
   const enriched = useMemo(() => enrichProduct(product), [product]);
 
   const groups = product.variantGroups ?? [];
-  const [imgIdx, setImgIdx] = useState(0);
   const [selections, setSelections] = useState<VariantSelections>(() =>
     defaultVariantSelections(groups),
   );
@@ -193,7 +183,7 @@ export function ProductDetailView({
     triggerAddMainAck();
   };
 
-  const images = detail.images.length ? detail.images : [product.image];
+  const detailPairs = useMemo(() => getDetailPairs(detail), [detail]);
 
   return (
     <div className="bg-[#f9fafb]">
@@ -220,7 +210,7 @@ export function ProductDetailView({
           <div>
             <div className="relative aspect-square overflow-hidden rounded-2xl border border-[var(--border)] bg-white shadow-sm">
               <Image
-                src={images[imgIdx] ?? product.image}
+                src={product.image}
                 alt={product.imageAlt}
                 fill
                 priority
@@ -228,22 +218,6 @@ export function ProductDetailView({
                 sizes="(max-width: 1024px) 100vw, 50vw"
               />
             </div>
-            {images.length > 1 ? (
-              <div className="mt-4 flex gap-3">
-                {images.map((src, i) => (
-                  <button
-                    key={src}
-                    type="button"
-                    onClick={() => setImgIdx(i)}
-                    className={`relative h-20 w-20 shrink-0 overflow-hidden rounded-xl border-2 bg-white transition ${
-                      i === imgIdx ? "border-[var(--brand-from)]" : "border-transparent ring-1 ring-neutral-200"
-                    }`}
-                  >
-                    <Image src={src} alt="" fill className="object-contain p-1" sizes="80px" />
-                  </button>
-                ))}
-              </div>
-            ) : null}
           </div>
 
           <div>
@@ -276,24 +250,7 @@ export function ProductDetailView({
                 </p>
               </div>
             ) : null}
-            {detail.descriptionItems && detail.descriptionItems.length > 0 ? (
-              <ul className="mt-5 space-y-3">
-                {detail.descriptionItems.map((line, i) => (
-                  <li
-                    key={i}
-                    className="flex gap-3 text-[15px] leading-relaxed text-neutral-600"
-                  >
-                    <span
-                      className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--brand-from)]"
-                      aria-hidden
-                    />
-                    <span>{line}</span>
-                  </li>
-                ))}
-              </ul>
-            ) : detail.longDescription.trim() ? (
-              <p className="mt-5 text-[15px] leading-relaxed text-neutral-600">{detail.longDescription}</p>
-            ) : null}
+            {detailPairs.length > 0 ? <DetailKvList pairs={detailPairs} /> : null}
 
             <div className="mt-6 flex flex-wrap items-end gap-3">
               <span className="font-display text-3xl font-bold tabular-nums text-neutral-950">
@@ -448,27 +405,6 @@ export function ProductDetailView({
             </div>
           </div>
         </div>
-
-        {detail.specs.length > 1 ? (
-          <section className="mt-20">
-            <h2 className="font-display text-2xl font-bold text-neutral-900">Especificaciones técnicas</h2>
-            <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {detail.specs.map((s) => (
-                <div
-                  key={s.key}
-                  className="rounded-2xl border border-[var(--border)] bg-[#f3f0ff] p-5"
-                >
-                  <SpecIcon kind={s.icon} />
-                  <p className="mt-3 text-[10px] font-bold uppercase tracking-wider text-neutral-500">
-                    {s.title}
-                  </p>
-                  <p className="font-display mt-1 text-lg font-semibold text-neutral-900">{s.value}</p>
-                  <p className="mt-2 text-sm text-neutral-600">{s.desc}</p>
-                </div>
-              ))}
-            </div>
-          </section>
-        ) : null}
 
         {detail.relatedIds.length > 0 ? (
           <section className="mt-20">

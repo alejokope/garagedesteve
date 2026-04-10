@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState, useEffect, useMemo, useRef, useState } from "react";
+import { toast } from "sonner";
 
 import { useBackofficeSaveBarReporter } from "@/app/components/backoffice/backoffice-save-bar";
 
@@ -15,9 +16,14 @@ export function CreateVariantKindForm() {
   const prevPending = useRef(false);
 
   useEffect(() => {
-    if (prevPending.current && !pending && !state?.error) {
-      setDirty(false);
-      setFormNonce((n) => n + 1);
+    if (prevPending.current && !pending) {
+      if (state?.error) {
+        toast.error("No se pudo crear el tipo", { description: state.error });
+      } else {
+        toast.success("Tipo de opción creado", { description: "Ya aparece en productos y listas." });
+        setDirty(false);
+        setFormNonce((n) => n + 1);
+      }
     }
     prevPending.current = pending;
   }, [pending, state?.error]);

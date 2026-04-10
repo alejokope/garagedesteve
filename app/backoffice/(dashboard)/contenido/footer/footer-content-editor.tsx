@@ -68,11 +68,13 @@ export function FooterContentEditor({
       const r = await saveFooterContentAction(data);
       if (!r.ok) {
         setErr(r.error);
-        return;
+        throw new Error(r.error);
       }
       router.refresh();
     } catch (e) {
-      setErr(e instanceof Error ? e.message : "No se pudo guardar");
+      const msg = e instanceof Error ? e.message : "No se pudo guardar";
+      setErr(msg);
+      throw new Error(msg);
     } finally {
       setSaving(false);
     }

@@ -9,6 +9,7 @@ import {
   type FormEvent,
   type ReactNode,
 } from "react";
+import { toast } from "sonner";
 
 import { useBackofficeSaveBarReporter } from "@/app/components/backoffice/backoffice-save-bar";
 import { categories } from "@/lib/data";
@@ -89,6 +90,12 @@ export function ProductForm({
 }) {
   const [state, formAction, pending] = useActionState(saveProduct, null);
   const [draftId, setDraftId] = useState(initial?.id ?? "");
+
+  useEffect(() => {
+    if (state?.error) {
+      toast.error("No se pudo guardar el producto", { description: state.error });
+    }
+  }, [state?.error]);
   const [wizardMode, setWizardMode] = useState(mode === "create");
   const [wizardStep, setWizardStep] = useState(0);
   const [formDirty, setFormDirty] = useState(false);
@@ -194,7 +201,7 @@ export function ProductForm({
             className="w-full rounded-xl border border-white/[0.1] bg-black/30 px-3 py-2.5 text-sm text-white outline-none focus:ring-2 focus:ring-violet-500/40"
             placeholder="Ej. Apple, JBL…"
           />
-          <span className="mt-1 block text-[11px] text-slate-500">Ficha y filtro de marcas.</span>
+          <span className="mt-1 block text-[11px] text-slate-500">Visible en la tienda y filtros del catálogo.</span>
         </label>
       </div>
     </FieldCard>
@@ -348,11 +355,10 @@ export function ProductForm({
   const detailBlock = (
     <div className="space-y-4">
       <p className="text-sm text-slate-400">
-        Galería, specs y relacionados. Opcional: la tienda puede usar valores por defecto.
+        Viñetas de beneficios, garantía en recuadro y productos relacionados. Todo opcional.
       </p>
       <ProductDetailEditor
         key={initial?.id ?? "product-detail-new"}
-        productId={productIdForUploads}
         initialDetail={initial?.detail}
         catalogProductOptions={catalogProductOptions}
         currentProductId={mode === "create" ? draftId.trim() || undefined : initial?.id}
@@ -366,7 +372,7 @@ export function ProductForm({
         <p className="text-lg font-semibold text-white">Rápido y guiado</p>
         <p className="mt-2 text-sm leading-relaxed text-slate-300">
           Primero el nombre y el ID, después categoría y precio, una foto, y listo para publicar. Las ofertas,
-          variantes y la ficha larga son opcionales.
+          variantes y el texto extra en la página del producto son opcionales.
         </p>
       </div>
       <div className="rounded-2xl border border-white/[0.08] bg-black/20 p-5">
@@ -374,7 +380,7 @@ export function ProductForm({
         <ul className="mt-3 list-inside list-disc space-y-2 text-sm text-slate-400">
           <li>El ID no se puede cambiar después: elegí algo estable (ej. modelo-color).</li>
           <li>Sin categoría en el menú: creala en Listas antes o después y volvé acá.</li>
-          <li>Un solo guardado al final incluye variantes y ficha.</li>
+          <li>Un solo guardado al final incluye variantes y texto de la página.</li>
         </ul>
       </div>
     </div>
@@ -528,10 +534,10 @@ export function ProductForm({
                 content: variantsBlock,
               },
               {
-                id: "ficha",
+                id: "texto",
                 step: "Paso 3",
-                title: "Página detallada del producto",
-                subtitle: "Galería, specs y relacionados. Opcional.",
+                title: "Texto en la página del producto",
+                subtitle: "Viñetas, garantía y productos relacionados. Opcional.",
                 optional: true,
                 content: detailBlock,
               },

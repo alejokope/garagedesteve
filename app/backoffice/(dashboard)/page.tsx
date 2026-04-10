@@ -11,7 +11,7 @@ const cards = [
   {
     title: "Productos",
     description:
-      "Catálogo completo: fotos, descripciones, specs, precios, descuentos y variantes (colores, almacenamiento, mallas, etc.).",
+      "Catálogo completo: foto, precios, descuentos y variantes (colores, almacenamiento, mallas, etc.).",
     href: "/backoffice/productos",
     tag: "Catálogo",
   },

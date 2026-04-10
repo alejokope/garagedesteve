@@ -327,7 +327,9 @@ export function RepairPricingEditor({
       await saveRepairPricingAction(normalizeRepairPricingForPersist(data));
       router.refresh();
     } catch (e) {
-      setErr(e instanceof Error ? e.message : "Error al guardar");
+      const msg = e instanceof Error ? e.message : "Error al guardar";
+      setErr(msg);
+      throw new Error(msg);
     } finally {
       setSaving(false);
     }
