@@ -4,9 +4,11 @@ import { whatsappUrl } from "@/lib/whatsapp";
 const LINKTREE = siteConfig.publicLinks.linktree;
 const IG_SHORT = "instagram.com/elgaragedesteve";
 
-export function buildRepairPricingWhatsAppMessage(): string {
+export function buildRepairPricingWhatsAppMessage(brandNameOverride?: string): string {
   const name =
-    process.env.NEXT_PUBLIC_WHATSAPP_BUSINESS_NAME ?? siteConfig.brandName;
+    brandNameOverride?.trim() ||
+    process.env.NEXT_PUBLIC_WHATSAPP_BUSINESS_NAME ||
+    siteConfig.brandName;
   return [
     `Hola ${name}, ¿cómo están? 👋`,
     "",
@@ -75,16 +77,25 @@ export function buildRepairFormWhatsAppMessage(input: {
   return lines.join("\n");
 }
 
-export function repairWhatsAppHref(text: string): string | null {
-  const phone = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER?.replace(/\D/g, "") ?? "";
+export function repairWhatsAppHref(
+  text: string,
+  phoneDigitsOverride?: string | null,
+): string | null {
+  const fromOverride = phoneDigitsOverride?.replace(/\D/g, "") ?? "";
+  const phone =
+    fromOverride ||
+    process.env.NEXT_PUBLIC_WHATSAPP_NUMBER?.replace(/\D/g, "") ||
+    "";
   if (!phone) return null;
   return whatsappUrl(phone, text);
 }
 
 /** Mensaje para coordinar una reparación por WhatsApp (página de seguimiento / trámite). */
-export function buildRepairsFlowWhatsAppMessage(): string {
+export function buildRepairsFlowWhatsAppMessage(brandNameOverride?: string): string {
   const name =
-    process.env.NEXT_PUBLIC_WHATSAPP_BUSINESS_NAME ?? siteConfig.brandName;
+    brandNameOverride?.trim() ||
+    process.env.NEXT_PUBLIC_WHATSAPP_BUSINESS_NAME ||
+    siteConfig.brandName;
   return [
     `Hola ${name}, ¿cómo están?`,
     "",

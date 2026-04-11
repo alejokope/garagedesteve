@@ -2,6 +2,8 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
+
+import { useFloatingContact } from "@/app/context/floating-contact-context";
 import {
   formatServicePrice,
   type RepairFormPayload,
@@ -18,6 +20,7 @@ export function RepairFormView({
   config: RepairFormPayload;
   variant?: "page" | "section";
 }) {
+  const { phoneDigits: floatingPhone, brandName: floatingBrand } = useFloatingContact();
   const isSection = variant === "section";
   const [serviceId, setServiceId] = useState(
     () => config.serviceTypes[0]?.id ?? "",
@@ -55,7 +58,7 @@ export function RepairFormView({
   const waHref = useMemo(() => {
     if (!serviceType || !brand || !model || !priority || !delivery) return null;
     const text = buildRepairFormWhatsAppMessage({
-      businessName: config.whatsappBusinessName,
+      businessName: config.whatsappBusinessName?.trim() || floatingBrand,
       serviceTypeLabel: serviceType.title,
       brandLabel: brand.label,
       modelLabel: model.label,
@@ -67,7 +70,7 @@ export function RepairFormView({
       email: config.showEmailField ? email : undefined,
       fileNames,
     });
-    return repairWhatsAppHref(text);
+    return repairWhatsAppHref(text, floatingPhone);
   }, [
     serviceType,
     brand,
@@ -81,6 +84,8 @@ export function RepairFormView({
     fileNames,
     config.showEmailField,
     config.whatsappBusinessName,
+    floatingPhone,
+    floatingBrand,
   ]);
 
   function onFilesChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -347,11 +352,12 @@ export function RepairFormView({
               </a>
             ) : (
               <p className="mt-10 rounded-xl bg-amber-50 px-4 py-3 text-sm text-amber-950">
-                Configurá{" "}
+                Configurá el número en el panel:{" "}
+                <span className="font-medium">Contenido → Botones flotantes</span>, o{" "}
                 <code className="rounded bg-amber-100/80 px-1 font-mono text-xs">
                   NEXT_PUBLIC_WHATSAPP_NUMBER
                 </code>{" "}
-                para enviar la solicitud.
+                como respaldo.
               </p>
             )}
           </div>

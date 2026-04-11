@@ -4,10 +4,10 @@ import Image from "next/image";
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import { useCatalogProducts } from "@/app/context/catalog-products-context";
+import { useFloatingContact } from "@/app/context/floating-contact-context";
 import { useCart } from "@/app/context/cart-context";
 import { cartLineDisplayName, cartLineUnitPrice } from "@/lib/cart-line";
 import { enrichProduct } from "@/lib/catalog";
-import { siteConfig } from "@/lib/site-config";
 import { formatMoneyUsd } from "@/lib/format";
 import { buildWhatsAppOrderMessage, whatsappUrl } from "@/lib/whatsapp";
 
@@ -23,20 +23,17 @@ export function CartPageView() {
   const { items, remove, setQty, total, clear } = useCart();
   const { products: catalogProducts, status: catalogStatus } = useCatalogProducts();
   const [note, setNote] = useState("");
-
-  const phone =
-    process.env.NEXT_PUBLIC_WHATSAPP_NUMBER?.replace(/\D/g, "") ?? "";
-  const businessName =
-    process.env.NEXT_PUBLIC_WHATSAPP_BUSINESS_NAME ?? siteConfig.brandName;
+  const { phoneDigits, cartMessageTemplate, messageTemplateVars } = useFloatingContact();
 
   const waLink = useMemo(() => {
     const text = buildWhatsAppOrderMessage(items, total, {
-      businessName,
       customerNote: note,
+      cartMessageTemplate,
+      templateVars: messageTemplateVars,
     });
-    if (!phone) return null;
-    return whatsappUrl(phone, text);
-  }, [items, total, businessName, note, phone]);
+    if (!phoneDigits) return null;
+    return whatsappUrl(phoneDigits, text);
+  }, [items, total, note, phoneDigits, cartMessageTemplate, messageTemplateVars]);
 
   const count = items.reduce((s, i) => s + i.qty, 0);
   const subtotal = total;
@@ -295,13 +292,14 @@ export function CartPageView() {
                   </div>
                 </dl>
 
-                {!phone ? (
+                {!phoneDigits ? (
                   <p className="mt-4 rounded-xl bg-amber-50 px-3 py-2 text-xs text-amber-950">
-                    Configurá{" "}
+                    Configurá el número de WhatsApp en el panel:{" "}
+                    <span className="font-medium">Contenido → Botones flotantes</span> (o{" "}
                     <code className="rounded bg-amber-100/80 px-1.5 py-0.5 text-[11px]">
                       NEXT_PUBLIC_WHATSAPP_NUMBER
                     </code>{" "}
-                    en <code className="text-[11px]">.env.local</code>.
+                    en entorno como respaldo).
                   </p>
                 ) : null}
 

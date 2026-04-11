@@ -2,6 +2,8 @@
 
 import Link from "next/link";
 import { useMemo, useState } from "react";
+
+import { useFloatingContact } from "@/app/context/floating-contact-context";
 import {
   formatRepairTablePriceCell,
   repairCategoryVisibleForDevice,
@@ -33,6 +35,7 @@ export function RepairPricingView({
   config: RepairPricingPayload;
   variant?: "page" | "section";
 }) {
+  const { phoneDigits, brandName } = useFloatingContact();
   const isSection = variant === "section";
   const [deviceFilterId, setDeviceFilterId] = useState<string | "all">("all");
 
@@ -49,9 +52,9 @@ export function RepairPricingView({
   }, [config.categories, deviceFilterId]);
 
   const waCta = useMemo(() => {
-    const text = buildRepairPricingWhatsAppMessage();
-    return repairWhatsAppHref(text);
-  }, []);
+    const text = buildRepairPricingWhatsAppMessage(brandName);
+    return repairWhatsAppHref(text, phoneDigits);
+  }, [brandName, phoneDigits]);
 
   const [openAccordion, setOpenAccordion] = useState<string | null>(
     config.warrantyAccordion[0]?.id ?? null,
@@ -364,8 +367,9 @@ export function RepairPricingView({
               </a>
             ) : (
               <p className="mt-4 text-sm text-white/80">
-                Configurá{" "}
-                <code className="rounded bg-black/20 px-1.5 py-0.5 text-xs">NEXT_PUBLIC_WHATSAPP_NUMBER</code>
+                Configurá el número en{" "}
+                <span className="font-semibold text-white">Contenido → Botones flotantes</span> o en{" "}
+                <code className="rounded bg-black/20 px-1.5 py-0.5 text-xs">NEXT_PUBLIC_WHATSAPP_NUMBER</code>.
               </p>
             )}
             {config.ctaBanner.hoursLine ? (

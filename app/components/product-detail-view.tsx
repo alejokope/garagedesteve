@@ -6,6 +6,7 @@ import { useMemo, useState } from "react";
 
 import { ProductFavoriteButton } from "@/app/components/product-favorite-button";
 import { useCart } from "@/app/context/cart-context";
+import { useFloatingContact } from "@/app/context/floating-contact-context";
 import { useAckFlash } from "@/app/hooks/use-ack-flash";
 import { enrichProduct } from "@/lib/catalog";
 import type { Product } from "@/lib/data";
@@ -155,16 +156,15 @@ export function ProductDetailView({
 
   const { add } = useCart();
   const { on: addMainAck, trigger: triggerAddMainAck } = useAckFlash();
+  const { phoneDigits, brandName: businessName } = useFloatingContact();
 
   const setVariant = (groupId: string, optionId: string) => {
     setSelections((prev) => ({ ...prev, [groupId]: optionId }));
   };
 
-  const phoneDigits = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER?.replace(/\D/g, "") ?? "";
-  const businessName = process.env.NEXT_PUBLIC_WHATSAPP_BUSINESS_NAME ?? "The iPhone";
   const variantSummary = describeVariantSelections(groups, selections);
   const waHref =
-    phoneDigits.length > 0
+    phoneDigits && phoneDigits.length > 0
       ? whatsappUrl(
           phoneDigits,
           `Hola ${businessName}, consulto por: ${product.name}${variantSummary.length ? ` — ${variantSummary.join(", ")}` : ""}.`,

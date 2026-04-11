@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useMemo, useState } from "react";
 
+import { useFloatingContact } from "@/app/context/floating-contact-context";
 import {
   buildRepairsFlowWhatsAppMessage,
   repairWhatsAppHref,
@@ -69,6 +70,7 @@ function formatEsDate(iso: string): string {
 }
 
 export function RepairsTrackView({ variant = "page" }: { variant?: "page" | "section" }) {
+  const { phoneDigits, brandName } = useFloatingContact();
   const isSection = variant === "section";
   const [code, setCode] = useState("");
   const [loading, setLoading] = useState(false);
@@ -76,9 +78,9 @@ export function RepairsTrackView({ variant = "page" }: { variant?: "page" | "sec
   const [invalidAttempt, setInvalidAttempt] = useState(false);
 
   const waHref = useMemo(() => {
-    const text = buildRepairsFlowWhatsAppMessage();
-    return repairWhatsAppHref(text);
-  }, []);
+    const text = buildRepairsFlowWhatsAppMessage(brandName);
+    return repairWhatsAppHref(text, phoneDigits);
+  }, [brandName, phoneDigits]);
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -182,8 +184,8 @@ export function RepairsTrackView({ variant = "page" }: { variant?: "page" | "sec
                 </a>
               ) : (
                 <p className="text-sm text-amber-800">
-                  Configurá <code className="rounded bg-neutral-100 px-1">NEXT_PUBLIC_WHATSAPP_NUMBER</code>{" "}
-                  para habilitar el enlace.
+                  Configurá el número en <span className="font-semibold">Contenido → Botones flotantes</span> o{" "}
+                  <code className="rounded bg-neutral-100 px-1">NEXT_PUBLIC_WHATSAPP_NUMBER</code>.
                 </p>
               )}
             </div>

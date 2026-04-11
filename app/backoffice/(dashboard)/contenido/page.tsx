@@ -17,12 +17,13 @@ import {
 } from "@/lib/home-public-content";
 
 import { FOOTER_CONTENT_KEY } from "@/lib/footer-content-schema";
+import { FLOATING_CONTACT_KEY } from "@/lib/floating-contact-schema";
 
 import { deleteContentEntryAction } from "./actions";
 import { SiteContentHub } from "./site-content-hub";
 
 const HOME_KEY_SET = new Set<string>(HOME_CONTENT_KEYS);
-const HIDDEN_IN_OTHER_TABLE = new Set<string>([FOOTER_CONTENT_KEY]);
+const HIDDEN_IN_OTHER_TABLE = new Set<string>([FOOTER_CONTENT_KEY, FLOATING_CONTACT_KEY]);
 
 export default async function BackofficeContenidoPage() {
   let rows: Awaited<ReturnType<typeof listContentEntriesAdmin>> = [];
@@ -81,22 +82,42 @@ export default async function BackofficeContenidoPage() {
         </Link>
       </div>
 
-      <div className="rounded-2xl border border-violet-500/25 bg-violet-950/20 p-4 sm:p-5">
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-wide text-violet-300/90">
-              Sitio completo
-            </p>
-            <p className="mt-1 text-sm text-slate-300">
-              Pie de página: textos, redes, enlaces y contacto que se ven en todas las páginas.
-            </p>
+      <div className="grid gap-4 sm:grid-cols-2">
+        <div className="rounded-2xl border border-violet-500/25 bg-violet-950/20 p-4 sm:p-5">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-wide text-violet-300/90">
+                Sitio completo
+              </p>
+              <p className="mt-1 text-sm text-slate-300">
+                Pie de página: textos, redes, enlaces y contacto que se ven en todas las páginas.
+              </p>
+            </div>
+            <Link
+              href="/backoffice/contenido/footer"
+              className="inline-flex shrink-0 items-center justify-center rounded-xl bg-white/[0.1] px-4 py-2.5 text-sm font-semibold text-white ring-1 ring-white/15 transition hover:bg-white/[0.14]"
+            >
+              Editar footer
+            </Link>
           </div>
-          <Link
-            href="/backoffice/contenido/footer"
-            className="inline-flex shrink-0 items-center justify-center rounded-xl bg-white/[0.1] px-4 py-2.5 text-sm font-semibold text-white ring-1 ring-white/15 transition hover:bg-white/[0.14]"
-          >
-            Editar footer
-          </Link>
+        </div>
+        <div className="rounded-2xl border border-fuchsia-500/25 bg-gradient-to-br from-fuchsia-950/30 to-violet-950/20 p-4 sm:p-5 ring-1 ring-fuchsia-500/20">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-wide text-fuchsia-200/90">
+                Contacto rápido
+              </p>
+              <p className="mt-1 text-sm text-slate-300">
+                Botones flotantes, número en base de datos, plantilla del globo y plantilla aparte para el carrito.
+              </p>
+            </div>
+            <Link
+              href="/backoffice/contenido/contacto-flotante"
+              className="inline-flex shrink-0 items-center justify-center rounded-xl bg-gradient-to-r from-fuchsia-500/25 to-violet-500/25 px-4 py-2.5 text-sm font-semibold text-white ring-1 ring-fuchsia-400/30 transition hover:from-fuchsia-500/35 hover:to-violet-500/35"
+            >
+              Configurar
+            </Link>
+          </div>
         </div>
       </div>
 

@@ -1,6 +1,8 @@
 /** Textos y navegación alineados al diseño de la home; centralizá acá el rebranding. */
 export const siteConfig = {
   brandName: "El Garage de Steve",
+  /** Dominio público del sitio ({{sitio}} en WhatsApp si no hay NEXT_PUBLIC_SITE_URL). */
+  siteUrl: "https://elgaragedesteve.com",
   tagline:
     "Tecnología premium y soporte técnico con la confianza que buscás en cada compra.",
   /** Links oficiales (WhatsApp, mensajes prearmados, footer). */

@@ -1,7 +1,11 @@
+import { siteConfig } from "@/lib/site-config";
 import { whatsappUrl } from "@/lib/whatsapp";
 
 export function buildSellDeviceWhatsAppMessage(businessName?: string) {
-  const name = businessName ?? process.env.NEXT_PUBLIC_WHATSAPP_BUSINESS_NAME ?? "El Garage de Steve";
+  const name =
+    businessName?.trim() ||
+    process.env.NEXT_PUBLIC_WHATSAPP_BUSINESS_NAME ||
+    siteConfig.brandName;
   return [
     `Hola ${name}, quiero vender mi equipo.`,
     "",
