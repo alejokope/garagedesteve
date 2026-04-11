@@ -3,7 +3,16 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { startTransition, useCallback, useEffect, useMemo, useState } from "react";
+import {
+  startTransition,
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
+import type { TransitionEvent } from "react";
 import { ProductFavoriteButton } from "@/app/components/product-favorite-button";
 import { useCart } from "@/app/context/cart-context";
 import { useAckFlash } from "@/app/hooks/use-ack-flash";
@@ -36,6 +45,94 @@ const CATALOG_SORT_OPTIONS = [
   ["precio-asc", "Precio: Menor a Mayor"],
   ["novedad", "Novedad"],
 ] as const satisfies ReadonlyArray<readonly [SortKey, string]>;
+
+const CATALOG_SHEET_PANEL_CLASS =
+  "transform-gpu transition-transform duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] will-change-transform";
+const CATALOG_SHEET_BACKDROP_CLASS =
+  "transition-opacity duration-300 ease-out will-change-opacity";
+
+function prefersReducedMotion(): boolean {
+  if (typeof window === "undefined") return false;
+  return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+}
+
+/** Debe ser ≥ duración CSS del panel (300ms) + margen para frame tardío. */
+const CATALOG_SHEET_CLOSE_FALLBACK_MS = 380;
+
+function useCatalogBottomSheet(open: boolean, onCloseComplete: () => void) {
+  const [entered, setEntered] = useState(false);
+  const closingRef = useRef(false);
+  const closeFallbackTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const clearCloseFallback = useCallback(() => {
+    if (closeFallbackTimerRef.current !== null) {
+      clearTimeout(closeFallbackTimerRef.current);
+      closeFallbackTimerRef.current = null;
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!open) {
+      clearCloseFallback();
+      startTransition(() => setEntered(false));
+      closingRef.current = false;
+      return;
+    }
+    closingRef.current = false;
+    if (prefersReducedMotion()) {
+      startTransition(() => setEntered(true));
+      return;
+    }
+    startTransition(() => setEntered(false));
+    let cancelled = false;
+    let innerRaf: number | null = null;
+    const outerRaf = requestAnimationFrame(() => {
+      if (cancelled) return;
+      innerRaf = requestAnimationFrame(() => {
+        if (cancelled) return;
+        startTransition(() => setEntered(true));
+      });
+    });
+    return () => {
+      cancelled = true;
+      cancelAnimationFrame(outerRaf);
+      if (innerRaf !== null) cancelAnimationFrame(innerRaf);
+    };
+  }, [open, clearCloseFallback]);
+
+  const requestClose = useCallback(() => {
+    if (!open) return;
+    if (prefersReducedMotion()) {
+      clearCloseFallback();
+      closingRef.current = false;
+      onCloseComplete();
+      return;
+    }
+    closingRef.current = true;
+    clearCloseFallback();
+    closeFallbackTimerRef.current = setTimeout(() => {
+      closeFallbackTimerRef.current = null;
+      if (!closingRef.current) return;
+      closingRef.current = false;
+      onCloseComplete();
+    }, CATALOG_SHEET_CLOSE_FALLBACK_MS);
+    startTransition(() => setEntered(false));
+  }, [open, onCloseComplete, clearCloseFallback]);
+
+  const onPanelTransitionEnd = useCallback(
+    (e: TransitionEvent<HTMLDivElement>) => {
+      if (e.target !== e.currentTarget) return;
+      if (e.propertyName !== "transform") return;
+      if (!closingRef.current) return;
+      closingRef.current = false;
+      clearCloseFallback();
+      onCloseComplete();
+    },
+    [onCloseComplete, clearCloseFallback],
+  );
+
+  return { entered, requestClose, onPanelTransitionEnd };
+}
 
 function parseList(s: string | null): string[] {
   if (!s?.trim()) return [];
@@ -425,12 +522,24 @@ export function CatalogView() {
     setPrecioMax(maxCatalogPrice);
   }, [maxCatalogPrice]);
 
+  const closeSortSheetComplete = useCallback(() => setSortSheetOpen(false), []);
+  const closeFiltersSheetComplete = useCallback(() => setFiltersOpen(false), []);
+  const sortSheetAnim = useCatalogBottomSheet(sortSheetOpen, closeSortSheetComplete);
+  const filtersSheetAnim = useCatalogBottomSheet(filtersOpen, closeFiltersSheetComplete);
+
+  const sortRequestCloseRef = useRef(sortSheetAnim.requestClose);
+  const filtersRequestCloseRef = useRef(filtersSheetAnim.requestClose);
+  useLayoutEffect(() => {
+    sortRequestCloseRef.current = sortSheetAnim.requestClose;
+    filtersRequestCloseRef.current = filtersSheetAnim.requestClose;
+  }, [sortSheetAnim.requestClose, filtersSheetAnim.requestClose]);
+
   useEffect(() => {
     if (!filtersOpen && !sortSheetOpen) return;
     const onKey = (e: KeyboardEvent) => {
       if (e.key !== "Escape") return;
-      setFiltersOpen(false);
-      setSortSheetOpen(false);
+      if (sortSheetOpen) sortRequestCloseRef.current();
+      else if (filtersOpen) filtersRequestCloseRef.current();
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
@@ -814,21 +923,28 @@ export function CatalogView() {
       {filtersOpen || sortSheetOpen ? (
         <button
           type="button"
-          className="fixed inset-0 z-[90] cursor-pointer bg-black/35 backdrop-blur-[1px] lg:hidden"
+          className={`fixed inset-0 z-[90] cursor-pointer bg-black/35 backdrop-blur-[1px] lg:hidden ${CATALOG_SHEET_BACKDROP_CLASS} ${
+            (sortSheetOpen && sortSheetAnim.entered) || (filtersOpen && filtersSheetAnim.entered)
+              ? "opacity-100"
+              : "opacity-0"
+          }`}
           aria-label="Cerrar panel"
           onClick={() => {
-            setFiltersOpen(false);
-            setSortSheetOpen(false);
+            if (sortSheetOpen) sortSheetAnim.requestClose();
+            else if (filtersOpen) filtersSheetAnim.requestClose();
           }}
         />
       ) : null}
 
       {sortSheetOpen ? (
         <div
-          className="fixed bottom-0 left-0 right-0 z-[95] flex max-h-[min(55dvh,420px)] flex-col rounded-t-2xl border border-[var(--border)] border-b-0 bg-white shadow-[0_-12px_48px_-12px_rgba(0,0,0,0.18)] lg:hidden"
+          className={`fixed bottom-0 left-0 right-0 z-[95] flex max-h-[min(55dvh,420px)] flex-col rounded-t-2xl border border-[var(--border)] border-b-0 bg-white shadow-[0_-12px_48px_-12px_rgba(0,0,0,0.18)] lg:hidden ${CATALOG_SHEET_PANEL_CLASS} ${
+            sortSheetAnim.entered ? "translate-y-0" : "translate-y-full"
+          }`}
           role="dialog"
           aria-modal="true"
           aria-labelledby="catalog-sort-sheet-title"
+          onTransitionEnd={sortSheetAnim.onPanelTransitionEnd}
         >
           <div className="flex shrink-0 items-center justify-between gap-3 border-b border-[var(--border)] px-4 py-3">
             <h2
@@ -839,7 +955,7 @@ export function CatalogView() {
             </h2>
             <button
               type="button"
-              onClick={() => setSortSheetOpen(false)}
+              onClick={sortSheetAnim.requestClose}
               className="rounded-xl p-2.5 text-neutral-500 transition hover:bg-neutral-100 hover:text-neutral-800"
               aria-label="Cerrar ordenar"
             >
@@ -868,7 +984,7 @@ export function CatalogView() {
                     onClick={() => {
                       setSort(key === "relevancia" ? "relevancia" : key);
                       setPage(1);
-                      setSortSheetOpen(false);
+                      sortSheetAnim.requestClose();
                     }}
                     className={`flex w-full items-center justify-between gap-3 rounded-xl px-3 py-3.5 text-left text-sm font-medium transition ${
                       selected
@@ -899,10 +1015,13 @@ export function CatalogView() {
 
       {filtersOpen ? (
         <div
-          className="fixed bottom-0 left-0 right-0 z-[95] flex max-h-[min(90dvh,720px)] flex-col rounded-t-2xl border border-[var(--border)] border-b-0 bg-white shadow-[0_-12px_48px_-12px_rgba(0,0,0,0.18)] lg:hidden"
+          className={`fixed bottom-0 left-0 right-0 z-[95] flex max-h-[min(90dvh,720px)] flex-col rounded-t-2xl border border-[var(--border)] border-b-0 bg-white shadow-[0_-12px_48px_-12px_rgba(0,0,0,0.18)] lg:hidden ${CATALOG_SHEET_PANEL_CLASS} ${
+            filtersSheetAnim.entered ? "translate-y-0" : "translate-y-full"
+          }`}
           role="dialog"
           aria-modal="true"
           aria-labelledby="catalog-filters-sheet-title"
+          onTransitionEnd={filtersSheetAnim.onPanelTransitionEnd}
         >
             <div className="flex shrink-0 items-center gap-3 border-b border-[var(--border)] px-4 py-3">
               <div className="min-w-0 flex-1">
@@ -922,7 +1041,7 @@ export function CatalogView() {
               </div>
               <button
                 type="button"
-                onClick={() => setFiltersOpen(false)}
+                onClick={filtersSheetAnim.requestClose}
                 className="rounded-xl p-2.5 text-neutral-500 transition hover:bg-neutral-100 hover:text-neutral-800"
                 aria-label="Cerrar filtros"
               >
@@ -944,7 +1063,7 @@ export function CatalogView() {
             <div className="shrink-0 border-t border-[var(--border)] bg-white px-4 py-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
               <button
                 type="button"
-                onClick={() => setFiltersOpen(false)}
+                onClick={filtersSheetAnim.requestClose}
                 className="h-12 w-full rounded-xl bg-neutral-950 text-sm font-semibold text-white transition hover:opacity-95"
               >
                 Ver {filtered.length} {filtered.length === 1 ? "producto" : "productos"}
