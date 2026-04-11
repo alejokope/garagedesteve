@@ -1,5 +1,6 @@
 import { Suspense } from "react";
 import { CatalogView } from "@/app/components/catalog/catalog-view";
+import { SiteRouteLoading } from "@/app/components/site/site-route-loading";
 import { SiteFooter } from "@/app/components/site-footer";
 import type { Metadata } from "next";
 
@@ -11,10 +12,8 @@ export const metadata: Metadata = {
 
 function CatalogSectionFallback() {
   return (
-    <div className="min-h-[40vh] bg-[#f3f4f6] px-4 py-12 sm:px-8">
-      <div className="mx-auto max-w-6xl animate-pulse">
-        <div className="h-12 rounded-2xl bg-neutral-200" />
-      </div>
+    <div id="catalogo" className="scroll-mt-24 bg-[#f3f4f6] px-4 py-10 sm:px-8">
+      <SiteRouteLoading />
     </div>
   );
 }

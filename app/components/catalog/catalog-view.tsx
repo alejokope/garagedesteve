@@ -27,6 +27,7 @@ import {
 import type { CategoryId } from "@/lib/data";
 import { categories } from "@/lib/data";
 import { useCatalogProducts } from "@/app/context/catalog-products-context";
+import { SiteRouteLoading } from "@/app/components/site/site-route-loading";
 import { formatMoneyUsd } from "@/lib/format";
 
 function parseList(s: string | null): string[] {
@@ -219,27 +220,6 @@ function PaginationNav({
   );
 }
 
-function CatalogLoadingSkeleton() {
-  return (
-    <div className="min-h-[50vh] bg-[#f3f4f6] px-4 py-16 sm:px-8">
-      <div className="mx-auto max-w-6xl animate-pulse">
-        <div className="h-14 rounded-2xl bg-neutral-200" />
-        <div className="mt-8 flex gap-8">
-          <div className="hidden w-[280px] shrink-0 rounded-2xl bg-neutral-200 lg:block" />
-          <div className="flex-1 space-y-4">
-            <div className="h-4 w-40 rounded bg-neutral-200" />
-            <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
-              {Array.from({ length: 6 }).map((_, i) => (
-                <div key={i} className="h-96 rounded-2xl bg-neutral-200" />
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
 export function CatalogView() {
   const searchParams = useSearchParams();
   const { products: catalogProducts, status, error, reload } = useCatalogProducts();
@@ -408,7 +388,11 @@ export function CatalogView() {
   }, [maxCatalogPrice]);
 
   if (status === "loading" || status === "idle") {
-    return <CatalogLoadingSkeleton />;
+    return (
+      <div id="catalogo" className="scroll-mt-24 bg-[#f3f4f6] px-4 py-10 sm:px-8">
+        <SiteRouteLoading />
+      </div>
+    );
   }
 
   if (status === "error") {

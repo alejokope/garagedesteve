@@ -199,3 +199,60 @@ body {
     animation: egd-fav-pop 0.48s cubic-bezier(0.34, 1.45, 0.64, 1) both;
   }
 }
+
+/* Transiciones de ruta del e-commerce (loading.tsx + barra de navegación) */
+@keyframes egd-site-loading-bar {
+  0% {
+    transform: translateX(-130%);
+  }
+  100% {
+    transform: translateX(380%);
+  }
+}
+
+@keyframes egd-site-loading-pulse {
+  0%,
+  100% {
+    opacity: 0.52;
+  }
+  50% {
+    opacity: 0.92;
+  }
+}
+
+@keyframes egd-nav-progress-move {
+  0% {
+    transform: translateX(-105%);
+  }
+  100% {
+    transform: translateX(420%);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .egd-site-route-loading__bar-inner {
+    animation: egd-site-loading-bar 1.2s cubic-bezier(0.45, 0, 0.2, 1) infinite;
+  }
+
+  .motion-safe\:egd-site-loading-pulse {
+    animation: egd-site-loading-pulse 1.4s ease-in-out infinite;
+  }
+
+  .egd-nav-progress-indeterminate {
+    animation: egd-nav-progress-move 0.85s cubic-bezier(0.33, 1, 0.55, 1) infinite;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .egd-site-route-loading__bar-inner {
+    transform: translateX(30%);
+    opacity: 0.85;
+  }
+
+  .egd-nav-progress-indeterminate {
+    width: 40%;
+    max-width: none;
+    margin-left: 0;
+    opacity: 0.75;
+  }
+}
