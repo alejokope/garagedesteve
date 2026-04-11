@@ -26,6 +26,18 @@ Listado y links: {{linktree}}
 
 Gracias.`;
 
+/** Precios, seguimiento y base del mensaje del formulario de servicio técnico (mismas variables que el botón flotante). */
+export const DEFAULT_SERVICIO_TECNICO_MESSAGE_TEMPLATE = `Hola {{marca}}, ¿cómo están? 👋
+
+Escribo por servicio técnico desde la web ({{sitio}}).
+
+Quiero consultar precios, presupuesto o coordinar una reparación / ingreso de equipo.
+
+Info y catálogo: {{linktree}}
+Retiro en oficina: {{retiro}}
+
+¡Gracias! ✨`;
+
 export const floatingContactPayloadSchema = z.object({
   /** URL completa del perfil de Instagram (https://…). Vacío = usar el del sitio en código. */
   instagramUrl: z.string().max(500).default(""),
@@ -38,6 +50,12 @@ export const floatingContactPayloadSchema = z.object({
    * {{telefono}}, {{email}}, {{horario}}, {{retiro}} y {{direccion}} vienen de Contenido → Datos de contacto.
    */
   cartMessageTemplate: z.string().min(1).max(4000).default(DEFAULT_CART_MESSAGE_TEMPLATE),
+  /** Servicio técnico: precios, seguimiento y prefijo del formulario (sin {{pedido}} / {{nota}}). */
+  servicioTecnicoMessageTemplate: z
+    .string()
+    .min(1)
+    .max(4000)
+    .default(DEFAULT_SERVICIO_TECNICO_MESSAGE_TEMPLATE),
   /** Nombre con el que te saludan en el mensaje y en otras pantallas del sitio. */
   brandName: z.string().max(120).default(""),
   showInstagramFab: z.boolean().default(true),
@@ -71,6 +89,8 @@ export type FloatingContactPublic = {
   showInstagramFab: boolean;
   showWhatsappFab: boolean;
   cartMessageTemplate: string;
+  /** Texto ya interpolado para WhatsApp de servicio técnico (tabla de precios, seguimiento, intro del formulario). */
+  servicioTecnicoMessage: string;
   messageTemplateVars: FloatingMessageTemplateVars;
   /** Desde `site.cart_free_shipping` (o legado en `site.floating_contact`). */
   cartFreeShippingEnabled: boolean;
@@ -83,6 +103,7 @@ export function defaultFloatingContactPayload(): FloatingContactPayload {
     whatsappPhone: "",
     fabMessageTemplate: DEFAULT_FAB_MESSAGE_TEMPLATE,
     cartMessageTemplate: DEFAULT_CART_MESSAGE_TEMPLATE,
+    servicioTecnicoMessageTemplate: DEFAULT_SERVICIO_TECNICO_MESSAGE_TEMPLATE,
     brandName: siteConfig.brandName,
     showInstagramFab: true,
     showWhatsappFab: true,
@@ -103,6 +124,10 @@ export function mergeFloatingContactDefaults(partial: unknown): FloatingContactP
         typeof o.fabMessageTemplate === "string" ? o.fabMessageTemplate : base.fabMessageTemplate,
       cartMessageTemplate:
         typeof o.cartMessageTemplate === "string" ? o.cartMessageTemplate : base.cartMessageTemplate,
+      servicioTecnicoMessageTemplate:
+        typeof o.servicioTecnicoMessageTemplate === "string"
+          ? o.servicioTecnicoMessageTemplate
+          : base.servicioTecnicoMessageTemplate,
       brandName: typeof o.brandName === "string" ? o.brandName : base.brandName,
       showInstagramFab: typeof o.showInstagramFab === "boolean" ? o.showInstagramFab : base.showInstagramFab,
       showWhatsappFab: typeof o.showWhatsappFab === "boolean" ? o.showWhatsappFab : base.showWhatsappFab,

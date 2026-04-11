@@ -1,31 +1,6 @@
-import { siteConfig } from "@/lib/site-config";
 import { whatsappUrl } from "@/lib/whatsapp";
 
-const LINKTREE = siteConfig.publicLinks.linktree;
-const IG_SHORT = "instagram.com/elgaragedesteve";
-
-export function buildRepairPricingWhatsAppMessage(brandNameOverride?: string): string {
-  const name =
-    brandNameOverride?.trim() ||
-    process.env.NEXT_PUBLIC_WHATSAPP_BUSINESS_NAME ||
-    siteConfig.brandName;
-  return [
-    `Hola ${name}, ¿cómo están? 👋`,
-    "",
-    `Somos ${IG_SHORT}.`,
-    "",
-    "2) Necesito reparar un equipo.",
-    "",
-    "Quiero consultar precios / cobertura de servicio técnico (vi la tabla en la web).",
-    "",
-    `En este link están productos y servicio técnico: ${LINKTREE}`,
-    "",
-    "¡Gracias!",
-  ].join("\n");
-}
-
-export function buildRepairFormWhatsAppMessage(input: {
-  businessName?: string;
+export type RepairFormWhatsAppFields = {
   serviceTypeLabel: string;
   brandLabel: string;
   modelLabel: string;
@@ -36,17 +11,12 @@ export function buildRepairFormWhatsAppMessage(input: {
   phone: string;
   email?: string;
   fileNames: string[];
-}): string {
-  const name =
-    input.businessName ??
-    process.env.NEXT_PUBLIC_WHATSAPP_BUSINESS_NAME ??
-    siteConfig.brandName;
+};
+
+/** Cuerpo del mensaje (modelo, problema, datos de contacto); el saludo va en la plantilla de Contacto flotante. */
+export function buildRepairFormWhatsAppBody(input: RepairFormWhatsAppFields): string {
   const lines: string[] = [
-    `Hola ${name}, ¿cómo están?`,
-    "",
-    "2) Necesito reparar un equipo.",
-    "",
-    "¿Qué reparación quiero hacer? Detalle del problema y modelo:",
+    "Detalle del pedido de servicio técnico:",
     "",
     `• Tipo de trabajo: ${input.serviceTypeLabel}`,
     `• Marca: ${input.brandLabel}`,
@@ -65,16 +35,24 @@ export function buildRepairFormWhatsAppMessage(input: {
   }
   if (input.fileNames.length > 0) {
     lines.push("");
-    lines.push(`Adjuntos en el chat: ${input.fileNames.join(", ")}`);
+    lines.push(`Archivos a enviar por el chat: ${input.fileNames.join(", ")}`);
   } else {
     lines.push("");
     lines.push("Si hace falta, mando fotos o video por este chat.");
   }
   lines.push("");
-  lines.push(`Referencia de precios y catálogo: ${LINKTREE}`);
-  lines.push("");
   lines.push("¿Me indican próximos pasos? Gracias.");
   return lines.join("\n");
+}
+
+/** Prefijo desde plantilla «Servicio técnico» + detalle del formulario. */
+export function composeRepairFormWhatsAppMessage(
+  introFromTemplate: string,
+  input: RepairFormWhatsAppFields,
+): string {
+  const body = buildRepairFormWhatsAppBody(input);
+  const intro = introFromTemplate.trim();
+  return intro ? `${intro}\n\n${body}` : body;
 }
 
 export function repairWhatsAppHref(
@@ -88,23 +66,4 @@ export function repairWhatsAppHref(
     "";
   if (!phone) return null;
   return whatsappUrl(phone, text);
-}
-
-/** Mensaje para coordinar una reparación por WhatsApp (página de seguimiento / trámite). */
-export function buildRepairsFlowWhatsAppMessage(brandNameOverride?: string): string {
-  const name =
-    brandNameOverride?.trim() ||
-    process.env.NEXT_PUBLIC_WHATSAPP_BUSINESS_NAME ||
-    siteConfig.brandName;
-  return [
-    `Hola ${name}, ¿cómo están?`,
-    "",
-    "Quiero coordinar o seguir el trámite de una reparación (presupuesto, ingreso del equipo o consulta).",
-    "",
-    `Si aplica, mi código de seguimiento lo paso en el próximo mensaje.`,
-    "",
-    `Info general: ${LINKTREE}`,
-    "",
-    "Gracias.",
-  ].join("\n");
 }

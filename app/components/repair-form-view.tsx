@@ -9,7 +9,7 @@ import {
   type RepairFormPayload,
 } from "@/lib/repair-form-schema";
 import {
-  buildRepairFormWhatsAppMessage,
+  composeRepairFormWhatsAppMessage,
   repairWhatsAppHref,
 } from "@/lib/repair-whatsapp";
 
@@ -20,7 +20,10 @@ export function RepairFormView({
   config: RepairFormPayload;
   variant?: "page" | "section";
 }) {
-  const { phoneDigits: floatingPhone, brandName: floatingBrand } = useFloatingContact();
+  const {
+    phoneDigits: floatingPhone,
+    servicioTecnicoMessage,
+  } = useFloatingContact();
   const isSection = variant === "section";
   const [serviceId, setServiceId] = useState(
     () => config.serviceTypes[0]?.id ?? "",
@@ -57,8 +60,7 @@ export function RepairFormView({
 
   const waHref = useMemo(() => {
     if (!serviceType || !brand || !model || !priority || !delivery) return null;
-    const text = buildRepairFormWhatsAppMessage({
-      businessName: config.whatsappBusinessName?.trim() || floatingBrand,
+    const text = composeRepairFormWhatsAppMessage(servicioTecnicoMessage, {
       serviceTypeLabel: serviceType.title,
       brandLabel: brand.label,
       modelLabel: model.label,
@@ -83,9 +85,8 @@ export function RepairFormView({
     email,
     fileNames,
     config.showEmailField,
-    config.whatsappBusinessName,
     floatingPhone,
-    floatingBrand,
+    servicioTecnicoMessage,
   ]);
 
   function onFilesChange(e: React.ChangeEvent<HTMLInputElement>) {

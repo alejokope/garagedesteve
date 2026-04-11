@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import { useFloatingContact } from "@/app/context/floating-contact-context";
 import {
@@ -11,10 +11,7 @@ import {
   repairRowModelDisplay,
   type RepairPricingPayload,
 } from "@/lib/repair-pricing-schema";
-import {
-  buildRepairPricingWhatsAppMessage,
-  repairWhatsAppHref,
-} from "@/lib/repair-whatsapp";
+import { repairWhatsAppHref } from "@/lib/repair-whatsapp";
 
 /** Cabeceras de categoría: variaciones solo en escala de grises (marca monocroma). */
 const headerToneClass: Record<
@@ -35,7 +32,7 @@ export function RepairPricingView({
   config: RepairPricingPayload;
   variant?: "page" | "section";
 }) {
-  const { phoneDigits, brandName } = useFloatingContact();
+  const { phoneDigits, servicioTecnicoMessage } = useFloatingContact();
   const isSection = variant === "section";
   const [deviceFilterId, setDeviceFilterId] = useState<string | "all">("all");
 
@@ -52,13 +49,38 @@ export function RepairPricingView({
   }, [config.categories, deviceFilterId]);
 
   const waCta = useMemo(() => {
-    const text = buildRepairPricingWhatsAppMessage(brandName);
-    return repairWhatsAppHref(text, phoneDigits);
-  }, [brandName, phoneDigits]);
+    return repairWhatsAppHref(servicioTecnicoMessage, phoneDigits);
+  }, [servicioTecnicoMessage, phoneDigits]);
 
   const [openAccordion, setOpenAccordion] = useState<string | null>(
     config.warrantyAccordion[0]?.id ?? null,
   );
+
+  const [deviceSheetOpen, setDeviceSheetOpen] = useState(false);
+
+  const selectedDeviceLabel = useMemo(() => {
+    if (deviceFilterId === "all") return "Todos los modelos";
+    return sortedDevices.find((d) => d.id === deviceFilterId)?.label ?? "Todos los modelos";
+  }, [deviceFilterId, sortedDevices]);
+
+  useEffect(() => {
+    if (!deviceSheetOpen) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setDeviceSheetOpen(false);
+    };
+    document.addEventListener("keydown", onKey);
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      document.body.style.overflow = prev;
+    };
+  }, [deviceSheetOpen]);
+
+  function pickDevice(id: string | "all") {
+    setDeviceFilterId(id);
+    setDeviceSheetOpen(false);
+  }
 
   return (
     <div
@@ -99,7 +121,9 @@ export function RepairPricingView({
           </p>
           <div className="mt-5 flex flex-wrap gap-3">
             <a
-              href="/servicio-tecnico#seguimiento"
+              href={waCta ?? "/servicio-tecnico#seguimiento"}
+              target={waCta ? "_blank" : undefined}
+              rel={waCta ? "noopener noreferrer" : undefined}
               className="inline-flex h-11 items-center justify-center rounded-xl bg-[#25D366] px-5 text-sm font-semibold text-white shadow-md transition hover:bg-[#20bd5a]"
             >
               Escribir por WhatsApp
@@ -111,33 +135,133 @@ export function RepairPricingView({
         </div>
 
         {sortedDevices.length > 0 ? (
-          <div className="mt-8 max-w-xl">
-            <label
-              htmlFor="repair-device-filter"
-              className="block text-xs font-semibold uppercase tracking-wide text-neutral-500"
-            >
-              Buscar por dispositivo
-            </label>
-            <select
-              id="repair-device-filter"
-              value={deviceFilterId}
-              onChange={(e) => {
-                const v = e.target.value;
-                setDeviceFilterId(v === "all" ? "all" : v);
-              }}
-              className="mt-2 w-full rounded-xl border border-neutral-200 bg-white px-4 py-3 text-sm font-medium text-neutral-900 shadow-sm ring-0 focus:border-[var(--brand-from)] focus:outline-none focus:ring-2 focus:ring-[var(--brand-from)]/25"
-            >
-              <option value="all">Todos los modelos</option>
-              {sortedDevices.map((d) => (
-                <option key={d.id} value={d.id}>
-                  {d.label}
-                </option>
-              ))}
-            </select>
-            <p className="mt-2 text-xs text-neutral-500">
-              Mostramos solo las filas del modelo elegido en cada tabla.
-            </p>
-          </div>
+          <>
+            <div className="mt-8 hidden max-w-xl md:block">
+              <label
+                htmlFor="repair-device-filter"
+                className="block text-xs font-semibold uppercase tracking-wide text-neutral-500"
+              >
+                Buscar por dispositivo
+              </label>
+              <select
+                id="repair-device-filter"
+                value={deviceFilterId}
+                onChange={(e) => {
+                  const v = e.target.value;
+                  setDeviceFilterId(v === "all" ? "all" : v);
+                }}
+                className="mt-2 w-full rounded-xl border border-neutral-200 bg-white px-4 py-3 text-sm font-medium text-neutral-900 shadow-sm ring-0 focus:border-[var(--brand-from)] focus:outline-none focus:ring-2 focus:ring-[var(--brand-from)]/25"
+              >
+                <option value="all">Todos los modelos</option>
+                {sortedDevices.map((d) => (
+                  <option key={d.id} value={d.id}>
+                    {d.label}
+                  </option>
+                ))}
+              </select>
+              <p className="mt-2 text-xs text-neutral-500">
+                Mostramos solo las filas del modelo elegido en cada tabla.
+              </p>
+            </div>
+
+            <div className="mt-8 md:hidden">
+              <p className="text-xs font-semibold uppercase tracking-wide text-neutral-500">
+                Buscar por dispositivo
+              </p>
+              <button
+                type="button"
+                onClick={() => setDeviceSheetOpen(true)}
+                className="mt-2 flex w-full items-center gap-3 rounded-2xl border border-neutral-200/90 bg-white p-4 text-left shadow-[0_4px_24px_-8px_rgba(15,23,42,0.12)] ring-1 ring-neutral-100 transition active:scale-[0.99] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-from)]/35"
+                aria-haspopup="dialog"
+                aria-expanded={deviceSheetOpen}
+              >
+                <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-[var(--brand-from)]/15 to-violet-500/10 text-lg">
+                  📱
+                </span>
+                <span className="min-w-0 flex-1">
+                  <span className="block font-display text-base font-semibold text-neutral-900">
+                    {selectedDeviceLabel}
+                  </span>
+                  <span className="mt-0.5 block text-xs text-neutral-500">
+                    Tocá para filtrar precios por modelo
+                  </span>
+                </span>
+                <svg
+                  className="h-5 w-5 shrink-0 text-neutral-400"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={2}
+                  stroke="currentColor"
+                  aria-hidden
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+            </div>
+
+            {deviceSheetOpen ? (
+              <div
+                className="fixed inset-0 z-[90] md:hidden"
+                role="dialog"
+                aria-modal="true"
+                aria-label="Elegir dispositivo"
+              >
+                <button
+                  type="button"
+                  className="absolute inset-0 bg-black/50 backdrop-blur-[2px]"
+                  onClick={() => setDeviceSheetOpen(false)}
+                  aria-label="Cerrar"
+                />
+                <div
+                  className="absolute inset-x-0 bottom-0 max-h-[min(85dvh,100%)] overflow-hidden rounded-t-[1.35rem] bg-white shadow-[0_-12px_48px_-12px_rgba(15,23,42,0.25)]"
+                  style={{ paddingBottom: "max(1rem, env(safe-area-inset-bottom))" }}
+                >
+                  <div className="flex items-center justify-between border-b border-neutral-100 px-4 py-3">
+                    <p className="font-display text-base font-semibold text-neutral-900">
+                      Dispositivo
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => setDeviceSheetOpen(false)}
+                      className="rounded-full p-2 text-neutral-500 transition hover:bg-neutral-100 hover:text-neutral-800"
+                      aria-label="Cerrar"
+                    >
+                      <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  </div>
+                  <div className="max-h-[min(72dvh,520px)] overflow-y-auto overscroll-contain px-2 py-2">
+                    <button
+                      type="button"
+                      onClick={() => pickDevice("all")}
+                      className={`flex w-full items-center rounded-xl px-4 py-3.5 text-left text-sm font-medium transition ${
+                        deviceFilterId === "all"
+                          ? "bg-[var(--brand-from)]/12 text-[var(--brand-from)] ring-2 ring-[var(--brand-from)]/25"
+                          : "text-neutral-800 hover:bg-neutral-50"
+                      }`}
+                    >
+                      Todos los modelos
+                    </button>
+                    {sortedDevices.map((d) => (
+                      <button
+                        key={d.id}
+                        type="button"
+                        onClick={() => pickDevice(d.id)}
+                        className={`mt-1 flex w-full items-center rounded-xl px-4 py-3.5 text-left text-sm font-medium transition ${
+                          deviceFilterId === d.id
+                            ? "bg-[var(--brand-from)]/12 text-[var(--brand-from)] ring-2 ring-[var(--brand-from)]/25"
+                            : "text-neutral-800 hover:bg-neutral-50"
+                        }`}
+                      >
+                        {d.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            ) : null}
+          </>
         ) : null}
 
         <div className="mt-10 flex flex-col gap-10 lg:flex-row lg:items-start lg:gap-10">

@@ -16,6 +16,7 @@ import {
 import {
   DEFAULT_CART_MESSAGE_TEMPLATE,
   DEFAULT_FAB_MESSAGE_TEMPLATE,
+  DEFAULT_SERVICIO_TECNICO_MESSAGE_TEMPLATE,
   FLOATING_CONTACT_KEY,
   type FloatingContactPayload,
 } from "@/lib/floating-contact-schema";
@@ -120,7 +121,7 @@ export function FloatingContactEditor({
   const [data, setData] = useState<FloatingContactPayload>(initial);
   const [err, setErr] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
-  const [messageTab, setMessageTab] = useState<"fab" | "cart">("fab");
+  const [messageTab, setMessageTab] = useState<"fab" | "cart" | "servicio">("fab");
 
   useEffect(() => {
     setData(initial);
@@ -142,6 +143,11 @@ export function FloatingContactEditor({
     return interpolateRichTemplate(data.cartMessageTemplate, { ...vars, pedido, nota });
   }, [data, siteContactPreview]);
 
+  const previewServicioMessage = useMemo(() => {
+    const vars = buildFabTemplateVars(data, siteContactPreview);
+    return interpolateFabTemplate(data.servicioTecnicoMessageTemplate, vars);
+  }, [data, siteContactPreview]);
+
   const isDirty = JSON.stringify(data) !== JSON.stringify(initial);
 
   const discard = useCallback(() => {
@@ -160,6 +166,13 @@ export function FloatingContactEditor({
     setData((d) => ({
       ...d,
       cartMessageTemplate: `${d.cartMessageTemplate}${token}`,
+    }));
+  }, []);
+
+  const insertServicioToken = useCallback((token: string) => {
+    setData((d) => ({
+      ...d,
+      servicioTecnicoMessageTemplate: `${d.servicioTecnicoMessageTemplate}${token}`,
     }));
   }, []);
 
@@ -286,7 +299,8 @@ export function FloatingContactEditor({
           <span>
             <span className="font-medium text-white">Mostrar botón flotante de WhatsApp</span>
             <span className="mt-1 block text-xs text-slate-500">
-              El saludo usa la pestaña «Botón flotante»; el carrito tiene su plantilla en la otra pestaña.
+              El saludo del globo verde está en «Botón flotante»; el carrito y servicio técnico tienen cada uno su
+              plantilla en las otras pestañas.
             </span>
           </span>
         </label>
@@ -299,8 +313,8 @@ export function FloatingContactEditor({
         <div className="pointer-events-none absolute -bottom-24 -left-12 h-40 w-40 rounded-full bg-emerald-500/10 blur-3xl" />
         <h2 className={`${boEditorH2} relative`}>Plantillas de WhatsApp</h2>
         <p className="relative mt-2 max-w-2xl text-sm leading-relaxed text-slate-400">
-          Mismo bloque: elegí con las pestañas si editás el saludo del botón flotante o el mensaje al finalizar el pedido
-          desde el carrito.
+          Elegí la pestaña: saludo del botón flotante, cierre del pedido desde el carrito, o mensajes de servicio técnico
+          (precios, seguimiento y base del formulario de reparación).
         </p>
 
         <div className="relative mt-6 flex flex-wrap gap-2 border-b border-white/[0.08] pb-px">
@@ -325,6 +339,17 @@ export function FloatingContactEditor({
             }`}
           >
             Mensaje del carrito
+          </button>
+          <button
+            type="button"
+            onClick={() => setMessageTab("servicio")}
+            className={`rounded-t-lg px-4 py-2.5 text-sm font-semibold transition ${
+              messageTab === "servicio"
+                ? "bg-white/[0.1] text-white ring-1 ring-white/15 ring-b-0"
+                : "text-slate-500 hover:bg-white/[0.04] hover:text-slate-200"
+            }`}
+          >
+            Servicio técnico
           </button>
         </div>
 
@@ -385,6 +410,75 @@ export function FloatingContactEditor({
                   ) : (
                     <span className="text-amber-200/90">falta número válido o el botón está oculto</span>
                   )}
+                </p>
+              </div>
+            </>
+          ) : messageTab === "servicio" ? (
+            <>
+              <p className="text-sm text-slate-400">
+                Usan este texto los enlaces a WhatsApp en precios de reparación, seguimiento de reparaciones y el
+                encabezado del mensaje del formulario de servicio; en el formulario se agrega abajo el detalle del equipo
+                y el problema (no usás{" "}
+                <code className="rounded bg-white/10 px-1 font-mono text-[11px] text-slate-300">
+                  {"{{pedido}}"}
+                </code>{" "}
+                ni{" "}
+                <code className="rounded bg-white/10 px-1 font-mono text-[11px] text-slate-300">
+                  {"{{nota}}"}
+                </code>
+                ).
+              </p>
+              <div className="mt-6">
+                <p className={labelClass}>Variables — tocá para agregar al final</p>
+                <div className="mt-2 flex flex-wrap gap-2">
+                  {VARIABLES.map((v) => (
+                    <button
+                      key={`st-${v.token}`}
+                      type="button"
+                      onClick={() => insertServicioToken(v.token)}
+                      className="group rounded-full border border-white/10 bg-white/[0.06] px-3 py-1.5 text-left text-xs font-medium text-slate-200 ring-1 ring-white/5 transition hover:border-teal-400/35 hover:bg-teal-500/10 hover:text-white"
+                      title={v.hint}
+                    >
+                      <span className="font-mono text-[11px] text-teal-200/90">{v.token}</span>
+                      <span className="ml-2 text-slate-500 group-hover:text-slate-300">{v.title}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <label className="mt-6 block">
+                <span className={labelClass}>Plantilla de servicio técnico</span>
+                <textarea
+                  value={data.servicioTecnicoMessageTemplate}
+                  onChange={(e) =>
+                    setData((d) => ({ ...d, servicioTecnicoMessageTemplate: e.target.value }))
+                  }
+                  rows={14}
+                  className={`${inputClass} font-mono text-[13px] leading-relaxed`}
+                />
+              </label>
+              <div className="mt-3 flex flex-wrap gap-2">
+                <button
+                  type="button"
+                  onClick={() =>
+                    setData((d) => ({
+                      ...d,
+                      servicioTecnicoMessageTemplate: DEFAULT_SERVICIO_TECNICO_MESSAGE_TEMPLATE,
+                    }))
+                  }
+                  className="rounded-lg border border-white/15 bg-white/5 px-3 py-1.5 text-xs font-medium text-slate-300 hover:bg-white/10"
+                >
+                  Restaurar ejemplo por defecto
+                </button>
+              </div>
+              <div className="mt-8 rounded-2xl border border-white/[0.08] bg-black/25 p-4">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-500">
+                  Vista previa del mensaje
+                </p>
+                <pre className="mt-3 max-h-64 overflow-auto whitespace-pre-wrap break-words rounded-xl bg-black/40 p-4 text-[13px] leading-relaxed text-slate-200 ring-1 ring-white/5">
+                  {previewServicioMessage}
+                </pre>
+                <p className="mt-3 text-xs text-slate-500">
+                  En el formulario web, debajo de este texto se concatenan modelo, problema y datos de contacto.
                 </p>
               </div>
             </>

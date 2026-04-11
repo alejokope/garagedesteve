@@ -4,10 +4,13 @@ import Link from "next/link";
 import { useMemo, useState } from "react";
 
 import { useFloatingContact } from "@/app/context/floating-contact-context";
+import { repairWhatsAppHref } from "@/lib/repair-whatsapp";
 import {
-  buildRepairsFlowWhatsAppMessage,
-  repairWhatsAppHref,
-} from "@/lib/repair-whatsapp";
+  repairStatusBadgeClass,
+  repairStatusMessageCardClass,
+  repairStatusPublicLabelClass,
+  repairStatusPublicPanelClass,
+} from "@/lib/repair-status-ui";
 import {
   REPAIR_STATUS_LABELS,
   type RepairStatus,
@@ -70,7 +73,7 @@ function formatEsDate(iso: string): string {
 }
 
 export function RepairsTrackView({ variant = "page" }: { variant?: "page" | "section" }) {
-  const { phoneDigits, brandName } = useFloatingContact();
+  const { phoneDigits, servicioTecnicoMessage } = useFloatingContact();
   const isSection = variant === "section";
   const [code, setCode] = useState("");
   const [loading, setLoading] = useState(false);
@@ -78,9 +81,8 @@ export function RepairsTrackView({ variant = "page" }: { variant?: "page" | "sec
   const [invalidAttempt, setInvalidAttempt] = useState(false);
 
   const waHref = useMemo(() => {
-    const text = buildRepairsFlowWhatsAppMessage(brandName);
-    return repairWhatsAppHref(text, phoneDigits);
-  }, [brandName, phoneDigits]);
+    return repairWhatsAppHref(servicioTecnicoMessage, phoneDigits);
+  }, [servicioTecnicoMessage, phoneDigits]);
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -236,12 +238,18 @@ export function RepairsTrackView({ variant = "page" }: { variant?: "page" | "sec
             ) : null}
 
             {result ? (
-              <div className="mt-6 space-y-4 rounded-xl border border-emerald-200/80 bg-emerald-50/40 p-5">
+              <div
+                className={`mt-6 space-y-4 rounded-xl border p-5 shadow-sm ${repairStatusPublicPanelClass[result.status]}`}
+              >
                 <div className="flex flex-wrap items-center gap-2">
-                  <span className="text-xs font-semibold uppercase tracking-wide text-emerald-800">
+                  <span
+                    className={`text-xs font-semibold uppercase tracking-wide ${repairStatusPublicLabelClass[result.status]}`}
+                  >
                     Estado actual
                   </span>
-                  <span className="rounded-full bg-emerald-600 px-3 py-1 text-xs font-semibold text-white">
+                  <span
+                    className={`rounded-full px-3 py-1 text-xs font-semibold ${repairStatusBadgeClass[result.status]}`}
+                  >
                     {REPAIR_STATUS_LABELS[result.status]}
                   </span>
                 </div>
@@ -263,13 +271,13 @@ export function RepairsTrackView({ variant = "page" }: { variant?: "page" | "sec
                     <dd className="mt-1 whitespace-pre-wrap text-neutral-800">{result.description}</dd>
                   </div>
                   {result.messages.length > 0 ? (
-                    <div className="border-t border-emerald-200/60 pt-3">
+                    <div className="border-t border-neutral-200/70 pt-3">
                       <dt className="font-medium text-neutral-600">Actualizaciones del taller</dt>
                       <dd className="mt-2 space-y-3">
                         {result.messages.map((m) => (
                           <div
                             key={m.id}
-                            className="rounded-lg border border-emerald-100 bg-white/80 px-3 py-2 text-neutral-800"
+                            className={`rounded-lg border px-3 py-2 text-neutral-800 shadow-sm ${repairStatusMessageCardClass[result.status]}`}
                           >
                             <time
                               className="font-mono text-[11px] text-neutral-500"

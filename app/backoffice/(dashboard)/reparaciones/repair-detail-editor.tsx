@@ -18,6 +18,10 @@ import type {
   RepairTrackingMessageRow,
 } from "@/lib/backoffice/repairs-db";
 import {
+  repairStatusAdminActiveButtonClass,
+  repairStatusHistoryBorderClass,
+} from "@/lib/repair-status-ui";
+import {
   REPAIR_STATUSES,
   REPAIR_STATUS_LABELS,
   type RepairStatus,
@@ -398,9 +402,9 @@ export function RepairDetailEditor({
           <div className="rounded-2xl border border-white/[0.08] bg-white/[0.02] p-6">
             <h2 className="font-display text-lg font-semibold text-white">Estado del taller</h2>
             <p className="mt-1 text-xs text-slate-500">
-              Cada cambio queda registrado en el historial con fecha y hora. Al pasar a{" "}
-              <strong className="text-slate-400">Finalizado</strong> se envía un email al cliente con
-              el código.
+              Cada cambio queda registrado en el historial y se envía un{" "}
+              <strong className="text-slate-400">email al cliente</strong> indicando el estado
+              anterior y el nuevo (incluye enlace al seguimiento y, si aplica, aviso de finalizado).
             </p>
             <div className="mt-4 flex flex-wrap gap-2">
               {REPAIR_STATUSES.map((s) => (
@@ -411,7 +415,7 @@ export function RepairDetailEditor({
                   onClick={() => applyStatus(s)}
                   className={`rounded-full px-4 py-2 text-xs font-semibold transition ${
                     status === s
-                      ? "bg-violet-600 text-white"
+                      ? repairStatusAdminActiveButtonClass[s]
                       : "bg-white/[0.06] text-slate-200 ring-1 ring-white/10 hover:bg-white/[0.1]"
                   } disabled:opacity-40`}
                 >
@@ -430,7 +434,10 @@ export function RepairDetailEditor({
         ) : (
           <ul className="mt-4 divide-y divide-white/[0.06]">
             {history.map((h) => (
-              <li key={h.id} className="flex flex-wrap items-baseline justify-between gap-2 py-3 text-sm">
+              <li
+                key={h.id}
+                className={`flex flex-wrap items-baseline justify-between gap-2 rounded-r-lg py-3 pl-3 text-sm ${repairStatusHistoryBorderClass[h.to_status]}`}
+              >
                 <span className="text-slate-300">
                   {h.from_status ? (
                     <>

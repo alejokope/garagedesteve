@@ -2,6 +2,7 @@ import "server-only";
 
 import { Resend } from "resend";
 
+import { REPAIR_STATUS_LABELS, type RepairStatus } from "@/lib/repairs-types";
 import { siteConfig } from "@/lib/site-config";
 
 function siteBaseUrl(): string {
@@ -18,9 +19,11 @@ function escapeHtml(s: string): string {
     .replace(/"/g, "&quot;");
 }
 
-export async function sendRepairFinishedEmail(input: {
+export async function sendRepairStatusChangedEmail(input: {
   to: string;
   trackingCode: string;
+  fromStatus: RepairStatus;
+  toStatus: RepairStatus;
 }): Promise<{ ok: true } | { ok: false; message: string }> {
   const key = process.env.RESEND_API_KEY?.trim();
   const from = process.env.RESEND_FROM_EMAIL?.trim();
@@ -35,6 +38,8 @@ export async function sendRepairFinishedEmail(input: {
   const trackUrl = `${base}/servicio-tecnico#seguimiento`;
   const brand = siteConfig.brandName;
   const codeHtml = `<strong style="font-size:18px;letter-spacing:0.06em;">${escapeHtml(input.trackingCode)}</strong>`;
+  const fromLabel = REPAIR_STATUS_LABELS[input.fromStatus];
+  const toLabel = REPAIR_STATUS_LABELS[input.toStatus];
 
   const overrideTo = process.env.RESEND_OVERRIDE_TO?.trim();
   const realRecipient = input.to.trim();
@@ -42,6 +47,13 @@ export async function sendRepairFinishedEmail(input: {
   const testBanner = overrideTo
     ? `<tr><td style="padding:16px 28px;background:#fef3c7;border-bottom:1px solid #fcd34d;"><p style="margin:0;font-size:13px;line-height:1.5;color:#92400e;"><strong>Modo prueba Resend:</strong> destinatario real: <span style="font-family:ui-monospace,monospace;">${escapeHtml(realRecipient)}</span></p></td></tr>`
     : "";
+
+  const extraFinal =
+    input.toStatus === "finalizado"
+      ? `<p style="margin:16px 0 0;font-size:15px;line-height:1.6;color:#14532d;background:#f0fdf4;padding:14px 16px;border-radius:10px;border:1px solid #bbf7d0;">
+            Tu caso quedó marcado como <strong>finalizado</strong>. Podés pasar a retirar el equipo o coordinar la entrega según lo acordado.
+          </p>`
+      : "";
 
   const html = `<!DOCTYPE html>
 <html lang="es">
@@ -51,19 +63,20 @@ export async function sendRepairFinishedEmail(input: {
       <tr>
         <td style="padding:28px 28px 8px;">
           <p style="margin:0;font-size:13px;font-weight:600;color:#71717a;text-transform:uppercase;letter-spacing:0.12em;">${escapeHtml(brand)}</p>
-          <h1 style="margin:12px 0 0;font-size:22px;font-weight:700;color:#18181b;">Tu reparación está lista</h1>
+          <h1 style="margin:12px 0 0;font-size:22px;font-weight:700;color:#18181b;">Actualización de tu reparación</h1>
         </td>
       </tr>
       <tr>
         <td style="padding:8px 28px 24px;">
           <p style="margin:0 0 16px;font-size:15px;line-height:1.6;color:#3f3f46;">
-            Marcamos tu caso como <strong>finalizado</strong>. Podés pasar a retirarlo o coordinar la entrega según lo acordado.
+            El estado de tu caso cambió de <strong>${escapeHtml(fromLabel)}</strong> a <strong>${escapeHtml(toLabel)}</strong>.
           </p>
           <p style="margin:0 0 12px;font-size:14px;color:#52525b;">Código de seguimiento:</p>
-          <p style="margin:0 0 20px;padding:14px 18px;background:#f0fdf4;border-radius:10px;border:1px solid #bbf7d0;text-align:center;font-family:ui-monospace,monospace;color:#14532d;">
+          <p style="margin:0 0 20px;padding:14px 18px;background:#fafafa;border-radius:10px;border:1px solid #e4e4e7;text-align:center;font-family:ui-monospace,monospace;color:#18181b;">
             ${codeHtml}
           </p>
-          <p style="margin:0 0 16px;font-size:15px;line-height:1.6;color:#3f3f46;">
+          ${extraFinal}
+          <p style="margin:20px 0 16px;font-size:15px;line-height:1.6;color:#3f3f46;">
             <a href="${escapeHtml(trackUrl)}" style="color:#2563eb;font-weight:600;">Ver detalle en la web</a>
           </p>
           <p style="margin:0;font-size:13px;line-height:1.5;color:#71717a;">
@@ -84,7 +97,7 @@ export async function sendRepairFinishedEmail(input: {
   const { error } = await resend.emails.send({
     from,
     to: sendTo,
-    subject: `${brand} · Reparación finalizada (${input.trackingCode})`,
+    subject: `${brand} · Estado: ${toLabel} (${input.trackingCode})`,
     html,
   });
 

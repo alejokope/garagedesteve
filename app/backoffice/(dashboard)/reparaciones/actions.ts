@@ -11,7 +11,7 @@ import {
   updateRepairStatusAdmin,
 } from "@/lib/backoffice/repairs-db";
 import { sendRepairCreatedEmail } from "@/lib/email/send-repair-created-email";
-import { sendRepairFinishedEmail } from "@/lib/email/send-repair-finished-email";
+import { sendRepairStatusChangedEmail } from "@/lib/email/send-repair-status-changed-email";
 import { requireBackofficeSession } from "@/lib/backoffice/session";
 import { type RepairStatus } from "@/lib/repairs-types";
 
@@ -90,19 +90,26 @@ export async function updateRepairDetailsAction(formData: FormData) {
 
 export async function updateRepairStatusAction(input: { id: string; newStatus: RepairStatus }) {
   await requireBackofficeSession();
-  await updateRepairStatusAdmin(input);
-  if (input.newStatus === "finalizado") {
-    const row = await getRepairAdmin(input.id);
-    if (row) {
-      const sent = await sendRepairFinishedEmail({
-        to: row.email,
-        trackingCode: row.tracking_code,
-      });
-      if (!sent.ok) {
-        console.error("[reparaciones] Email de finalizado no enviado:", sent.message);
-      }
-    }
+  const rowBefore = await getRepairAdmin(input.id);
+  if (!rowBefore) {
+    throw new Error("Reparación no encontrada");
   }
+  if (rowBefore.status === input.newStatus) {
+    return;
+  }
+
+  await updateRepairStatusAdmin(input);
+
+  const sent = await sendRepairStatusChangedEmail({
+    to: rowBefore.email,
+    trackingCode: rowBefore.tracking_code,
+    fromStatus: rowBefore.status,
+    toStatus: input.newStatus,
+  });
+  if (!sent.ok) {
+    console.error("[reparaciones] Email de cambio de estado no enviado:", sent.message);
+  }
+
   revalidatePath("/backoffice/reparaciones");
   revalidatePath(`/backoffice/reparaciones/${input.id}`);
 }

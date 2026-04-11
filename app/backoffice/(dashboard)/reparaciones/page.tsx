@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { listRepairsAdmin } from "@/lib/backoffice/repairs-db";
+import { repairStatusBackofficeBadgeClass } from "@/lib/repair-status-ui";
 import { REPAIR_STATUS_LABELS } from "@/lib/repairs-types";
 
 function formatShortDate(iso: string): string {
@@ -31,8 +32,8 @@ export default async function BackofficeReparacionesPage() {
             Reparaciones
           </h1>
           <p className="mt-2 max-w-xl text-sm text-slate-400">
-            Cada caso tiene un código único de seguimiento para el cliente. Los cambios de estado
-            quedan en el historial de la ficha.
+            Cada caso tiene un código único de seguimiento. Al cambiar el estado se notifica por email
+            al cliente y el movimiento queda en el historial de la ficha.
           </p>
         </div>
         <div className="flex flex-shrink-0 flex-wrap items-center gap-2 sm:gap-3">
@@ -89,7 +90,9 @@ export default async function BackofficeReparacionesPage() {
                     </p>
                     <p className="mt-2 break-all text-xs leading-snug text-slate-400">{r.email}</p>
                   </div>
-                  <span className="shrink-0 rounded-full bg-white/[0.08] px-2.5 py-1 text-[11px] font-semibold text-slate-200">
+                  <span
+                    className={`shrink-0 rounded-full px-2.5 py-1 text-[11px] font-semibold ${repairStatusBackofficeBadgeClass[r.status]}`}
+                  >
                     {REPAIR_STATUS_LABELS[r.status]}
                   </span>
                 </div>
@@ -123,8 +126,12 @@ export default async function BackofficeReparacionesPage() {
                       {r.tracking_code}
                     </td>
                     <td className="max-w-[220px] truncate px-4 py-3 text-slate-300">{r.email}</td>
-                    <td className="whitespace-nowrap px-4 py-3 text-slate-200">
-                      {REPAIR_STATUS_LABELS[r.status]}
+                    <td className="whitespace-nowrap px-4 py-3">
+                      <span
+                        className={`inline-flex rounded-full px-2.5 py-1 text-[11px] font-semibold ${repairStatusBackofficeBadgeClass[r.status]}`}
+                      >
+                        {REPAIR_STATUS_LABELS[r.status]}
+                      </span>
                     </td>
                     <td className="whitespace-nowrap px-4 py-3 text-xs text-slate-500">
                       {formatShortDate(r.created_at)}

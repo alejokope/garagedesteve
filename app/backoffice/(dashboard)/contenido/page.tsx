@@ -183,7 +183,7 @@ export default async function BackofficeContenidoPage() {
                 Contacto rápido
               </p>
               <p className="mt-1 text-sm text-slate-300">
-                Instagram, WhatsApp, número y plantillas de mensaje (pestañas flotante / carrito).
+                Instagram, WhatsApp, número y plantillas de mensaje (flotante, carrito y servicio técnico).
               </p>
             </div>
             <Link
