@@ -6,7 +6,6 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useBackofficeSaveBarReporter } from "@/app/components/backoffice/backoffice-save-bar";
 import type { ProductRow } from "@/lib/backoffice/products-db";
 import { SITE_HOME_SECTION_META } from "@/lib/backoffice/site-content-sections-meta";
-import { categories as categoryNav } from "@/lib/data";
 import {
   HOME_CATEGORY_TILE_ASPECT_LABEL,
   HOME_CATEGORY_TILE_IMAGE_GUIDE_ES,
@@ -41,8 +40,6 @@ const SERVICE_ICONS: { value: HomeServiceTechData["features"][0]["icon"]; label:
   { value: "puzzle", label: "Rompecabezas (repuestos)" },
   { value: "clock", label: "Reloj (tiempos)" },
 ];
-
-const categoryOptions = categoryNav.filter((c) => c.id !== "all");
 
 function ModuleVisibilityToggle({
   checked,
@@ -157,15 +154,41 @@ export type SiteContentHubProps = {
   };
   hasRow: Record<string, boolean>;
   products: Pick<ProductRow, "id" | "name" | "published">[];
+  /** Categorías activas desde Listas → Categorías (misma fuente que la tienda). */
+  productCategoryOptions: { id: string; label: string }[];
 };
 
-export function SiteContentHub({ revision, homeKeys, merged, hasRow, products }: SiteContentHubProps) {
+export function SiteContentHub({
+  revision,
+  homeKeys,
+  merged,
+  hasRow,
+  products,
+  productCategoryOptions,
+}: SiteContentHubProps) {
   const router = useRouter();
   const refresh = useCallback(() => router.refresh(), [router]);
 
   const publishedProducts = useMemo(
     () => [...products].filter((p) => p.published).sort((a, b) => a.name.localeCompare(b.name, "es")),
     [products],
+  );
+
+  const categoryOptions = useMemo(
+    () =>
+      productCategoryOptions.length > 0
+        ? productCategoryOptions
+        : [
+            { id: "iphone", label: "iPhone" },
+            { id: "ipad", label: "iPad" },
+            { id: "mac", label: "MacBook" },
+            { id: "watch", label: "Apple Watch" },
+            { id: "audio", label: "AirPods" },
+            { id: "desktop", label: "iMac" },
+            { id: "servicio", label: "Servicio técnico" },
+            { id: "otros", label: "Otros" },
+          ],
+    [productCategoryOptions],
   );
 
   const [hero, setHero] = useState<HomeHeroData>(merged.hero);

@@ -17,7 +17,8 @@ export type Product = {
   id: string;
   name: string;
   short: string;
-  category: CategoryId;
+  /** Slug alineado a `product_categories.id` en Supabase. */
+  category: string;
   /** Marca comercial (ej. Apple, JBL); opcional. */
   brand?: string;
   /** Precio orientativo en USD — el cliente confirma por WhatsApp */

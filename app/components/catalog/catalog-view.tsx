@@ -20,7 +20,7 @@ import {
   PAGE_SIZE,
   brandFilterOptionsFromProducts,
   catalogCategoriesFromUrl,
-  CATALOG_FILTER_CATEGORY_IDS,
+  categoryLabelForProduct,
   type CatalogEstado,
   type EnrichedProduct,
   parseBrandFilterKeysFromUrlParam,
@@ -33,8 +33,6 @@ import {
   shopStockConditions,
   sortEnriched,
 } from "@/lib/catalog";
-import type { CategoryId } from "@/lib/data";
-import { categories } from "@/lib/data";
 import { useCatalogProducts } from "@/app/context/catalog-products-context";
 import { SiteRouteLoading } from "@/app/components/site/site-route-loading";
 import { formatMoneyUsd } from "@/lib/format";
@@ -173,7 +171,7 @@ function CatalogCard({ p }: { p: EnrichedProduct }) {
           alt={p.imageAlt}
           fill
           sizes="(max-width: 768px) 100vw, 33vw"
-          className="object-contain p-4 transition duration-500 group-hover:scale-[1.02]"
+          className="object-cover object-center transition duration-500 group-hover:scale-[1.02]"
         />
         <div className="absolute right-2 top-2 flex flex-col items-end gap-1.5">
           {showDiscount ? (
@@ -326,7 +324,8 @@ function PaginationNav({
 
 export function CatalogView() {
   const searchParams = useSearchParams();
-  const { products: catalogProducts, status, error, reload } = useCatalogProducts();
+  const { products: catalogProducts, categoryFilterOptions, status, error, reload } =
+    useCatalogProducts();
 
   const enriched = useMemo(
     () => catalogProducts.map(enrichProduct),
@@ -339,11 +338,11 @@ export function CatalogView() {
   );
 
   const catalogCategoryOptions = useMemo(() => {
-    const allowed = new Set<CategoryId>(CATALOG_FILTER_CATEGORY_IDS);
-    return categories.filter(
-      (c): c is { id: CategoryId; label: string } => c.id !== "all" && allowed.has(c.id),
-    );
-  }, []);
+    if (categoryFilterOptions.length > 0) return categoryFilterOptions;
+    const ids = [...new Set(catalogProducts.map((p) => p.category))].filter(Boolean);
+    ids.sort((a, b) => a.localeCompare(b, "es", { sensitivity: "base" }));
+    return ids.map((id) => ({ id, label: categoryLabelForProduct(id) }));
+  }, [categoryFilterOptions, catalogProducts]);
 
   /** Filtros solo en memoria: no usar router (evita navegaciones /tienda en cada tecla). */
   const [q, setQ] = useState(() => searchParams.get("q") ?? "");
@@ -356,7 +355,7 @@ export function CatalogView() {
   const [marcas, setMarcas] = useState<ShopBrandFilterId[]>(() =>
     parseBrandFilterKeysFromUrlParam(searchParams.get("marcas")),
   );
-  const [categorias, setCategorias] = useState<CategoryId[]>(() =>
+  const [categorias, setCategorias] = useState<string[]>(() =>
     catalogCategoriesFromUrl(searchParams),
   );
   const [estados, setEstados] = useState<CatalogEstado[]>(
@@ -380,12 +379,22 @@ export function CatalogView() {
     return marcas.filter((id) => validBrandFilterIds.has(id));
   }, [marcas, validBrandFilterIds]);
 
+  const validCategoryFilterIds = useMemo(
+    () => new Set(catalogCategoryOptions.map((o) => o.id)),
+    [catalogCategoryOptions],
+  );
+
+  const effectiveCategorias = useMemo(() => {
+    if (validCategoryFilterIds.size === 0) return categorias;
+    return categorias.filter((id) => validCategoryFilterIds.has(id));
+  }, [categorias, validCategoryFilterIds]);
+
   /** Min/max de precio según filtros actuales (sin tope de precio), para el slider realista. */
   const priceScope = useMemo(() => {
     const withoutPrice = filterEnriched(enriched, {
       q,
       marcas: effectiveMarcas,
-      categorias,
+      categorias: effectiveCategorias,
       estados,
       stockConditions,
       precioMax: Number.POSITIVE_INFINITY,
@@ -394,7 +403,7 @@ export function CatalogView() {
     const prices = basis.map((p) => p.price).filter((n) => typeof n === "number" && !Number.isNaN(n));
     if (prices.length === 0) return { min: 0, max: 1 };
     return { min: Math.min(...prices), max: Math.max(...prices) };
-  }, [enriched, q, effectiveMarcas, categorias, estados, stockConditions]);
+  }, [enriched, q, effectiveMarcas, effectiveCategorias, estados, stockConditions]);
 
   const minCatalogPrice = priceScope.min;
   const maxCatalogPrice = priceScope.max;
@@ -427,7 +436,7 @@ export function CatalogView() {
 
   const activeFilterCount = useMemo(() => {
     let n =
-      marcas.length + categorias.length + estados.length + stockConditions.length;
+      marcas.length + effectiveCategorias.length + estados.length + stockConditions.length;
     if (
       maxCatalogPrice > minCatalogPrice &&
       clampedPrecioMax < maxCatalogPrice
@@ -437,7 +446,7 @@ export function CatalogView() {
     return n;
   }, [
     marcas.length,
-    categorias.length,
+    effectiveCategorias.length,
     estados.length,
     stockConditions.length,
     clampedPrecioMax,
@@ -456,13 +465,22 @@ export function CatalogView() {
     const f = filterEnriched(enriched, {
       q,
       marcas: effectiveMarcas,
-      categorias,
+      categorias: effectiveCategorias,
       estados,
       stockConditions,
       precioMax: clampedPrecioMax,
     });
     return sortEnriched(f, sort);
-  }, [enriched, q, effectiveMarcas, categorias, estados, stockConditions, clampedPrecioMax, sort]);
+  }, [
+    enriched,
+    q,
+    effectiveMarcas,
+    effectiveCategorias,
+    estados,
+    stockConditions,
+    clampedPrecioMax,
+    sort,
+  ]);
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
   const currentPage = Math.min(page, totalPages);
@@ -481,12 +499,12 @@ export function CatalogView() {
     setPage(1);
   };
 
-  const toggleCategoria = (id: CategoryId) => {
+  const toggleCategoria = (id: string) => {
     setCategorias((prev) => {
       const set = new Set(prev);
       if (set.has(id)) set.delete(id);
       else set.add(id);
-      return [...set] as CategoryId[];
+      return [...set];
     });
     setPage(1);
   };

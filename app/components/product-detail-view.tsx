@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import { ProductFavoriteButton } from "@/app/components/product-favorite-button";
 import { useCart } from "@/app/context/cart-context";
@@ -95,7 +95,7 @@ function SmallProductCard({
         />
       </div>
       <Link href={`/tienda/${p.id}`} className="relative aspect-square bg-neutral-50">
-        <Image src={p.image} alt={p.imageAlt} fill className="object-contain p-3" sizes="200px" />
+        <Image src={p.image} alt={p.imageAlt} fill className="object-cover object-center" sizes="200px" />
       </Link>
       <div className="flex flex-1 flex-col p-4">
         {p.brand?.trim() ? (
@@ -185,6 +185,23 @@ export function ProductDetailView({
 
   const detailPairs = useMemo(() => getDetailPairs(detail), [detail]);
 
+  const mainImageSrc = product.image?.trim() ?? "";
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+
+  useEffect(() => {
+    if (!lightboxOpen) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setLightboxOpen(false);
+    };
+    document.addEventListener("keydown", onKey);
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      document.body.style.overflow = prevOverflow;
+    };
+  }, [lightboxOpen]);
+
   return (
     <div className="bg-[#f9fafb]">
       <div className="border-b border-[var(--border)] bg-neutral-100/80">
@@ -208,16 +225,28 @@ export function ProductDetailView({
       <div className="mx-auto max-w-6xl px-4 py-10 sm:px-8">
         <div className="grid gap-10 lg:grid-cols-2 lg:gap-14">
           <div>
-            <div className="relative aspect-square overflow-hidden rounded-2xl border border-[var(--border)] bg-white shadow-sm">
-              <Image
-                src={product.image}
-                alt={product.imageAlt}
-                fill
-                priority
-                className="object-contain p-6"
-                sizes="(max-width: 1024px) 100vw, 50vw"
-              />
-            </div>
+            {mainImageSrc ? (
+              <button
+                type="button"
+                onClick={() => setLightboxOpen(true)}
+                className="group relative aspect-square w-full cursor-zoom-in overflow-hidden rounded-2xl border border-[var(--border)] bg-white text-left shadow-sm transition hover:brightness-[1.02] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-from)] focus-visible:ring-offset-2"
+                aria-label={`Ver imagen ampliada: ${product.name}`}
+              >
+                <Image
+                  src={product.image}
+                  alt={product.imageAlt}
+                  fill
+                  priority
+                  className="object-cover object-center transition duration-300 group-hover:scale-[1.02]"
+                  sizes="(max-width: 1024px) 100vw, 50vw"
+                />
+                <span className="pointer-events-none absolute bottom-3 right-3 rounded-lg bg-black/60 px-2.5 py-1 text-[11px] font-semibold tracking-wide text-white opacity-0 shadow-sm backdrop-blur-sm transition group-hover:opacity-100">
+                  Ampliar
+                </span>
+              </button>
+            ) : (
+              <div className="relative aspect-square overflow-hidden rounded-2xl border border-[var(--border)] bg-neutral-100 shadow-sm" aria-hidden />
+            )}
           </div>
 
           <div>
@@ -439,6 +468,43 @@ export function ProductDetailView({
         ) : null}
 
       </div>
+
+      {lightboxOpen && mainImageSrc ? (
+        <div
+          className="fixed inset-0 z-[300] flex items-center justify-center bg-black/92 p-4 sm:p-10"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Imagen ampliada"
+          onClick={() => setLightboxOpen(false)}
+        >
+          <button
+            type="button"
+            className="absolute right-3 top-3 z-[1] flex h-11 w-11 items-center justify-center rounded-full bg-white/12 text-white shadow-lg backdrop-blur-md transition hover:bg-white/22 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-black/50 sm:right-5 sm:top-5"
+            onClick={(e) => {
+              e.stopPropagation();
+              setLightboxOpen(false);
+            }}
+            aria-label="Cerrar vista ampliada"
+          >
+            <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" aria-hidden>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+          <div
+            className="relative h-[min(90dvh,100%)] w-full max-w-[min(96vw,1400px)]"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <Image
+              src={product.image}
+              alt={product.imageAlt}
+              fill
+              className="object-contain"
+              sizes="(max-width: 1400px) 96vw, 1400px"
+              quality={90}
+            />
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }

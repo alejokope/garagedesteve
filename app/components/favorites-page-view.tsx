@@ -96,7 +96,7 @@ function FavoriteRow({
           src={product.image}
           alt={product.imageAlt}
           fill
-          className="object-contain p-4"
+          className="object-cover object-center"
           sizes="(max-width: 768px) 100vw, 33vw"
         />
       </Link>

@@ -8,6 +8,7 @@ import {
   type FloatingContactPublic,
 } from "@/lib/floating-contact-schema";
 import { buildSellDeviceWhatsAppMessage } from "@/lib/sell-device-whatsapp";
+import { getCartFreeShippingPublic } from "@/lib/cart-free-shipping-content-server";
 import { getSiteContact } from "@/lib/site-contact-server";
 import { whatsappUrl } from "@/lib/whatsapp-url";
 
@@ -35,9 +36,13 @@ async function fetchFloatingPayload(): Promise<unknown | null> {
 }
 
 export async function getFloatingContactPublic(): Promise<FloatingContactPublic> {
-  const [raw, siteContact] = await Promise.all([fetchFloatingPayload(), getSiteContact()]);
+  const [raw, siteContact, cartFree] = await Promise.all([
+    fetchFloatingPayload(),
+    getSiteContact(),
+    getCartFreeShippingPublic(),
+  ]);
   const merged = mergeFloatingContactDefaults(raw);
-  return computeFloatingContactPublic(merged, siteContact);
+  return computeFloatingContactPublic(merged, siteContact, cartFree);
 }
 
 export async function getSellDeviceWhatsAppHrefServer(): Promise<string | null> {

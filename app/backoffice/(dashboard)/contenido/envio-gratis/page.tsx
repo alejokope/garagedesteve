@@ -1,26 +1,16 @@
 import Link from "next/link";
 
 import { getContentEntryAdmin } from "@/lib/backoffice/content-db";
-import {
-  FLOATING_CONTACT_KEY,
-  mergeFloatingContactDefaults,
-} from "@/lib/floating-contact-schema";
-
+import { CART_FREE_SHIPPING_CONTENT_KEY } from "@/lib/cart-free-shipping-content-schema";
 import { getCartFreeShippingPublic } from "@/lib/cart-free-shipping-content-server";
-import { getSiteContact } from "@/lib/site-contact-server";
 
-import { FloatingContactEditor } from "./floating-contact-editor";
+import { CartFreeShippingEditor } from "./cart-free-shipping-editor";
 
-export default async function BackofficeFloatingContactPage() {
-  let initial = mergeFloatingContactDefaults(null);
+export default async function BackofficeCartFreeShippingPage() {
+  const initial = await getCartFreeShippingPublic();
   let revision = "default";
-  const [siteContactPreview, cartFreePreview] = await Promise.all([
-    getSiteContact(),
-    getCartFreeShippingPublic(),
-  ]);
   try {
-    const row = await getContentEntryAdmin(FLOATING_CONTACT_KEY);
-    if (row?.payload) initial = mergeFloatingContactDefaults(row.payload);
+    const row = await getContentEntryAdmin(CART_FREE_SHIPPING_CONTENT_KEY);
     revision = row?.updated_at ?? "default";
   } catch {
     /* sin supabase */
@@ -32,15 +22,11 @@ export default async function BackofficeFloatingContactPage() {
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">Contenido</p>
           <h1 className="mt-1 font-display text-2xl font-semibold text-white sm:text-3xl">
-            Botones flotantes
+            Envío gratis (carrito)
           </h1>
           <p className="mt-2 max-w-2xl text-sm leading-relaxed text-slate-400">
-            Instagram arriba y WhatsApp abajo. Número y plantillas de mensaje en la base; el envío gratis del carrito se
-            configura en{" "}
-            <Link href="/backoffice/contenido/envio-gratis" className="text-violet-300 hover:text-violet-200">
-              Envío gratis
-            </Link>
-            .
+            Umbral y visibilidad de la promo en el carrito. Si aún no guardaste acá, se usan valores previos de la base
+            (incluido legado de contacto rápido) hasta que pulses Guardar.
           </p>
         </div>
         <div className="flex flex-wrap gap-3">
@@ -57,12 +43,7 @@ export default async function BackofficeFloatingContactPage() {
           </Link>
         </div>
       </div>
-      <FloatingContactEditor
-        initial={initial}
-        revision={revision}
-        siteContactPreview={siteContactPreview}
-        cartFreePreview={cartFreePreview}
-      />
+      <CartFreeShippingEditor initial={initial} revision={revision} />
     </div>
   );
 }

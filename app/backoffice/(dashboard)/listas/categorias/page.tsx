@@ -13,7 +13,12 @@ export default async function CategoriasListasPage({
 }) {
   const q = await searchParams;
   const rows = await listProductCategoriesAdmin();
-  const revision = rows.map((c) => `${c.id}:${c.label}:${c.sort_order}:${c.active}`).join("|");
+  const revision = rows
+    .map(
+      (c) =>
+        `${c.id}:${c.label}:${c.sort_order}:${c.active}:${c.default_image ?? ""}:${c.default_image_alt ?? ""}`,
+    )
+    .join("|");
 
   return (
     <div className="space-y-10">
@@ -22,11 +27,14 @@ export default async function CategoriasListasPage({
         <h1 className="mt-1 font-display text-2xl font-semibold text-white sm:text-3xl">Categorías</h1>
         <p className="mt-2 max-w-2xl text-sm leading-relaxed text-slate-400">
           Definís en qué <strong className="text-slate-200">sección del catálogo</strong> cae cada producto (iPhone,
-          iPad, etc.). Esto no reemplaza las variantes (color, almacenamiento): esas se cargan al{" "}
+          iPad, etc.). Podés configurar una <strong className="text-slate-200">imagen por defecto</strong>: si un
+          producto no tiene foto propia, la tienda usa la de la categoría. Tras subir un archivo, pulsá{" "}
+          <strong className="text-slate-200">Guardar cambios</strong> para guardar la URL en la base. Las variantes
+          (color, almacenamiento) se cargan al{" "}
           <Link href="/backoffice/productos" className="text-violet-300 underline hover:text-violet-200">
             editar cada producto
           </Link>
-          , en el bloque &quot;Variantes&quot;.
+          .
         </p>
       </div>
 

@@ -9,6 +9,19 @@ import { createSupabaseServiceClient } from "@/lib/supabase/service";
 
 export type { ProductCategoryRow, VariantKindDefinitionRow, VariantPricingModeLabelRow };
 
+function mapProductCategoryRow(raw: Record<string, unknown>): ProductCategoryRow {
+  const di = raw.default_image;
+  const dai = raw.default_image_alt;
+  return {
+    id: String(raw.id),
+    label: String(raw.label ?? ""),
+    sort_order: Number(raw.sort_order) || 0,
+    active: Boolean(raw.active),
+    default_image: di != null && String(di).trim() !== "" ? String(di).trim() : null,
+    default_image_alt: dai != null && String(dai).trim() !== "" ? String(dai).trim() : null,
+  };
+}
+
 export async function listProductCategoriesAdmin(): Promise<ProductCategoryRow[]> {
   const { data, error } = await createSupabaseServiceClient()
     .from("product_categories")
@@ -16,7 +29,7 @@ export async function listProductCategoriesAdmin(): Promise<ProductCategoryRow[]
     .order("sort_order", { ascending: true })
     .order("label", { ascending: true });
   if (error) throw new Error(error.message);
-  return (data ?? []) as ProductCategoryRow[];
+  return (data ?? []).map((r) => mapProductCategoryRow(r as Record<string, unknown>));
 }
 
 export async function listProductCategoriesPublic(): Promise<{ id: string; label: string }[]> {

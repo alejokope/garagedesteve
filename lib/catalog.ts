@@ -97,7 +97,8 @@ const categoryLabels: Record<CategoryId, string> = {
   otros: "ACCESORIOS",
 };
 
-function categoryLabelForProduct(category: string): string {
+/** Etiqueta para filtros / UI cuando el id no está en el mapa fijo. */
+export function categoryLabelForProduct(category: string): string {
   const known = categoryLabels[category as CategoryId];
   if (known) return known;
   return category
@@ -108,7 +109,7 @@ function categoryLabelForProduct(category: string): string {
 }
 
 /** Derivado de la categoría del producto (backoffice); usado para orden “relevancia” y datos enriquecidos. */
-export function shopTipoFromCategory(c: CategoryId): ShopTipo {
+export function shopTipoFromCategory(c: string): ShopTipo {
   switch (c) {
     case "iphone":
       return "smartphones";
@@ -198,17 +199,6 @@ export const shopTipos: { id: ShopTipo; label: string }[] = [
 
 const shopTipoIds = new Set(shopTipos.map((t) => t.id));
 
-export const CATALOG_FILTER_CATEGORY_IDS: CategoryId[] = [
-  "mac",
-  "ipad",
-  "iphone",
-  "watch",
-  "audio",
-  "desktop",
-  "servicio",
-  "otros",
-];
-
 function categoryIdFromLegacyShopTipo(t: ShopTipo): CategoryId | null {
   const m: Record<ShopTipo, CategoryId | null> = {
     smartphones: "iphone",
@@ -228,21 +218,21 @@ function categoryIdFromLegacyShopTipo(t: ShopTipo): CategoryId | null {
  * Categorías seleccionadas al cargar el catálogo: `cat` (ids separados por coma, ej. iphone,ipad)
  * o compatibilidad con URLs viejas `tipos` (smartphones, tablet, …).
  */
+const URL_CATEGORY_SLUG = /^[a-z0-9_-]{1,64}$/;
+
 export function catalogCategoriesFromUrl(searchParams: {
   get: (key: string) => string | null;
-}): CategoryId[] {
+}): string[] {
   const rawCat = searchParams.get("cat");
   if (rawCat?.trim()) {
     const parts = rawCat.split(",").map((x) => x.trim().toLowerCase()).filter(Boolean);
-    const out = parts.filter((p): p is CategoryId =>
-      CATALOG_FILTER_CATEGORY_IDS.includes(p as CategoryId),
-    );
+    const out = parts.filter((p) => URL_CATEGORY_SLUG.test(p));
     if (out.length) return [...new Set(out)];
   }
   const rawTipos = searchParams.get("tipos");
   if (rawTipos?.trim()) {
     const parts = rawTipos.split(",").map((x) => x.trim()).filter(Boolean);
-    const fromTipos: CategoryId[] = [];
+    const fromTipos: string[] = [];
     for (const part of parts) {
       if (!shopTipoIds.has(part as ShopTipo)) continue;
       const cid = categoryIdFromLegacyShopTipo(part as ShopTipo);
@@ -272,7 +262,7 @@ export function filterEnriched(
     q: string;
     marcas: ShopBrandFilterId[];
     /** Filtro por categoría de producto (misma clave que en la tienda / backoffice). */
-    categorias: CategoryId[];
+    categorias: string[];
     estados: CatalogEstado[];
     stockConditions: ProductStockCondition[];
     precioMax: number;

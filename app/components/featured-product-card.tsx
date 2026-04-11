@@ -40,7 +40,7 @@ export function FeaturedProductCard({ product }: { product: Product }) {
           alt={product.imageAlt}
           fill
           sizes="(max-width: 640px) 100vw, 25vw"
-          className="object-contain p-4 transition duration-500 group-hover:scale-[1.02]"
+          className="object-cover object-center transition duration-500 group-hover:scale-[1.02]"
         />
         {product.condition === "used" ? (
           <span className="absolute right-3 top-3 rounded-md bg-amber-600 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-white shadow-sm">

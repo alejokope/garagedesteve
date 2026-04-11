@@ -42,13 +42,6 @@ export const floatingContactPayloadSchema = z.object({
   brandName: z.string().max(120).default(""),
   showInstagramFab: z.boolean().default(true),
   showWhatsappFab: z.boolean().default(true),
-  /**
-   * Mostrar la promo de envío gratis en todo el carrito (pastilla arriba, aviso entre ítems y notas, resumen,
-   * barra fija móvil). Si está desactivado, en ningún lugar del carrito se muestra ese beneficio.
-   */
-  cartFreeShippingEnabled: z.boolean().default(true),
-  /** Subtotal mínimo en USD (orientativo) para la promo; 0 = siempre que haya total en USD. */
-  cartFreeShippingMinUsd: z.number().min(0).max(999_999).default(800),
 });
 
 export type FloatingContactPayload = z.infer<typeof floatingContactPayloadSchema>;
@@ -79,6 +72,7 @@ export type FloatingContactPublic = {
   showWhatsappFab: boolean;
   cartMessageTemplate: string;
   messageTemplateVars: FloatingMessageTemplateVars;
+  /** Desde `site.cart_free_shipping` (o legado en `site.floating_contact`). */
   cartFreeShippingEnabled: boolean;
   cartFreeShippingMinUsd: number;
 };
@@ -92,8 +86,6 @@ export function defaultFloatingContactPayload(): FloatingContactPayload {
     brandName: siteConfig.brandName,
     showInstagramFab: true,
     showWhatsappFab: true,
-    cartFreeShippingEnabled: true,
-    cartFreeShippingMinUsd: 800,
   });
 }
 
@@ -114,16 +106,6 @@ export function mergeFloatingContactDefaults(partial: unknown): FloatingContactP
       brandName: typeof o.brandName === "string" ? o.brandName : base.brandName,
       showInstagramFab: typeof o.showInstagramFab === "boolean" ? o.showInstagramFab : base.showInstagramFab,
       showWhatsappFab: typeof o.showWhatsappFab === "boolean" ? o.showWhatsappFab : base.showWhatsappFab,
-      cartFreeShippingEnabled:
-        typeof o.cartFreeShippingEnabled === "boolean"
-          ? o.cartFreeShippingEnabled
-          : base.cartFreeShippingEnabled,
-      cartFreeShippingMinUsd:
-        typeof o.cartFreeShippingMinUsd === "number" &&
-        Number.isFinite(o.cartFreeShippingMinUsd) &&
-        o.cartFreeShippingMinUsd >= 0
-          ? o.cartFreeShippingMinUsd
-          : base.cartFreeShippingMinUsd,
     });
   } catch {
     return base;

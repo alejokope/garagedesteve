@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 
@@ -385,9 +386,9 @@ export function FooterContentEditor({
         <h2 className={boEditorH2}>Contacto en el pie</h2>
         <p className="mt-2 text-sm text-slate-500">
           Dirección, teléfono, email y horarios se editan en{" "}
-          <a href="/backoffice/contenido/contacto" className="font-medium text-violet-300 hover:text-violet-200">
+          <Link href="/backoffice/contenido/contacto" className="font-medium text-violet-300 hover:text-violet-200">
             Contenido → Datos de contacto
-          </a>{" "}
+          </Link>{" "}
           (fuente única para el sitio público).
         </p>
       </section>

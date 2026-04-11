@@ -1,5 +1,3 @@
-import type { CategoryId } from "@/lib/data";
-
 /**
  * Debe coincidir con el recuadro de la home (`aspect-[4/3]` en `HomeCategoriesGrid`).
  * Sirve para orientar al cliente al exportar o recortar antes de subir.
@@ -21,7 +19,7 @@ export type HomeCategoryTile =
       href: string;
       image: string;
       imageAlt: string;
-      category: CategoryId;
+      category: string;
     }
   | {
       kind: "service";
@@ -101,7 +99,7 @@ export const homeCategoryTiles: HomeCategoryTile[] = [
 ];
 
 /** Si una tarjeta de producto no tiene imagen en BD, usamos la de la misma categoría en los defaults. */
-export function fallbackImageForProductCategory(category: CategoryId): {
+export function fallbackImageForProductCategory(category: string): {
   image: string;
   imageAlt: string;
 } {

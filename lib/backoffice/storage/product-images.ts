@@ -76,6 +76,39 @@ export async function uploadHomeCategoryImage(file: File): Promise<string> {
   return data.publicUrl;
 }
 
+function safeCategoryPathSegment(categoryId: string): string {
+  return categoryId.replace(/[^a-zA-Z0-9-_]/g, "-").slice(0, 120) || "categoria";
+}
+
+/** Imagen por defecto de categoría (`product_categories.default_image`). */
+export async function uploadCategoryDefaultImage(categoryId: string, file: File): Promise<string> {
+  if (file.size > MAX_BYTES) {
+    throw new Error("La imagen no puede superar 5 MB");
+  }
+  if (!file.type.startsWith("image/")) {
+    throw new Error("Subí un archivo de imagen (JPG, PNG, WebP o GIF)");
+  }
+
+  const safe = safeCategoryPathSegment(categoryId);
+  const uid = crypto.randomUUID();
+  const ext = extFromFile(file);
+  const path = `catalog/defaults/${safe}-${uid}.${ext}`;
+  const buf = Buffer.from(await file.arrayBuffer());
+
+  const supabase = createSupabaseServiceClient();
+  const bucket = getProductImagesBucket();
+
+  const { error } = await supabase.storage.from(bucket).upload(path, buf, {
+    contentType: file.type || "image/jpeg",
+    upsert: false,
+  });
+
+  if (error) throw new Error(error.message);
+
+  const { data } = supabase.storage.from(bucket).getPublicUrl(path);
+  return data.publicUrl;
+}
+
 export async function uploadProductGalleryImage(productId: string, file: File): Promise<string> {
   if (file.size > MAX_BYTES) {
     throw new Error("La imagen no puede superar 5 MB");

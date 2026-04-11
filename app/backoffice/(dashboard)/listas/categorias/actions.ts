@@ -3,10 +3,8 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
-import {
-  countProductsByCategory,
-  listProductCategoriesAdmin,
-} from "@/lib/backoffice/catalog-dictionaries-db";
+import { countProductsByCategory } from "@/lib/backoffice/catalog-dictionaries-db";
+import { uploadCategoryDefaultImage } from "@/lib/backoffice/storage/product-images";
 import { createSupabaseServiceClient } from "@/lib/supabase/service";
 import { requireBackofficeSession } from "@/lib/backoffice/session";
 import { slugifyLabel } from "@/lib/slug";
@@ -15,6 +13,7 @@ function revalidateListas() {
   revalidatePath("/backoffice/listas/categorias");
   revalidatePath("/backoffice/productos");
   revalidatePath("/backoffice/productos/nuevo");
+  revalidatePath("/", "layout");
 }
 
 export async function createCategory(
@@ -33,12 +32,17 @@ export async function createCategory(
   const sort_order = sortRaw ? Number.parseInt(sortRaw, 10) : 0;
   if (Number.isNaN(sort_order)) return { error: "Orden inválido" };
 
+  const defaultImage = String(formData.get("default_image") ?? "").trim();
+  const defaultImageAlt = String(formData.get("default_image_alt") ?? "").trim();
+
   const supabase = createSupabaseServiceClient();
   const { error } = await supabase.from("product_categories").insert({
     id,
     label,
     sort_order,
     active,
+    default_image: defaultImage || null,
+    default_image_alt: defaultImageAlt || null,
     updated_at: new Date().toISOString(),
   });
   if (error) {
@@ -56,6 +60,8 @@ export async function updateCategory(formData: FormData): Promise<void> {
   const label = String(formData.get("label") ?? "").trim();
   const sortRaw = String(formData.get("sort_order") ?? "").trim();
   const active = formData.get("active") === "on";
+  const defaultImage = String(formData.get("default_image") ?? "").trim();
+  const defaultImageAlt = String(formData.get("default_image_alt") ?? "").trim();
 
   if (!id || !label) return;
   const sort_order = sortRaw ? Number.parseInt(sortRaw, 10) : 0;
@@ -68,6 +74,8 @@ export async function updateCategory(formData: FormData): Promise<void> {
       label,
       sort_order,
       active,
+      default_image: defaultImage || null,
+      default_image_alt: defaultImageAlt || null,
       updated_at: new Date().toISOString(),
     })
     .eq("id", id);
@@ -96,4 +104,26 @@ export async function deleteCategory(formData: FormData) {
   }
   revalidateListas();
   redirect("/backoffice/listas/categorias");
+}
+
+export type UploadCategoryImageResult =
+  | { ok: true; url: string }
+  | { ok: false; error: string };
+
+export async function uploadCategoryDefaultImageFormAction(
+  formData: FormData,
+): Promise<UploadCategoryImageResult> {
+  await requireBackofficeSession();
+  const categoryId = String(formData.get("categoryId") ?? "").trim();
+  const file = formData.get("file");
+  if (!categoryId) return { ok: false, error: "Falta la categoría" };
+  if (!(file instanceof File) || file.size === 0) {
+    return { ok: false, error: "Elegí un archivo de imagen" };
+  }
+  try {
+    const url = await uploadCategoryDefaultImage(categoryId, file);
+    return { ok: true, url };
+  } catch (e) {
+    return { ok: false, error: e instanceof Error ? e.message : "No se pudo subir" };
+  }
 }

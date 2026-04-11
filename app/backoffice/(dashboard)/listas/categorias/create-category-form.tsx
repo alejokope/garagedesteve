@@ -99,6 +99,22 @@ export function CreateCategoryForm() {
           <input name="active" type="checkbox" defaultChecked className="h-4 w-4 rounded" />
           <span className="text-sm text-slate-300">Activa</span>
         </label>
+        <label className="block sm:col-span-2">
+          <span className="mb-1 block text-xs text-slate-500">Imagen por defecto (URL, opcional)</span>
+          <input
+            name="default_image"
+            className="w-full rounded-xl border border-white/[0.1] bg-black/30 px-3 py-2 text-sm text-white"
+            placeholder="https://… o subila después al editar la fila"
+          />
+        </label>
+        <label className="block sm:col-span-2">
+          <span className="mb-1 block text-xs text-slate-500">Texto alternativo de esa imagen (opcional)</span>
+          <input
+            name="default_image_alt"
+            className="w-full rounded-xl border border-white/[0.1] bg-black/30 px-3 py-2 text-sm text-white"
+            placeholder="Describe la imagen para accesibilidad"
+          />
+        </label>
       </div>
     </form>
   );

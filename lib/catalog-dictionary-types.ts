@@ -3,6 +3,9 @@ export type ProductCategoryRow = {
   label: string;
   sort_order: number;
   active: boolean;
+  /** URL si el producto de esta categoría no tiene imagen propia. */
+  default_image: string | null;
+  default_image_alt: string | null;
 };
 
 export type VariantKindDefinitionRow = {

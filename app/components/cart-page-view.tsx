@@ -155,7 +155,7 @@ export function CartPageView() {
                           alt={line.product.imageAlt}
                           fill
                           sizes="(max-width: 640px) 96px, 112px"
-                          className="object-contain p-2"
+                          className="object-cover object-center"
                         />
                       </div>
                       <div className="min-w-0 flex-1">
@@ -265,7 +265,7 @@ export function CartPageView() {
                             alt={p.imageAlt}
                             fill
                             sizes="160px"
-                            className="object-contain p-2"
+                            className="object-cover object-center"
                           />
                         </Link>
                         <p className="mt-2 line-clamp-2 font-display text-xs font-semibold text-neutral-900">

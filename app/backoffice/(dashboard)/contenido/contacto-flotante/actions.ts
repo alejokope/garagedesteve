@@ -37,7 +37,6 @@ export async function saveFloatingContactAction(
         ...data,
         instagramUrl: normalizeInstagramInput(data.instagramUrl),
         whatsappPhone: data.whatsappPhone.replace(/\D/g, ""),
-        cartFreeShippingMinUsd: Math.round(data.cartFreeShippingMinUsd),
       },
     });
   } catch (e) {

@@ -115,7 +115,7 @@ export function productRowToProduct(row: ProductRow): Product {
     id: row.id,
     name: row.name,
     short: row.short,
-    category: row.category as Product["category"],
+    category: row.category,
     ...(row.brand ? { brand: row.brand } : {}),
     price: row.price,
     condition,

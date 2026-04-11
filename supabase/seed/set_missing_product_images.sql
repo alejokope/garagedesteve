@@ -1,0 +1,7 @@
+-- DEPRECADO: Ya no rellenamos `products.image` con un placeholder genérico.
+-- La tienda usa `product_categories.default_image` cuando el producto no tiene imagen
+-- (ver `supabase/migrations/008_product_category_default_image.sql`).
+--
+-- Si en algún momento corriste el script viejo con la foto Unsplash 1696446702183,
+-- para dejar esos productos sin imagen y que usen la default de categoría ejecutá:
+--   supabase/seed/clear_placeholder_product_images.sql

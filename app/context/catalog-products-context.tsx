@@ -16,8 +16,12 @@ import type { Product } from "@/lib/data";
 
 type Status = "idle" | "loading" | "ready" | "error";
 
+export type CatalogCategoryFilterOption = { id: string; label: string };
+
 type CatalogProductsValue = {
   products: Product[];
+  /** Categorías activas desde Supabase; vacío = el catálogo arma opciones desde los productos. */
+  categoryFilterOptions: CatalogCategoryFilterOption[];
   status: Status;
   error: string | null;
   productLookup: Record<string, Product>;
@@ -26,10 +30,27 @@ type CatalogProductsValue = {
 
 const CatalogProductsContext = createContext<CatalogProductsValue | null>(null);
 
-/** Solo deduplica peticiones en vuelo; no guarda el resultado (evita catálogo viejo al navegar o recargar). */
-let catalogInflight: Promise<Product[]> | null = null;
+type CatalogFetchResult = { products: Product[]; categoryFilterOptions: CatalogCategoryFilterOption[] };
 
-function fetchCatalogOnce(forceNew: boolean): Promise<Product[]> {
+/** Solo deduplica peticiones en vuelo; no guarda el resultado (evita catálogo viejo al navegar o recargar). */
+let catalogInflight: Promise<CatalogFetchResult> | null = null;
+
+function parseCatalogResponse(raw: unknown): CatalogFetchResult {
+  if (Array.isArray(raw)) {
+    return { products: raw as Product[], categoryFilterOptions: [] };
+  }
+  if (raw && typeof raw === "object") {
+    const o = raw as Record<string, unknown>;
+    const products = Array.isArray(o.products) ? (o.products as Product[]) : [];
+    const categoryFilterOptions = Array.isArray(o.categoryFilterOptions)
+      ? (o.categoryFilterOptions as CatalogCategoryFilterOption[])
+      : [];
+    return { products, categoryFilterOptions };
+  }
+  return { products: [], categoryFilterOptions: [] };
+}
+
+function fetchCatalogOnce(forceNew: boolean): Promise<CatalogFetchResult> {
   if (forceNew) catalogInflight = null;
   if (catalogInflight) return catalogInflight;
 
@@ -47,7 +68,7 @@ function fetchCatalogOnce(forceNew: boolean): Promise<Product[]> {
         const body = (await r.json().catch(() => ({}))) as { error?: string };
         throw new Error(body.error ?? "No se pudo cargar el catálogo");
       }
-      return r.json() as Promise<Product[]>;
+      return parseCatalogResponse(await r.json());
     })
     .finally(() => {
       if (catalogInflight === p) catalogInflight = null;
@@ -62,6 +83,7 @@ const SHOP_CATALOG_PATH = /^\/(tienda(\/.*)?|carrito|favoritos)$/;
 export function CatalogProductsProvider({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const [products, setProducts] = useState<Product[]>([]);
+  const [categoryFilterOptions, setCategoryFilterOptions] = useState<CatalogCategoryFilterOption[]>([]);
   const [status, setStatus] = useState<Status>("idle");
   const [error, setError] = useState<string | null>(null);
   const isFirstPathEffect = useRef(true);
@@ -71,7 +93,8 @@ export function CatalogProductsProvider({ children }: { children: ReactNode }) {
     setStatus("loading");
     fetchCatalogOnce(forceNew)
       .then((data) => {
-        setProducts(data);
+        setProducts(data.products);
+        setCategoryFilterOptions(data.categoryFilterOptions);
         setStatus("ready");
       })
       .catch((e: unknown) => {
@@ -105,12 +128,13 @@ export function CatalogProductsProvider({ children }: { children: ReactNode }) {
   const value = useMemo<CatalogProductsValue>(
     () => ({
       products,
+      categoryFilterOptions,
       status,
       error,
       productLookup,
       reload,
     }),
-    [products, status, error, productLookup, reload],
+    [products, categoryFilterOptions, status, error, productLookup, reload],
   );
 
   return (

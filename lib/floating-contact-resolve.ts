@@ -1,5 +1,7 @@
 import { whatsappUrl } from "@/lib/whatsapp-url";
 import { siteConfig } from "@/lib/site-config";
+import type { CartFreeShippingPayload } from "@/lib/cart-free-shipping-content-schema";
+import { mergeCartFreeShippingDefaults } from "@/lib/cart-free-shipping-content-schema";
 import {
   defaultSiteContactPayload,
   formatOfficesForTemplate,
@@ -118,6 +120,7 @@ export function buildFabTemplateVars(
 export function computeFloatingContactPublic(
   payload: FloatingContactPayload,
   siteContact: SiteContactPayload,
+  cartFreeShipping: CartFreeShippingPayload,
 ): FloatingContactPublic {
   const phoneDigits = resolvePhoneDigits(payload);
   const brandName = resolveBrandName(payload);
@@ -142,8 +145,8 @@ export function computeFloatingContactPublic(
     showWhatsappFab: payload.showWhatsappFab,
     cartMessageTemplate: payload.cartMessageTemplate,
     messageTemplateVars: vars,
-    cartFreeShippingEnabled: payload.cartFreeShippingEnabled,
-    cartFreeShippingMinUsd: payload.cartFreeShippingMinUsd,
+    cartFreeShippingEnabled: cartFreeShipping.enabled,
+    cartFreeShippingMinUsd: cartFreeShipping.minUsd,
   };
 }
 
@@ -152,5 +155,6 @@ export function computeFloatingContactPublicFromDefaults(): FloatingContactPubli
   return computeFloatingContactPublic(
     mergeFloatingContactDefaults(null),
     defaultSiteContactPayload(),
+    mergeCartFreeShippingDefaults(null),
   );
 }

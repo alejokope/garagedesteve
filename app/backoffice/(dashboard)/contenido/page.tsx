@@ -16,6 +16,8 @@ import {
   mergeWhyChoose,
 } from "@/lib/home-public-content";
 
+import { listProductCategoriesAdmin } from "@/lib/backoffice/catalog-dictionaries-db";
+import { CART_FREE_SHIPPING_CONTENT_KEY } from "@/lib/cart-free-shipping-content-schema";
 import { FOOTER_CONTENT_KEY } from "@/lib/footer-content-schema";
 import { FLOATING_CONTACT_KEY } from "@/lib/floating-contact-schema";
 import { SITE_CONTACT_KEY } from "@/lib/site-contact-schema";
@@ -28,17 +30,26 @@ const HIDDEN_IN_OTHER_TABLE = new Set<string>([
   FOOTER_CONTENT_KEY,
   FLOATING_CONTACT_KEY,
   SITE_CONTACT_KEY,
+  CART_FREE_SHIPPING_CONTENT_KEY,
 ]);
 
 export default async function BackofficeContenidoPage() {
   let rows: Awaited<ReturnType<typeof listContentEntriesAdmin>> = [];
   let products: Awaited<ReturnType<typeof listProductsAdmin>> = [];
+  let productCategoryOptions: { id: string; label: string }[] = [];
   let loadError: string | null = null;
 
   try {
     [rows, products] = await Promise.all([listContentEntriesAdmin(), listProductsAdmin()]);
   } catch (e) {
     loadError = e instanceof Error ? e.message : "No se pudo cargar el contenido";
+  }
+
+  try {
+    const cats = await listProductCategoriesAdmin();
+    productCategoryOptions = cats.filter((c) => c.active).map((c) => ({ id: c.id, label: c.label }));
+  } catch {
+    /* sin supabase */
   }
 
   const payloadByKey = new Map(rows.map((r) => [r.key, r.payload] as const));
@@ -87,6 +98,47 @@ export default async function BackofficeContenidoPage() {
         </Link>
       </div>
 
+      <nav
+        aria-label="Accesos directos del sitio"
+        className="rounded-2xl border border-white/[0.08] bg-white/[0.02] px-4 py-4 sm:px-5"
+      >
+        <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Más contenido del sitio</p>
+        <ul className="mt-3 flex flex-wrap gap-2">
+          <li>
+            <Link
+              href="/backoffice/contenido/contacto"
+              className="inline-block rounded-lg bg-cyan-500/15 px-3 py-1.5 text-xs font-medium text-cyan-100 ring-1 ring-cyan-500/25 hover:bg-cyan-500/25"
+            >
+              Contacto público
+            </Link>
+          </li>
+          <li>
+            <Link
+              href="/backoffice/contenido/footer"
+              className="inline-block rounded-lg bg-white/[0.06] px-3 py-1.5 text-xs font-medium text-slate-200 ring-1 ring-white/10 hover:bg-white/[0.1]"
+            >
+              Footer
+            </Link>
+          </li>
+          <li>
+            <Link
+              href="/backoffice/contenido/contacto-flotante"
+              className="inline-block rounded-lg bg-white/[0.06] px-3 py-1.5 text-xs font-medium text-slate-200 ring-1 ring-white/10 hover:bg-white/[0.1]"
+            >
+              Contacto rápido (WhatsApp / IG)
+            </Link>
+          </li>
+          <li>
+            <Link
+              href="/backoffice/contenido/envio-gratis"
+              className="inline-block rounded-lg bg-emerald-500/15 px-3 py-1.5 text-xs font-medium text-emerald-100 ring-1 ring-emerald-500/25 hover:bg-emerald-500/25"
+            >
+              Envío gratis (carrito)
+            </Link>
+          </li>
+        </ul>
+      </nav>
+
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         <div className="rounded-2xl border border-violet-500/25 bg-violet-950/20 p-4 sm:p-5">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -131,7 +183,7 @@ export default async function BackofficeContenidoPage() {
                 Contacto rápido
               </p>
               <p className="mt-1 text-sm text-slate-300">
-                Botones flotantes, número, plantillas de WhatsApp y umbral de envío gratis del carrito.
+                Instagram, WhatsApp, número y plantillas de mensaje (pestañas flotante / carrito).
               </p>
             </div>
             <Link
@@ -139,6 +191,24 @@ export default async function BackofficeContenidoPage() {
               className="inline-flex shrink-0 items-center justify-center rounded-xl bg-gradient-to-r from-fuchsia-500/25 to-violet-500/25 px-4 py-2.5 text-sm font-semibold text-white ring-1 ring-fuchsia-400/30 transition hover:from-fuchsia-500/35 hover:to-violet-500/35"
             >
               Configurar
+            </Link>
+          </div>
+        </div>
+        <div className="rounded-2xl border border-emerald-500/25 bg-emerald-950/15 p-4 sm:p-5 ring-1 ring-emerald-500/20 sm:col-span-2 lg:col-span-1">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-wide text-emerald-200/90">
+                Envío gratis
+              </p>
+              <p className="mt-1 text-sm text-slate-300">
+                Solo la promo del carrito (umbral y visibilidad). Independiente del WhatsApp.
+              </p>
+            </div>
+            <Link
+              href="/backoffice/contenido/envio-gratis"
+              className="inline-flex shrink-0 items-center justify-center rounded-xl bg-white/[0.1] px-4 py-2.5 text-sm font-semibold text-white ring-1 ring-white/15 transition hover:bg-white/[0.14]"
+            >
+              Editar
             </Link>
           </div>
         </div>
@@ -174,6 +244,7 @@ export default async function BackofficeContenidoPage() {
           merged={merged}
           hasRow={hasRow}
           products={products.map((p) => ({ id: p.id, name: p.name, published: p.published }))}
+          productCategoryOptions={productCategoryOptions}
         />
       )}
 
