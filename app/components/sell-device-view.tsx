@@ -1,7 +1,5 @@
 import Link from "next/link";
 
-import { siteConfig } from "@/lib/site-config";
-
 const steps = [
   {
     title: "Escribinos por WhatsApp",
@@ -28,9 +26,11 @@ const criteria = [
 
 type Props = {
   whatsappHref: string | null;
+  fallbackEmail: string;
+  fallbackPhone: string;
 };
 
-export function SellDeviceView({ whatsappHref }: Props) {
+export function SellDeviceView({ whatsappHref, fallbackEmail, fallbackPhone }: Props) {
   return (
     <div className="border-b border-[var(--border)] bg-white">
       <div className="mx-auto max-w-3xl px-5 pb-16 pt-[calc(4rem+env(safe-area-inset-top))] sm:px-8 sm:pb-20 sm:pt-20 lg:pt-24">
@@ -72,12 +72,12 @@ export function SellDeviceView({ whatsappHref }: Props) {
         ) : (
           <p className="mt-10 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-950">
             El enlace a WhatsApp no está configurado. Escribinos a{" "}
-            <a href={`mailto:${siteConfig.contact.email}`} className="font-semibold underline underline-offset-2">
-              {siteConfig.contact.email}
+            <a href={`mailto:${fallbackEmail}`} className="font-semibold underline underline-offset-2">
+              {fallbackEmail}
             </a>{" "}
             o al{" "}
-            <a href={`tel:${siteConfig.contact.phone.replace(/\s/g, "")}`} className="font-semibold underline underline-offset-2">
-              {siteConfig.contact.phone}
+            <a href={`tel:${fallbackPhone.replace(/\s/g, "")}`} className="font-semibold underline underline-offset-2">
+              {fallbackPhone}
             </a>{" "}
             para cotizar tu equipo.
           </p>

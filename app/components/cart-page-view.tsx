@@ -2,11 +2,13 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useMemo, useState, type ReactNode } from "react";
 import { useCatalogProducts } from "@/app/context/catalog-products-context";
 import { useFloatingContact } from "@/app/context/floating-contact-context";
+import { useSiteContact } from "@/app/context/site-contact-context";
 import { useCart } from "@/app/context/cart-context";
 import { cartLineDisplayName, cartLineUnitPrice } from "@/lib/cart-line";
+import { computeCartFreeShipping } from "@/lib/cart-free-shipping";
 import { enrichProduct } from "@/lib/catalog";
 import { formatMoneyUsd } from "@/lib/format";
 import { buildWhatsAppOrderMessage, whatsappUrl } from "@/lib/whatsapp";
@@ -16,14 +18,20 @@ function formatCartMoney(n: number) {
   return formatMoneyUsd(n);
 }
 
-/** Umbral orientativo para mensaje de envío gratis (USD). */
-const FREE_SHIPPING_THRESHOLD = 800;
-
 export function CartPageView() {
   const { items, remove, setQty, total, clear } = useCart();
   const { products: catalogProducts, status: catalogStatus } = useCatalogProducts();
   const [note, setNote] = useState("");
-  const { phoneDigits, cartMessageTemplate, messageTemplateVars } = useFloatingContact();
+  const {
+    phoneDigits,
+    cartMessageTemplate,
+    messageTemplateVars,
+    cartFreeShippingEnabled,
+    cartFreeShippingMinUsd,
+  } = useFloatingContact();
+  const { pickupAreaShort } = useSiteContact();
+
+  const freeShippingMin = cartFreeShippingMinUsd;
 
   const waLink = useMemo(() => {
     const text = buildWhatsAppOrderMessage(items, total, {
@@ -37,8 +45,30 @@ export function CartPageView() {
 
   const count = items.reduce((s, i) => s + i.qty, 0);
   const subtotal = total;
-  const untilFree = Math.max(0, FREE_SHIPPING_THRESHOLD - subtotal);
-  const hasFreeShipping = subtotal >= FREE_SHIPPING_THRESHOLD && subtotal > 0;
+
+  const { showPromo: showFreeShippingPromo, hasFreeShipping, untilFree } = useMemo(
+    () => computeCartFreeShipping(cartFreeShippingEnabled, freeShippingMin, subtotal),
+    [cartFreeShippingEnabled, freeShippingMin, subtotal],
+  );
+
+  const freeShippingMessage: ReactNode = useMemo(() => {
+    if (!showFreeShippingPromo || count === 0) return null;
+    if (hasFreeShipping) return "¡Envío gratis en este pedido!";
+    if (freeShippingMin <= 0) return "Coordinamos envío por WhatsApp";
+    return (
+      <>
+        Envío gratis en compras desde {formatCartMoney(freeShippingMin)}
+        {subtotal > 0 ? ` · Te faltan ${formatCartMoney(untilFree)}` : ""}
+      </>
+    );
+  }, [
+    showFreeShippingPromo,
+    count,
+    hasFreeShipping,
+    freeShippingMin,
+    subtotal,
+    untilFree,
+  ]);
 
   const cartProductIds = useMemo(
     () => new Set(items.map((i) => i.product.id)),
@@ -75,7 +105,7 @@ export function CartPageView() {
                 : `${count} ${count === 1 ? "producto" : "productos"} seleccionado${count === 1 ? "" : "s"}`}
             </p>
           </div>
-          {count > 0 ? (
+          {freeShippingMessage ? (
             <div
               className={`inline-flex w-fit items-center gap-2 rounded-full px-3 py-1.5 text-xs font-semibold sm:text-sm ${
                 hasFreeShipping
@@ -86,13 +116,7 @@ export function CartPageView() {
               <span className="text-base leading-none" aria-hidden>
                 {hasFreeShipping ? "✓" : "🚚"}
               </span>
-              {hasFreeShipping
-                ? "¡Envío gratis en este pedido!"
-                : `Envío gratis en compras desde ${formatCartMoney(FREE_SHIPPING_THRESHOLD)}${
-                    subtotal > 0
-                      ? ` · Te faltan ${formatCartMoney(untilFree)}`
-                      : ""
-                  }`}
+              {freeShippingMessage}
             </div>
           ) : null}
         </div>
@@ -185,12 +209,28 @@ export function CartPageView() {
                 })}
               </ul>
 
+              {freeShippingMessage ? (
+                <div
+                  className={`flex items-start gap-3 rounded-2xl border px-4 py-3.5 text-sm font-semibold ${
+                    hasFreeShipping
+                      ? "border-emerald-200/90 bg-emerald-50/90 text-emerald-900 ring-1 ring-emerald-200/70"
+                      : "border-amber-200/90 bg-amber-50/90 text-amber-950 ring-1 ring-amber-200/70"
+                  }`}
+                  role="status"
+                >
+                  <span className="text-lg leading-none" aria-hidden>
+                    {hasFreeShipping ? "✓" : "🚚"}
+                  </span>
+                  <span>{freeShippingMessage}</span>
+                </div>
+              ) : null}
+
               <div className="rounded-2xl border border-[var(--border)] bg-white p-5 shadow-sm">
                 <label htmlFor="cart-note" className="text-sm font-semibold text-neutral-900">
                   Notas del pedido
                 </label>
                 <p className="mt-1 text-xs text-neutral-500">
-                  Capacidad, color, forma de pago o retiro en Microcentro — lo vemos todo por WhatsApp.
+                  Capacidad, color, forma de pago o retiro en {pickupAreaShort} — lo vemos todo por WhatsApp.
                 </p>
                 <textarea
                   id="cart-note"
@@ -275,7 +315,13 @@ export function CartPageView() {
                   </div>
                   <div className="flex justify-between gap-4 text-neutral-600">
                     <dt>Envío</dt>
-                    <dd className="font-semibold text-emerald-600">
+                    <dd
+                      className={
+                        hasFreeShipping
+                          ? "font-semibold text-emerald-600"
+                          : "font-medium text-neutral-800"
+                      }
+                    >
                       {hasFreeShipping ? "Gratis" : "A coordinar"}
                     </dd>
                   </div>
@@ -287,7 +333,7 @@ export function CartPageView() {
                       </dd>
                     </div>
                     <p className="mt-2 text-xs text-neutral-500">
-                      Precios orientativos en USD; cerramos valor y retiro en oficina (Microcentro) por WhatsApp.
+                      Precios orientativos en USD; cerramos valor y retiro en oficina ({pickupAreaShort}) por WhatsApp.
                     </p>
                   </div>
                 </dl>
@@ -352,7 +398,17 @@ export function CartPageView() {
       {/* Barra fija mobile: total + WhatsApp */}
       {items.length > 0 ? (
         <div className="fixed inset-x-0 bottom-0 z-50 border-t border-[var(--border)] bg-white/95 px-4 py-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] shadow-[0_-8px_30px_rgba(15,23,42,0.08)] backdrop-blur-md lg:hidden">
-          <div className="mx-auto flex max-w-lg items-center justify-between gap-3">
+          <div className="mx-auto max-w-lg space-y-2">
+            {freeShippingMessage ? (
+              <p
+                className={`text-center text-[11px] font-semibold leading-snug ${
+                  hasFreeShipping ? "text-emerald-800" : "text-amber-900"
+                }`}
+              >
+                {freeShippingMessage}
+              </p>
+            ) : null}
+            <div className="flex items-center justify-between gap-3">
             <div>
               <p className="text-[11px] font-medium uppercase tracking-wide text-neutral-500">Total</p>
               <p className="font-display text-lg font-bold tabular-nums text-neutral-900">
@@ -375,6 +431,7 @@ export function CartPageView() {
               </svg>
               WhatsApp
             </a>
+            </div>
           </div>
         </div>
       ) : null}

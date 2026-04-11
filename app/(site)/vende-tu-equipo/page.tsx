@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { SellDeviceView } from "@/app/components/sell-device-view";
 import { SiteFooter } from "@/app/components/site-footer";
 import { getSellDeviceWhatsAppHrefServer } from "@/lib/floating-contact-server";
+import { getSiteContact } from "@/lib/site-contact-server";
 import { siteConfig } from "@/lib/site-config";
 
 export const metadata: Metadata = {
@@ -12,11 +13,18 @@ export const metadata: Metadata = {
 };
 
 export default async function VendeTuEquipoPage() {
-  const whatsappHref = await getSellDeviceWhatsAppHrefServer();
+  const [whatsappHref, contact] = await Promise.all([
+    getSellDeviceWhatsAppHrefServer(),
+    getSiteContact(),
+  ]);
 
   return (
     <main className="min-h-screen">
-      <SellDeviceView whatsappHref={whatsappHref} />
+      <SellDeviceView
+        whatsappHref={whatsappHref}
+        fallbackEmail={contact.email}
+        fallbackPhone={contact.phone}
+      />
       <SiteFooter />
     </main>
   );

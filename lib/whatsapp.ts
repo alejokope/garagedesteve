@@ -6,6 +6,11 @@ import {
 } from "@/lib/floating-contact-resolve";
 import { DEFAULT_CART_MESSAGE_TEMPLATE } from "@/lib/floating-contact-schema";
 import { formatMoneyUsd } from "@/lib/format";
+import {
+  defaultSiteContactPayload,
+  formatOfficesForTemplate,
+  pickupAreaShortLabel,
+} from "@/lib/site-contact-schema";
 import { siteConfig } from "@/lib/site-config";
 import type { CartItem } from "@/lib/types";
 
@@ -48,6 +53,7 @@ export function buildCartNotaBlock(customerNote?: string): string {
 
 function fallbackTemplateVars(businessName?: string): FabTemplateVars {
   const marca = businessName?.trim() || siteConfig.brandName;
+  const c = defaultSiteContactPayload();
   return {
     marca,
     sitio:
@@ -57,6 +63,11 @@ function fallbackTemplateVars(businessName?: string): FabTemplateVars {
     instagram: siteConfig.publicLinks.instagram,
     linktree: siteConfig.publicLinks.linktree,
     año: String(new Date().getFullYear()),
+    telefono: c.phone,
+    email: c.email,
+    horario: c.hours,
+    retiro: pickupAreaShortLabel(c),
+    direccion: formatOfficesForTemplate(c),
   };
 }
 

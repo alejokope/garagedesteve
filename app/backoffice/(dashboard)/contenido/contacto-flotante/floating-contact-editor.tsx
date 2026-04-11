@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
@@ -18,6 +19,7 @@ import {
   FLOATING_CONTACT_KEY,
   type FloatingContactPayload,
 } from "@/lib/floating-contact-schema";
+import type { SiteContactPayload } from "@/lib/site-contact-schema";
 import {
   buildFabTemplateVars,
   computeFloatingContactPublic,
@@ -42,6 +44,31 @@ const VARIABLES: { token: string; title: string; hint: string }[] = [
   { token: "{{instagram}}", title: "Instagram", hint: "URL del perfil configurada arriba (o la del sitio)." },
   { token: "{{linktree}}", title: "Linktree", hint: "Enlace oficial del sitio en código." },
   { token: "{{año}}", title: "Año", hint: "Año actual (automático)." },
+  {
+    token: "{{telefono}}",
+    title: "Teléfono",
+    hint: "Desde Contenido → Datos de contacto (texto que se muestra en el footer).",
+  },
+  {
+    token: "{{email}}",
+    title: "Email",
+    hint: "Desde Contenido → Datos de contacto.",
+  },
+  {
+    token: "{{horario}}",
+    title: "Horario",
+    hint: "Horario de atención desde Datos de contacto.",
+  },
+  {
+    token: "{{retiro}}",
+    title: "Retiro",
+    hint: "Texto corto para “retiro en …” (nombre de sede o dirección).",
+  },
+  {
+    token: "{{direccion}}",
+    title: "Direcciones",
+    hint: "Todas las oficinas en texto plano (una por línea).",
+  },
 ];
 
 const CART_ONLY_VARIABLES: { token: string; title: string; hint: string }[] = [
@@ -78,9 +105,12 @@ const CART_PREVIEW_ITEMS: CartItem[] = [
 export function FloatingContactEditor({
   initial,
   revision,
+  siteContactPreview,
 }: {
   initial: FloatingContactPayload;
   revision: string;
+  /** Datos de contacto actuales (misma fuente que el footer) para vista previa de plantillas. */
+  siteContactPreview: SiteContactPayload;
 }) {
   const router = useRouter();
   const [data, setData] = useState<FloatingContactPayload>(initial);
@@ -91,18 +121,21 @@ export function FloatingContactEditor({
     setData(initial);
   }, [revision, initial]);
 
-  const previewPublic = useMemo(() => computeFloatingContactPublic(data), [data]);
+  const previewPublic = useMemo(
+    () => computeFloatingContactPublic(data, siteContactPreview),
+    [data, siteContactPreview],
+  );
   const previewMessage = useMemo(() => {
-    const vars = buildFabTemplateVars(data);
+    const vars = buildFabTemplateVars(data, siteContactPreview);
     return interpolateFabTemplate(data.fabMessageTemplate, vars);
-  }, [data]);
+  }, [data, siteContactPreview]);
 
   const previewCartMessage = useMemo(() => {
-    const vars = buildFabTemplateVars(data);
+    const vars = buildFabTemplateVars(data, siteContactPreview);
     const pedido = buildCartPedidoBlock(CART_PREVIEW_ITEMS, 950);
     const nota = buildCartNotaBlock("Retiro viernes por la tarde");
     return interpolateRichTemplate(data.cartMessageTemplate, { ...vars, pedido, nota });
-  }, [data]);
+  }, [data, siteContactPreview]);
 
   const isDirty = JSON.stringify(data) !== JSON.stringify(initial);
 
@@ -160,7 +193,13 @@ export function FloatingContactEditor({
   return (
     <div className="min-w-0 space-y-8 pb-28 sm:pb-10 lg:pb-8">
       <p className="rounded-xl border border-violet-500/20 bg-violet-950/20 px-4 py-3 text-sm text-slate-300">
-        Botón flotante, carrito y número en un solo lugar. Guardá con la barra inferior. Clave:{" "}
+        Botón flotante, carrito y número en un solo lugar. En las plantillas podés usar{" "}
+        <code className="font-mono text-violet-200/90">{"{{telefono}}"}</code>,{" "}
+        <code className="font-mono text-violet-200/90">{"{{retiro}}"}</code>, etc.: se rellenan desde{" "}
+        <Link href="/backoffice/contenido/contacto" className="font-medium text-violet-200 underline-offset-2 hover:underline">
+          Datos de contacto
+        </Link>
+        . Guardá con la barra inferior. Clave:{" "}
         <code className="rounded-md bg-white/[0.08] px-1.5 py-0.5 font-mono text-xs text-violet-200/90">
           {FLOATING_CONTACT_KEY}
         </code>
@@ -240,6 +279,57 @@ export function FloatingContactEditor({
             <span className="mt-1 block text-xs text-slate-500">
               El saludo rápido usa la plantilla «flotante»; el carrito tiene su propia plantilla más abajo.
             </span>
+          </span>
+        </label>
+      </section>
+
+      <section className={boEditorSection}>
+        <h2 className={boEditorH2}>Carrito: envío gratis</h2>
+        <p className="mt-2 max-w-2xl text-sm leading-relaxed text-slate-400">
+          Controla <strong className="font-medium text-slate-300">todos</strong> los avisos de envío gratis en la página
+          del carrito: encabezado, bloque bajo la lista de productos, fila «Envío» del resumen y texto en la barra fija
+          móvil. Es orientativo; el cierre real sigue por WhatsApp. Si lo desactivás, ninguno de esos textos aparece y el
+          envío queda en «A coordinar».
+        </p>
+        <label className="mt-5 flex cursor-pointer items-start gap-3 rounded-xl border border-white/[0.08] bg-white/[0.02] px-4 py-3">
+          <input
+            type="checkbox"
+            className="mt-1 size-4 shrink-0 rounded border-white/20 bg-black/40 text-violet-500 focus:ring-violet-500/40"
+            checked={data.cartFreeShippingEnabled}
+            onChange={(e) => setData((d) => ({ ...d, cartFreeShippingEnabled: e.target.checked }))}
+          />
+          <span>
+            <span className="font-medium text-white">Ofrecer envío gratis según umbral</span>
+            <span className="mt-1 block text-xs text-slate-500">
+              Mostrar progreso «te faltan X» y marcar envío en verde al alcanzar el mínimo.
+            </span>
+          </span>
+        </label>
+        <label className="mt-5 block">
+          <span className={labelClass}>Subtotal mínimo (USD, orientativo)</span>
+          <input
+            type="number"
+            inputMode="decimal"
+            min={0}
+            step={1}
+            disabled={!data.cartFreeShippingEnabled}
+            value={data.cartFreeShippingMinUsd}
+            onChange={(e) => {
+              const raw = e.target.value;
+              const n = parseFloat(raw);
+              setData((d) => ({
+                ...d,
+                cartFreeShippingMinUsd: Number.isFinite(n)
+                  ? Math.min(999_999, Math.max(0, n))
+                  : d.cartFreeShippingMinUsd,
+              }));
+            }}
+            className={`${inputClass} disabled:cursor-not-allowed disabled:opacity-45`}
+          />
+          <span className="mt-2 block text-xs text-slate-500">
+            Ej. <strong className="font-medium text-slate-400">800</strong> = gratis desde US$ 800 en el subtotal. Con{" "}
+            <strong className="font-medium text-slate-400">0</strong> se considera gratis en cuanto hay total en USD (no
+            aplica si todo es «a convenir»).
           </span>
         </label>
       </section>

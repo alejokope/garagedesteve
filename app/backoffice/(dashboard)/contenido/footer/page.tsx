@@ -28,8 +28,12 @@ export default async function BackofficeFooterContentPage() {
             Pie de página (footer)
           </h1>
           <p className="mt-2 max-w-2xl text-sm leading-relaxed text-slate-400">
-            Textos del pie, redes, columnas de enlaces, contacto y links legales. Se guarda en Supabase y el
-            sitio público lo lee en cada página. Clave:{" "}
+            Textos del pie, redes, columnas de enlaces y links legales. Los datos de contacto (direcciones, teléfono,
+            email, horarios) están en{" "}
+            <Link href="/backoffice/contenido/contacto" className="text-violet-300 hover:text-violet-200">
+              Datos de contacto
+            </Link>
+            . Se guarda en Supabase y el sitio público lo lee en cada página. Clave:{" "}
             <code className="rounded-md bg-white/[0.08] px-1.5 py-0.5 font-mono text-xs text-violet-200/90">
               {FOOTER_CONTENT_KEY}
             </code>

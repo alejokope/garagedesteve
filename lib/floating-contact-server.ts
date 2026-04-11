@@ -8,6 +8,7 @@ import {
   type FloatingContactPublic,
 } from "@/lib/floating-contact-schema";
 import { buildSellDeviceWhatsAppMessage } from "@/lib/sell-device-whatsapp";
+import { getSiteContact } from "@/lib/site-contact-server";
 import { whatsappUrl } from "@/lib/whatsapp-url";
 
 function hasSupabaseEnv(): boolean {
@@ -34,9 +35,9 @@ async function fetchFloatingPayload(): Promise<unknown | null> {
 }
 
 export async function getFloatingContactPublic(): Promise<FloatingContactPublic> {
-  const raw = await fetchFloatingPayload();
+  const [raw, siteContact] = await Promise.all([fetchFloatingPayload(), getSiteContact()]);
   const merged = mergeFloatingContactDefaults(raw);
-  return computeFloatingContactPublic(merged);
+  return computeFloatingContactPublic(merged, siteContact);
 }
 
 export async function getSellDeviceWhatsAppHrefServer(): Promise<string | null> {

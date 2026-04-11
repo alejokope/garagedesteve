@@ -382,62 +382,14 @@ export function FooterContentEditor({
       </section>
 
       <section className={boEditorSection}>
-        <h2 className={boEditorH2}>Contacto</h2>
-        <div className="mt-4 grid gap-4 sm:grid-cols-2">
-          <label className="block sm:col-span-2">
-            <span className={labelClass}>Dirección / retiro</span>
-            <textarea
-              value={data.contact.address}
-              onChange={(e) =>
-                setData((d) => ({
-                  ...d,
-                  contact: { ...d.contact, address: e.target.value },
-                }))
-              }
-              rows={2}
-              className={inputClass}
-            />
-          </label>
-          <label className="block">
-            <span className={labelClass}>Teléfono</span>
-            <input
-              value={data.contact.phone}
-              onChange={(e) =>
-                setData((d) => ({
-                  ...d,
-                  contact: { ...d.contact, phone: e.target.value },
-                }))
-              }
-              className={inputClass}
-            />
-          </label>
-          <label className="block">
-            <span className={labelClass}>Email</span>
-            <input
-              value={data.contact.email}
-              onChange={(e) =>
-                setData((d) => ({
-                  ...d,
-                  contact: { ...d.contact, email: e.target.value },
-                }))
-              }
-              className={inputClass}
-            />
-          </label>
-          <label className="block sm:col-span-2">
-            <span className={labelClass}>Horarios</span>
-            <input
-              value={data.contact.hours}
-              onChange={(e) =>
-                setData((d) => ({
-                  ...d,
-                  contact: { ...d.contact, hours: e.target.value },
-                }))
-              }
-              className={inputClass}
-            />
-          </label>
-        </div>
+        <h2 className={boEditorH2}>Contacto en el pie</h2>
+        <p className="mt-2 text-sm text-slate-500">
+          Dirección, teléfono, email y horarios se editan en{" "}
+          <a href="/backoffice/contenido/contacto" className="font-medium text-violet-300 hover:text-violet-200">
+            Contenido → Datos de contacto
+          </a>{" "}
+          (fuente única para el sitio público).
+        </p>
       </section>
 
       <section className={boEditorSection}>

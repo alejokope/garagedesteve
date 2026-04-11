@@ -1,22 +1,16 @@
 import Link from "next/link";
 
 import { getContentEntryAdmin } from "@/lib/backoffice/content-db";
-import {
-  FLOATING_CONTACT_KEY,
-  mergeFloatingContactDefaults,
-} from "@/lib/floating-contact-schema";
-
 import { getSiteContact } from "@/lib/site-contact-server";
+import { SITE_CONTACT_KEY } from "@/lib/site-contact-schema";
 
-import { FloatingContactEditor } from "./floating-contact-editor";
+import { SiteContactEditor } from "./site-contact-editor";
 
-export default async function BackofficeFloatingContactPage() {
-  let initial = mergeFloatingContactDefaults(null);
+export default async function BackofficeSiteContactPage() {
+  const initial = await getSiteContact();
   let revision = "default";
-  const siteContactPreview = await getSiteContact();
   try {
-    const row = await getContentEntryAdmin(FLOATING_CONTACT_KEY);
-    if (row?.payload) initial = mergeFloatingContactDefaults(row.payload);
+    const row = await getContentEntryAdmin(SITE_CONTACT_KEY);
     revision = row?.updated_at ?? "default";
   } catch {
     /* sin supabase */
@@ -28,11 +22,14 @@ export default async function BackofficeFloatingContactPage() {
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">Contenido</p>
           <h1 className="mt-1 font-display text-2xl font-semibold text-white sm:text-3xl">
-            Botones flotantes
+            Datos de contacto del sitio
           </h1>
           <p className="mt-2 max-w-2xl text-sm leading-relaxed text-slate-400">
-            Instagram arriba y WhatsApp abajo.             El número, las plantillas de WhatsApp y la promo de envío gratis del carrito viven en la base; el mismo
-            número y nombre se usan en fichas y formularios, con respaldo en variables de entorno si hace falta.
+            Oficinas, teléfono, email y horarios: una sola fuente para el footer público y textos relacionados. Clave:{" "}
+            <code className="rounded-md bg-white/[0.08] px-1.5 py-0.5 font-mono text-xs text-violet-200/90">
+              {SITE_CONTACT_KEY}
+            </code>
+            .
           </p>
         </div>
         <div className="flex flex-wrap gap-3">
@@ -49,11 +46,7 @@ export default async function BackofficeFloatingContactPage() {
           </Link>
         </div>
       </div>
-      <FloatingContactEditor
-        initial={initial}
-        revision={revision}
-        siteContactPreview={siteContactPreview}
-      />
+      <SiteContactEditor initial={initial} revision={revision} />
     </div>
   );
 }

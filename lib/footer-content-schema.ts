@@ -33,12 +33,6 @@ export const footerContentPayloadSchema = z.object({
   /** Cuatro columnas: [0][1] arriba a la derecha; [2] y [3] se listan bajo `supportColumnTitle`. */
   columns: z.array(footerColumnSchema).length(4),
   supportColumnTitle: z.string(),
-  contact: z.object({
-    address: z.string(),
-    phone: z.string(),
-    email: z.string(),
-    hours: z.string(),
-  }),
   legalLinks: z.array(footerNavLinkSchema).default([]),
 });
 
@@ -74,12 +68,6 @@ export function defaultFooterContentPayload(): FooterContentPayload {
     social: cloneSocialFromSiteConfig(),
     columns: cloneColumnsFromSiteConfig(),
     supportColumnTitle: "Soporte",
-    contact: {
-      address: siteConfig.contact.address,
-      phone: siteConfig.contact.phone,
-      email: siteConfig.contact.email,
-      hours: siteConfig.contact.hours,
-    },
     legalLinks: [
       { label: "Privacidad", href: "/#faq" },
       { label: "Términos", href: "/#faq" },
@@ -110,10 +98,6 @@ export function mergeFooterContentDefaults(partial: unknown): FooterContentPaylo
       ? z.array(footerNavLinkSchema).parse(legalRaw)
       : base.legalLinks;
 
-  const contactBase = base.contact;
-  const contactObj =
-    o.contact && typeof o.contact === "object" ? (o.contact as Record<string, unknown>) : {};
-
   try {
     return footerContentPayloadSchema.parse({
       ...base,
@@ -121,12 +105,6 @@ export function mergeFooterContentDefaults(partial: unknown): FooterContentPaylo
       columns,
       social,
       legalLinks,
-      contact: {
-        address: typeof contactObj.address === "string" ? contactObj.address : contactBase.address,
-        phone: typeof contactObj.phone === "string" ? contactObj.phone : contactBase.phone,
-        email: typeof contactObj.email === "string" ? contactObj.email : contactBase.email,
-        hours: typeof contactObj.hours === "string" ? contactObj.hours : contactBase.hours,
-      },
     });
   } catch {
     return base;

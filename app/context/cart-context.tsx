@@ -4,12 +4,18 @@ import {
   createContext,
   useCallback,
   useContext,
+  useEffect,
   useMemo,
   useReducer,
+  useRef,
   type ReactNode,
 } from "react";
 import { useShopFeedback } from "@/app/context/shop-feedback-context";
 import { cartLineUnitPrice } from "@/lib/cart-line";
+import {
+  loadCartFromLocalStorage,
+  saveCartToLocalStorage,
+} from "@/lib/cart-local-storage";
 import type { Product } from "@/lib/data";
 import { cartLineKey, type VariantSelections } from "@/lib/product-variants";
 import type { CartItem } from "@/lib/types";
@@ -20,7 +26,8 @@ type Action =
   | { type: "ADD"; product: Product; variantSelections?: VariantSelections }
   | { type: "REMOVE"; lineKey: string }
   | { type: "SET_QTY"; lineKey: string; qty: number }
-  | { type: "CLEAR" };
+  | { type: "CLEAR" }
+  | { type: "REPLACE"; items: CartItem[] };
 
 function reducer(state: State, action: Action): State {
   switch (action.type) {
@@ -66,6 +73,8 @@ function reducer(state: State, action: Action): State {
       };
     case "CLEAR":
       return { items: [] };
+    case "REPLACE":
+      return { items: action.items };
     default:
       return state;
   }
@@ -86,6 +95,23 @@ const CartContext = createContext<CartContextValue | null>(null);
 function CartProviderInner({ children }: { children: ReactNode }) {
   const { celebrateCart } = useShopFeedback();
   const [state, dispatch] = useReducer(reducer, { items: [] });
+  const skipNextPersist = useRef(false);
+
+  useEffect(() => {
+    const loaded = loadCartFromLocalStorage();
+    skipNextPersist.current = true;
+    if (loaded.length > 0) {
+      dispatch({ type: "REPLACE", items: loaded });
+    }
+  }, []);
+
+  useEffect(() => {
+    if (skipNextPersist.current) {
+      skipNextPersist.current = false;
+      return;
+    }
+    saveCartToLocalStorage(state.items);
+  }, [state.items]);
 
   const add = useCallback(
     (product: Product, variantSelections?: VariantSelections) => {

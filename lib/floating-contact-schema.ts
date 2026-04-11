@@ -20,7 +20,7 @@ export const DEFAULT_CART_MESSAGE_TEMPLATE = `Hola {{marca}}, ¿cómo están? �
 
 {{pedido}}{{nota}}
 
-¿Me confirman disponibilidad, retiro en oficina (Microcentro) y formas de pago? Si vieron otro precio, lo vemos y lo intentamos mejorar 🙂
+¿Me confirman disponibilidad, retiro en oficina ({{retiro}}) y formas de pago? Si vieron otro precio, lo vemos y lo intentamos mejorar 🙂
 
 Listado y links: {{linktree}}
 
@@ -31,16 +31,24 @@ export const floatingContactPayloadSchema = z.object({
   instagramUrl: z.string().max(500).default(""),
   /** Solo dígitos o formato libre; al guardar se normaliza. Vacío = usar variable de entorno si existe. */
   whatsappPhone: z.string().max(40).default(""),
-  /** Texto con variables {{marca}}, {{sitio}}, {{instagram}}, {{linktree}}, {{año}} */
+  /** Texto con variables {{marca}}, {{sitio}}, {{instagram}}, {{linktree}}, {{año}}, {{telefono}}, {{email}}, {{horario}}, {{retiro}}, {{direccion}} */
   fabMessageTemplate: z.string().min(1).max(2000).default(DEFAULT_FAB_MESSAGE_TEMPLATE),
   /**
    * Mensaje del carrito: mismas variables + {{pedido}} (ítems y total) y {{nota}} (nota del cliente o vacío).
+   * {{telefono}}, {{email}}, {{horario}}, {{retiro}} y {{direccion}} vienen de Contenido → Datos de contacto.
    */
   cartMessageTemplate: z.string().min(1).max(4000).default(DEFAULT_CART_MESSAGE_TEMPLATE),
   /** Nombre con el que te saludan en el mensaje y en otras pantallas del sitio. */
   brandName: z.string().max(120).default(""),
   showInstagramFab: z.boolean().default(true),
   showWhatsappFab: z.boolean().default(true),
+  /**
+   * Mostrar la promo de envío gratis en todo el carrito (pastilla arriba, aviso entre ítems y notas, resumen,
+   * barra fija móvil). Si está desactivado, en ningún lugar del carrito se muestra ese beneficio.
+   */
+  cartFreeShippingEnabled: z.boolean().default(true),
+  /** Subtotal mínimo en USD (orientativo) para la promo; 0 = siempre que haya total en USD. */
+  cartFreeShippingMinUsd: z.number().min(0).max(999_999).default(800),
 });
 
 export type FloatingContactPayload = z.infer<typeof floatingContactPayloadSchema>;
@@ -52,6 +60,14 @@ export type FloatingMessageTemplateVars = {
   instagram: string;
   linktree: string;
   año: string;
+  /** Datos de contacto del sitio (site.contact). */
+  telefono: string;
+  email: string;
+  horario: string;
+  /** Texto corto para “retiro en …” (sede o dirección). */
+  retiro: string;
+  /** Todas las oficinas en texto plano. */
+  direccion: string;
 };
 
 export type FloatingContactPublic = {
@@ -63,6 +79,8 @@ export type FloatingContactPublic = {
   showWhatsappFab: boolean;
   cartMessageTemplate: string;
   messageTemplateVars: FloatingMessageTemplateVars;
+  cartFreeShippingEnabled: boolean;
+  cartFreeShippingMinUsd: number;
 };
 
 export function defaultFloatingContactPayload(): FloatingContactPayload {
@@ -74,6 +92,8 @@ export function defaultFloatingContactPayload(): FloatingContactPayload {
     brandName: siteConfig.brandName,
     showInstagramFab: true,
     showWhatsappFab: true,
+    cartFreeShippingEnabled: true,
+    cartFreeShippingMinUsd: 800,
   });
 }
 
@@ -94,6 +114,16 @@ export function mergeFloatingContactDefaults(partial: unknown): FloatingContactP
       brandName: typeof o.brandName === "string" ? o.brandName : base.brandName,
       showInstagramFab: typeof o.showInstagramFab === "boolean" ? o.showInstagramFab : base.showInstagramFab,
       showWhatsappFab: typeof o.showWhatsappFab === "boolean" ? o.showWhatsappFab : base.showWhatsappFab,
+      cartFreeShippingEnabled:
+        typeof o.cartFreeShippingEnabled === "boolean"
+          ? o.cartFreeShippingEnabled
+          : base.cartFreeShippingEnabled,
+      cartFreeShippingMinUsd:
+        typeof o.cartFreeShippingMinUsd === "number" &&
+        Number.isFinite(o.cartFreeShippingMinUsd) &&
+        o.cartFreeShippingMinUsd >= 0
+          ? o.cartFreeShippingMinUsd
+          : base.cartFreeShippingMinUsd,
     });
   } catch {
     return base;

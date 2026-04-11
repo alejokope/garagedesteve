@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { getFooterContent } from "@/lib/footer-content-server";
+import { getSiteContact } from "@/lib/site-contact-server";
 import { siteConfig } from "@/lib/site-config";
 
 function SocialIcon({ icon }: { icon: string }) {
@@ -42,7 +43,7 @@ function SocialIcon({ icon }: { icon: string }) {
 }
 
 export async function SiteFooter() {
-  const footer = await getFooterContent();
+  const [footer, contact] = await Promise.all([getFooterContent(), getSiteContact()]);
   const col0 = footer.columns[0]!;
   const col1 = footer.columns[1]!;
   const col2 = footer.columns[2]!;
@@ -147,21 +148,31 @@ export async function SiteFooter() {
           <div>
             <h3 className="text-sm font-semibold text-neutral-950">Contacto</h3>
             <ul className="mt-5 space-y-4 text-sm text-neutral-600">
-              <li className="flex gap-2">
-                <span className="shrink-0 text-neutral-400" aria-hidden>
-                  📍
-                </span>
-                <span>{footer.contact.address}</span>
-              </li>
+              {contact.offices.map((office, idx) => (
+                <li key={idx} className="flex gap-2">
+                  <span className="shrink-0 text-neutral-400" aria-hidden>
+                    📍
+                  </span>
+                  <span>
+                    {office.name ? (
+                      <>
+                        <span className="font-medium text-neutral-800">{office.name}</span>
+                        <br />
+                      </>
+                    ) : null}
+                    {office.address}
+                  </span>
+                </li>
+              ))}
               <li className="flex gap-2">
                 <span className="shrink-0 text-neutral-400" aria-hidden>
                   📞
                 </span>
                 <a
-                  href={`tel:${footer.contact.phone.replace(/\s/g, "")}`}
+                  href={`tel:${contact.phone.replace(/\s/g, "")}`}
                   className="transition hover:text-neutral-950"
                 >
-                  {footer.contact.phone}
+                  {contact.phone}
                 </a>
               </li>
               <li className="flex gap-2">
@@ -169,17 +180,17 @@ export async function SiteFooter() {
                   ✉️
                 </span>
                 <a
-                  href={`mailto:${footer.contact.email}`}
+                  href={`mailto:${contact.email}`}
                   className="transition hover:text-neutral-950"
                 >
-                  {footer.contact.email}
+                  {contact.email}
                 </a>
               </li>
               <li className="flex gap-2">
                 <span className="shrink-0 text-neutral-400" aria-hidden>
                   🕐
                 </span>
-                <span>{footer.contact.hours}</span>
+                <span>{contact.hours}</span>
               </li>
             </ul>
           </div>

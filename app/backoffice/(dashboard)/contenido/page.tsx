@@ -18,12 +18,17 @@ import {
 
 import { FOOTER_CONTENT_KEY } from "@/lib/footer-content-schema";
 import { FLOATING_CONTACT_KEY } from "@/lib/floating-contact-schema";
+import { SITE_CONTACT_KEY } from "@/lib/site-contact-schema";
 
 import { deleteContentEntryAction } from "./actions";
 import { SiteContentHub } from "./site-content-hub";
 
 const HOME_KEY_SET = new Set<string>(HOME_CONTENT_KEYS);
-const HIDDEN_IN_OTHER_TABLE = new Set<string>([FOOTER_CONTENT_KEY, FLOATING_CONTACT_KEY]);
+const HIDDEN_IN_OTHER_TABLE = new Set<string>([
+  FOOTER_CONTENT_KEY,
+  FLOATING_CONTACT_KEY,
+  SITE_CONTACT_KEY,
+]);
 
 export default async function BackofficeContenidoPage() {
   let rows: Awaited<ReturnType<typeof listContentEntriesAdmin>> = [];
@@ -82,7 +87,7 @@ export default async function BackofficeContenidoPage() {
         </Link>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         <div className="rounded-2xl border border-violet-500/25 bg-violet-950/20 p-4 sm:p-5">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
@@ -90,7 +95,7 @@ export default async function BackofficeContenidoPage() {
                 Sitio completo
               </p>
               <p className="mt-1 text-sm text-slate-300">
-                Pie de página: textos, redes, enlaces y contacto que se ven en todas las páginas.
+                Pie de página: textos, redes, columnas de enlaces y legales (sin datos de contacto).
               </p>
             </div>
             <Link
@@ -101,14 +106,32 @@ export default async function BackofficeContenidoPage() {
             </Link>
           </div>
         </div>
-        <div className="rounded-2xl border border-fuchsia-500/25 bg-gradient-to-br from-fuchsia-950/30 to-violet-950/20 p-4 sm:p-5 ring-1 ring-fuchsia-500/20">
+        <div className="rounded-2xl border border-cyan-500/25 bg-cyan-950/15 p-4 sm:p-5 ring-1 ring-cyan-500/15">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-wide text-cyan-200/90">
+                Contacto público
+              </p>
+              <p className="mt-1 text-sm text-slate-300">
+                Oficinas, teléfono, email y horario: fuente única para el footer, carrito y más.
+              </p>
+            </div>
+            <Link
+              href="/backoffice/contenido/contacto"
+              className="inline-flex shrink-0 items-center justify-center rounded-xl bg-white/[0.1] px-4 py-2.5 text-sm font-semibold text-white ring-1 ring-white/15 transition hover:bg-white/[0.14]"
+            >
+              Editar
+            </Link>
+          </div>
+        </div>
+        <div className="rounded-2xl border border-fuchsia-500/25 bg-gradient-to-br from-fuchsia-950/30 to-violet-950/20 p-4 sm:p-5 ring-1 ring-fuchsia-500/20 sm:col-span-2 lg:col-span-1">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <p className="text-xs font-semibold uppercase tracking-wide text-fuchsia-200/90">
                 Contacto rápido
               </p>
               <p className="mt-1 text-sm text-slate-300">
-                Botones flotantes, número en base de datos, plantilla del globo y plantilla aparte para el carrito.
+                Botones flotantes, número, plantillas de WhatsApp y umbral de envío gratis del carrito.
               </p>
             </div>
             <Link
