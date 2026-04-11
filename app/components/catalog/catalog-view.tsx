@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { startTransition, useCallback, useEffect, useMemo, useState } from "react";
 import { ProductFavoriteButton } from "@/app/components/product-favorite-button";
 import { useCart } from "@/app/context/cart-context";
 import { useAckFlash } from "@/app/hooks/use-ack-flash";
@@ -29,6 +29,13 @@ import { categories } from "@/lib/data";
 import { useCatalogProducts } from "@/app/context/catalog-products-context";
 import { SiteRouteLoading } from "@/app/components/site/site-route-loading";
 import { formatMoneyUsd } from "@/lib/format";
+
+/** Opciones de orden (misma lista que en desktop). */
+const CATALOG_SORT_OPTIONS = [
+  ["relevancia", "Relevancia"],
+  ["precio-asc", "Precio: Menor a Mayor"],
+  ["novedad", "Novedad"],
+] as const satisfies ReadonlyArray<readonly [SortKey, string]>;
 
 function parseList(s: string | null): string[] {
   if (!s?.trim()) return [];
@@ -262,6 +269,8 @@ export function CatalogView() {
     () => parseList(searchParams.get("condicion")) as ProductStockCondition[],
   );
   const [precioMax, setPrecioMax] = useState<number | null>(null);
+  const [filtersOpen, setFiltersOpen] = useState(false);
+  const [sortSheetOpen, setSortSheetOpen] = useState(false);
 
   const validBrandFilterIds = useMemo(
     () => new Set(brandFilterOptions.map((o) => o.id)),
@@ -299,15 +308,17 @@ export function CatalogView() {
 
   useEffect(() => {
     if (status !== "ready") return;
-    setPrecioMax((prev) => {
-      const clamp = (v: number) => Math.min(maxCatalogPrice, Math.max(minCatalogPrice, v));
-      if (prev === null) {
-        const raw = searchParams.get("max");
-        const parsed = raw ? parseInt(raw, 10) : NaN;
-        if (!Number.isNaN(parsed) && parsed > 0) return clamp(parsed);
-        return maxCatalogPrice;
-      }
-      return clamp(prev);
+    startTransition(() => {
+      setPrecioMax((prev) => {
+        const clamp = (v: number) => Math.min(maxCatalogPrice, Math.max(minCatalogPrice, v));
+        if (prev === null) {
+          const raw = searchParams.get("max");
+          const parsed = raw ? parseInt(raw, 10) : NaN;
+          if (!Number.isNaN(parsed) && parsed > 0) return clamp(parsed);
+          return maxCatalogPrice;
+        }
+        return clamp(prev);
+      });
     });
   }, [status, minCatalogPrice, maxCatalogPrice, searchParams]);
 
@@ -316,6 +327,33 @@ export function CatalogView() {
     maxCatalogPrice,
     Math.max(minCatalogPrice, effectivePrecioMax),
   );
+
+  const activeFilterCount = useMemo(() => {
+    let n =
+      marcas.length + categorias.length + estados.length + stockConditions.length;
+    if (
+      maxCatalogPrice > minCatalogPrice &&
+      clampedPrecioMax < maxCatalogPrice
+    ) {
+      n += 1;
+    }
+    return n;
+  }, [
+    marcas.length,
+    categorias.length,
+    estados.length,
+    stockConditions.length,
+    clampedPrecioMax,
+    maxCatalogPrice,
+    minCatalogPrice,
+  ]);
+
+  const currentSortLabel = useMemo(() => {
+    const row = CATALOG_SORT_OPTIONS.find(([key]) =>
+      key === "relevancia" ? sort === "relevancia" : sort === key,
+    );
+    return row?.[1] ?? "Relevancia";
+  }, [sort]);
 
   const filtered = useMemo(() => {
     const f = filterEnriched(enriched, {
@@ -387,6 +425,26 @@ export function CatalogView() {
     setPrecioMax(maxCatalogPrice);
   }, [maxCatalogPrice]);
 
+  useEffect(() => {
+    if (!filtersOpen && !sortSheetOpen) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== "Escape") return;
+      setFiltersOpen(false);
+      setSortSheetOpen(false);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [filtersOpen, sortSheetOpen]);
+
+  useEffect(() => {
+    if (!filtersOpen && !sortSheetOpen) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, [filtersOpen, sortSheetOpen]);
+
   if (status === "loading" || status === "idle") {
     return (
       <div id="catalogo" className="scroll-mt-24 bg-[#f3f4f6] px-4 py-10 sm:px-8">
@@ -412,11 +470,146 @@ export function CatalogView() {
     );
   }
 
+  const filterSections = (
+    <div className="space-y-6">
+      <div>
+        <p className="text-[11px] font-bold uppercase tracking-wider text-neutral-500">Marca</p>
+        <p className="mt-1 text-[11px] leading-snug text-neutral-400">
+          Se generan desde el campo marca de cada producto. “Otras marcas” = sin marca definida.
+        </p>
+        <div className="mt-2 flex flex-wrap gap-2">
+          {brandFilterOptions.length === 0 ? (
+            <span className="text-xs text-neutral-400">No hay marcas en el catálogo.</span>
+          ) : (
+            brandFilterOptions.map((m) => {
+              const on = marcas.includes(m.id);
+              return (
+                <button
+                  key={m.id}
+                  type="button"
+                  onClick={() => toggleMarcas(m.id)}
+                  className={`rounded-lg border px-3 py-2 text-xs font-medium transition ${
+                    on
+                      ? "border-[var(--brand-from)] bg-[var(--brand-from)]/10 text-[var(--brand-from)]"
+                      : "border-neutral-200 bg-neutral-50 text-neutral-600 hover:border-neutral-300"
+                  }`}
+                >
+                  {m.label}
+                </button>
+              );
+            })
+          )}
+        </div>
+      </div>
+
+      <div>
+        <p className="text-[11px] font-bold uppercase tracking-wider text-neutral-500">Categoría</p>
+        <div className="mt-2 flex flex-col gap-2">
+          {catalogCategoryOptions.map((t) => {
+            const on = categorias.includes(t.id);
+            return (
+              <button
+                key={t.id}
+                type="button"
+                onClick={() => toggleCategoria(t.id)}
+                className={`rounded-lg border px-3 py-2 text-left text-xs font-medium transition ${
+                  on
+                    ? "border-[var(--brand-from)] bg-[var(--brand-from)]/10 text-[var(--brand-from)]"
+                    : "border-neutral-200 bg-neutral-50 text-neutral-600 hover:border-neutral-300"
+                }`}
+              >
+                {t.label}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      <div>
+        <p className="text-[11px] font-bold uppercase tracking-wider text-neutral-500">Rango de precio</p>
+        <div className="mt-3">
+          <input
+            type="range"
+            min={minCatalogPrice}
+            max={maxCatalogPrice}
+            step={sliderStep}
+            value={clampedPrecioMax}
+            disabled={minCatalogPrice >= maxCatalogPrice}
+            onChange={(e) => {
+              setPrecioMax(parseInt(e.target.value, 10));
+              setPage(1);
+            }}
+            className="h-2 w-full cursor-pointer accent-[var(--brand-from)] disabled:cursor-not-allowed disabled:opacity-50"
+            aria-valuemin={minCatalogPrice}
+            aria-valuemax={maxCatalogPrice}
+            aria-valuenow={clampedPrecioMax}
+          />
+          <div className="mt-2 flex justify-between gap-2 text-xs text-neutral-500">
+            <span className="min-w-0 shrink truncate">{formatMoneyUsd(minCatalogPrice)}</span>
+            <span className="shrink-0 text-center font-semibold text-neutral-800">
+              Hasta {formatMoneyUsd(clampedPrecioMax)}
+            </span>
+            <span className="min-w-0 shrink truncate text-right">{formatMoneyUsd(maxCatalogPrice)}</span>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <p className="text-[11px] font-bold uppercase tracking-wider text-neutral-500">Condición</p>
+        <div className="mt-2 flex flex-wrap gap-2">
+          {shopStockConditions.map((c) => {
+            const on = stockConditions.includes(c.id);
+            return (
+              <button
+                key={c.id}
+                type="button"
+                onClick={() => toggleStockCondition(c.id)}
+                className={`rounded-lg border px-3 py-2 text-xs font-medium transition ${
+                  on
+                    ? "border-[var(--brand-from)] bg-[var(--brand-from)]/10 text-[var(--brand-from)]"
+                    : "border-neutral-200 bg-neutral-50 text-neutral-600 hover:border-neutral-300"
+                }`}
+              >
+                {c.label}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      <div>
+        <p className="text-[11px] font-bold uppercase tracking-wider text-neutral-500">Etiqueta</p>
+        <p className="mt-1 text-[11px] text-neutral-400">
+          Destacados en catálogo (oferta, más vendido, etc.)
+        </p>
+        <div className="mt-2 flex flex-wrap gap-2">
+          {shopEstados.map((e) => {
+            const on = estados.includes(e.id);
+            return (
+              <button
+                key={e.id}
+                type="button"
+                onClick={() => toggleEstados(e.id)}
+                className={`rounded-lg border px-3 py-2 text-xs font-medium transition ${
+                  on
+                    ? "border-[var(--brand-from)] bg-[var(--brand-from)]/10 text-[var(--brand-from)]"
+                    : "border-neutral-200 bg-neutral-50 text-neutral-600 hover:border-neutral-300"
+                }`}
+              >
+                {e.label}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+    </div>
+  );
+
   return (
     <div id="catalogo" className="scroll-mt-24 bg-[#f3f4f6] pb-16 pt-8 sm:pb-20 sm:pt-10">
       <div className="mx-auto max-w-6xl px-4 sm:px-8">
         {/* Barra búsqueda + orden */}
-        <div className="flex flex-col gap-4 rounded-2xl border border-[var(--border)] bg-white p-4 shadow-sm sm:flex-row sm:items-center sm:justify-between sm:p-5">
+        <div className="flex flex-col gap-4 rounded-2xl border border-[var(--border)] bg-white p-4 shadow-sm lg:flex-row lg:items-center lg:justify-between lg:p-5">
           <div className="relative min-w-0 flex-1">
             <svg
               className="pointer-events-none absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-neutral-400"
@@ -439,14 +632,8 @@ export function CatalogView() {
               className="h-12 w-full rounded-xl border border-neutral-200 bg-neutral-50 pl-11 pr-4 text-sm text-neutral-900 placeholder:text-neutral-400 focus:border-[var(--brand-from)] focus:outline-none focus:ring-2 focus:ring-[var(--brand-from)]/20"
             />
           </div>
-          <div className="flex flex-wrap gap-2 sm:justify-end">
-            {(
-              [
-                ["relevancia", "Relevancia"],
-                ["precio-asc", "Precio: Menor a Mayor"],
-                ["novedad", "Novedad"],
-              ] as const
-            ).map(([key, label]) => {
+          <div className="hidden flex-wrap gap-2 lg:flex lg:justify-end">
+            {CATALOG_SORT_OPTIONS.map(([key, label]) => {
               const active =
                 key === "relevancia"
                   ? sort === "relevancia"
@@ -472,14 +659,112 @@ export function CatalogView() {
           </div>
         </div>
 
+        {/* Móvil / tablet: barra única (misma línea visual que las cards del catálogo) */}
+        <div className="mt-3 rounded-2xl border border-[var(--border)] bg-white p-1.5 shadow-[0_1px_3px_rgba(15,23,42,0.06)] lg:hidden">
+          <div className="flex flex-col gap-1.5 sm:flex-row sm:items-stretch">
+            <button
+              type="button"
+              onClick={() => {
+                setFiltersOpen(false);
+                setSortSheetOpen(true);
+              }}
+              className="group flex min-h-[2.75rem] min-w-0 flex-1 items-center justify-between gap-3 rounded-xl bg-neutral-100/90 px-3.5 py-2 text-left text-neutral-900 transition hover:bg-neutral-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-from)]/20 focus-visible:ring-offset-2 sm:max-w-[13.5rem] sm:px-4"
+            >
+              <span className="flex min-w-0 items-center gap-3">
+                <svg
+                  className="h-5 w-5 shrink-0 text-neutral-500"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={1.65}
+                  stroke="currentColor"
+                  aria-hidden
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M7 4v8m0 0l2.5-2.5M7 12l-2.5-2.5M17 20v-8m0 0l2.5 2.5M17 12l-2.5 2.5"
+                  />
+                </svg>
+                <span className="min-w-0 text-left">
+                  <span className="block text-[10px] font-semibold uppercase tracking-[0.14em] text-neutral-400">
+                    Ordenar
+                  </span>
+                  <span className="line-clamp-1 font-display text-[15px] font-semibold leading-tight tracking-tight text-neutral-900">
+                    {currentSortLabel}
+                  </span>
+                </span>
+              </span>
+              <svg
+                className="h-5 w-5 shrink-0 text-neutral-400 transition group-hover:text-neutral-600"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={2}
+                stroke="currentColor"
+                aria-hidden
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+              </svg>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                setSortSheetOpen(false);
+                setFiltersOpen(true);
+              }}
+              className="group flex min-h-[2.75rem] min-w-0 flex-1 items-center justify-between gap-3 rounded-xl bg-neutral-950 px-3.5 py-2 text-left text-white shadow-sm transition hover:bg-neutral-800 active:scale-[0.99] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-950 focus-visible:ring-offset-2 sm:px-4"
+            >
+              <span className="flex min-w-0 items-center gap-3">
+                <svg
+                  className="h-5 w-5 shrink-0 text-white/90"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={1.65}
+                  stroke="currentColor"
+                  aria-hidden
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M12 3c2.755 0 5.455.232 8.083.678.533.09.917.556.917 1.096v1.044a2.25 2.25 0 01-.659 1.591l-5.432 5.432a2.25 2.25 0 00-.659 1.591v2.927a2.25 2.25 0 01-1.244 2.013L9.75 21v-6.568a2.25 2.25 0 00-.659-1.591L3.659 7.409A2.25 2.25 0 013 5.818V4.774c0-.54.384-1.006.917-1.096A48.32 48.32 0 0112 3z"
+                  />
+                </svg>
+                <span className="min-w-0">
+                  <span className="block text-[10px] font-semibold uppercase tracking-[0.14em] text-white/55">
+                    Refinar
+                  </span>
+                  <span className="font-display text-[15px] font-semibold leading-tight tracking-tight text-white">
+                    Filtros
+                  </span>
+                </span>
+              </span>
+              <span className="flex shrink-0 items-center gap-2">
+                {activeFilterCount > 0 ? (
+                  <span className="rounded-md bg-white px-2 py-1 text-center text-[11px] font-bold tabular-nums leading-none text-neutral-950">
+                    {activeFilterCount}
+                  </span>
+                ) : null}
+                <svg
+                  className="h-5 w-5 text-white/45 transition group-hover:text-white/70"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={2}
+                  stroke="currentColor"
+                  aria-hidden
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+                </svg>
+              </span>
+            </button>
+          </div>
+        </div>
+
         <div className="mt-8 flex flex-col gap-8 lg:flex-row lg:gap-10">
-          {/* Sidebar filtros */}
-          <aside className="w-full shrink-0 lg:w-[280px]">
+          {/* Sidebar filtros — solo desktop */}
+          <aside className="hidden w-full shrink-0 lg:block lg:w-[280px]">
             <div className="rounded-2xl border border-[var(--border)] bg-white p-5 shadow-sm">
               <div className="flex items-center justify-between border-b border-[var(--border)] pb-4">
-                <h2 className="font-display text-base font-semibold text-neutral-900">
-                  Filtros
-                </h2>
+                <h2 className="font-display text-base font-semibold text-neutral-900">Filtros</h2>
                 <button
                   type="button"
                   onClick={clearFilters}
@@ -488,147 +773,7 @@ export function CatalogView() {
                   Limpiar
                 </button>
               </div>
-
-              <div className="mt-5">
-                <p className="text-[11px] font-bold uppercase tracking-wider text-neutral-500">
-                  Marca
-                </p>
-                <p className="mt-1 text-[11px] leading-snug text-neutral-400">
-                  Se generan desde el campo marca de cada producto. “Otras marcas” = sin marca definida.
-                </p>
-                <div className="mt-2 flex flex-wrap gap-2">
-                  {brandFilterOptions.length === 0 ? (
-                    <span className="text-xs text-neutral-400">No hay marcas en el catálogo.</span>
-                  ) : (
-                    brandFilterOptions.map((m) => {
-                      const on = marcas.includes(m.id);
-                      return (
-                        <button
-                          key={m.id}
-                          type="button"
-                          onClick={() => toggleMarcas(m.id)}
-                          className={`rounded-lg border px-3 py-2 text-xs font-medium transition ${
-                            on
-                              ? "border-[var(--brand-from)] bg-[var(--brand-from)]/10 text-[var(--brand-from)]"
-                              : "border-neutral-200 bg-neutral-50 text-neutral-600 hover:border-neutral-300"
-                          }`}
-                        >
-                          {m.label}
-                        </button>
-                      );
-                    })
-                  )}
-                </div>
-              </div>
-
-              <div className="mt-6">
-                <p className="text-[11px] font-bold uppercase tracking-wider text-neutral-500">
-                  Categoría
-                </p>
-                <div className="mt-2 flex flex-col gap-2">
-                  {catalogCategoryOptions.map((t) => {
-                    const on = categorias.includes(t.id);
-                    return (
-                      <button
-                        key={t.id}
-                        type="button"
-                        onClick={() => toggleCategoria(t.id)}
-                        className={`rounded-lg border px-3 py-2 text-left text-xs font-medium transition ${
-                          on
-                            ? "border-[var(--brand-from)] bg-[var(--brand-from)]/10 text-[var(--brand-from)]"
-                            : "border-neutral-200 bg-neutral-50 text-neutral-600 hover:border-neutral-300"
-                        }`}
-                      >
-                        {t.label}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-
-              <div className="mt-6">
-                <p className="text-[11px] font-bold uppercase tracking-wider text-neutral-500">
-                  Rango de precio
-                </p>
-                <div className="mt-3">
-                  <input
-                    type="range"
-                    min={minCatalogPrice}
-                    max={maxCatalogPrice}
-                    step={sliderStep}
-                    value={clampedPrecioMax}
-                    disabled={minCatalogPrice >= maxCatalogPrice}
-                    onChange={(e) => {
-                      setPrecioMax(parseInt(e.target.value, 10));
-                      setPage(1);
-                    }}
-                    className="h-2 w-full cursor-pointer accent-[var(--brand-from)] disabled:cursor-not-allowed disabled:opacity-50"
-                    aria-valuemin={minCatalogPrice}
-                    aria-valuemax={maxCatalogPrice}
-                    aria-valuenow={clampedPrecioMax}
-                  />
-                  <div className="mt-2 flex justify-between gap-2 text-xs text-neutral-500">
-                    <span className="min-w-0 shrink truncate">{formatMoneyUsd(minCatalogPrice)}</span>
-                    <span className="shrink-0 text-center font-semibold text-neutral-800">
-                      Hasta {formatMoneyUsd(clampedPrecioMax)}
-                    </span>
-                    <span className="min-w-0 shrink truncate text-right">{formatMoneyUsd(maxCatalogPrice)}</span>
-                  </div>
-                </div>
-              </div>
-
-              <div className="mt-6">
-                <p className="text-[11px] font-bold uppercase tracking-wider text-neutral-500">
-                  Condición
-                </p>
-                <div className="mt-2 flex flex-wrap gap-2">
-                  {shopStockConditions.map((c) => {
-                    const on = stockConditions.includes(c.id);
-                    return (
-                      <button
-                        key={c.id}
-                        type="button"
-                        onClick={() => toggleStockCondition(c.id)}
-                        className={`rounded-lg border px-3 py-2 text-xs font-medium transition ${
-                          on
-                            ? "border-[var(--brand-from)] bg-[var(--brand-from)]/10 text-[var(--brand-from)]"
-                            : "border-neutral-200 bg-neutral-50 text-neutral-600 hover:border-neutral-300"
-                        }`}
-                      >
-                        {c.label}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-
-              <div className="mt-6">
-                <p className="text-[11px] font-bold uppercase tracking-wider text-neutral-500">
-                  Etiqueta
-                </p>
-                <p className="mt-1 text-[11px] text-neutral-400">
-                  Destacados en catálogo (oferta, más vendido, etc.)
-                </p>
-                <div className="mt-2 flex flex-wrap gap-2">
-                  {shopEstados.map((e) => {
-                    const on = estados.includes(e.id);
-                    return (
-                      <button
-                        key={e.id}
-                        type="button"
-                        onClick={() => toggleEstados(e.id)}
-                        className={`rounded-lg border px-3 py-2 text-xs font-medium transition ${
-                          on
-                            ? "border-[var(--brand-from)] bg-[var(--brand-from)]/10 text-[var(--brand-from)]"
-                            : "border-neutral-200 bg-neutral-50 text-neutral-600 hover:border-neutral-300"
-                        }`}
-                      >
-                        {e.label}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
+              <div className="mt-5">{filterSections}</div>
             </div>
           </aside>
 
@@ -665,6 +810,148 @@ export function CatalogView() {
           </div>
         </div>
       </div>
+
+      {filtersOpen || sortSheetOpen ? (
+        <button
+          type="button"
+          className="fixed inset-0 z-[90] cursor-pointer bg-black/35 backdrop-blur-[1px] lg:hidden"
+          aria-label="Cerrar panel"
+          onClick={() => {
+            setFiltersOpen(false);
+            setSortSheetOpen(false);
+          }}
+        />
+      ) : null}
+
+      {sortSheetOpen ? (
+        <div
+          className="fixed bottom-0 left-0 right-0 z-[95] flex max-h-[min(55dvh,420px)] flex-col rounded-t-2xl border border-[var(--border)] border-b-0 bg-white shadow-[0_-12px_48px_-12px_rgba(0,0,0,0.18)] lg:hidden"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="catalog-sort-sheet-title"
+        >
+          <div className="flex shrink-0 items-center justify-between gap-3 border-b border-[var(--border)] px-4 py-3">
+            <h2
+              id="catalog-sort-sheet-title"
+              className="font-display text-base font-semibold text-neutral-900"
+            >
+              Ordenar por
+            </h2>
+            <button
+              type="button"
+              onClick={() => setSortSheetOpen(false)}
+              className="rounded-xl p-2.5 text-neutral-500 transition hover:bg-neutral-100 hover:text-neutral-800"
+              aria-label="Cerrar ordenar"
+            >
+              <svg
+                className="h-5 w-5"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={1.75}
+                stroke="currentColor"
+                aria-hidden
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+          <ul className="flex flex-col gap-1 px-3 py-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]" role="listbox">
+            {CATALOG_SORT_OPTIONS.map(([key, label]) => {
+              const selected =
+                key === "relevancia" ? sort === "relevancia" : sort === key;
+              return (
+                <li key={key}>
+                  <button
+                    type="button"
+                    role="option"
+                    aria-selected={selected}
+                    onClick={() => {
+                      setSort(key === "relevancia" ? "relevancia" : key);
+                      setPage(1);
+                      setSortSheetOpen(false);
+                    }}
+                    className={`flex w-full items-center justify-between gap-3 rounded-xl px-3 py-3.5 text-left text-sm font-medium transition ${
+                      selected
+                        ? "bg-neutral-950 text-white"
+                        : "bg-neutral-50 text-neutral-800 hover:bg-neutral-100"
+                    }`}
+                  >
+                    <span className={selected ? "font-display font-semibold" : ""}>{label}</span>
+                    {selected ? (
+                      <svg
+                        className="h-5 w-5 shrink-0 text-white"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        strokeWidth={2.25}
+                        stroke="currentColor"
+                        aria-hidden
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                      </svg>
+                    ) : null}
+                  </button>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+      ) : null}
+
+      {filtersOpen ? (
+        <div
+          className="fixed bottom-0 left-0 right-0 z-[95] flex max-h-[min(90dvh,720px)] flex-col rounded-t-2xl border border-[var(--border)] border-b-0 bg-white shadow-[0_-12px_48px_-12px_rgba(0,0,0,0.18)] lg:hidden"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="catalog-filters-sheet-title"
+        >
+            <div className="flex shrink-0 items-center gap-3 border-b border-[var(--border)] px-4 py-3">
+              <div className="min-w-0 flex-1">
+                <h2
+                  id="catalog-filters-sheet-title"
+                  className="font-display text-base font-semibold text-neutral-900"
+                >
+                  Filtros
+                </h2>
+                <button
+                  type="button"
+                  onClick={clearFilters}
+                  className="mt-0.5 text-left text-xs font-semibold text-[var(--brand-from)] hover:underline"
+                >
+                  Limpiar todo
+                </button>
+              </div>
+              <button
+                type="button"
+                onClick={() => setFiltersOpen(false)}
+                className="rounded-xl p-2.5 text-neutral-500 transition hover:bg-neutral-100 hover:text-neutral-800"
+                aria-label="Cerrar filtros"
+              >
+                <svg
+                  className="h-5 w-5"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={1.75}
+                  stroke="currentColor"
+                  aria-hidden
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 py-4">
+              {filterSections}
+            </div>
+            <div className="shrink-0 border-t border-[var(--border)] bg-white px-4 py-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
+              <button
+                type="button"
+                onClick={() => setFiltersOpen(false)}
+                className="h-12 w-full rounded-xl bg-neutral-950 text-sm font-semibold text-white transition hover:opacity-95"
+              >
+                Ver {filtered.length} {filtered.length === 1 ? "producto" : "productos"}
+              </button>
+            </div>
+          </div>
+      ) : null}
     </div>
   );
 }
