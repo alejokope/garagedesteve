@@ -17,7 +17,8 @@ function sameDestination(href: string, pathname: string, search: string): boolea
 }
 
 /**
- * Barra fina bajo el header al navegar: feedback inmediato al clic (antes de que termine el RSC).
+ * Barra fina bajo el header al navegar: feedback al clic real hacia otra ruta (evita `pointerdown`
+ * sin navegación: arrastre, Cmd/Ctrl+clic a pestaña nueva, etc.).
  */
 export function SiteNavigationProgress() {
   const pathname = usePathname();
@@ -36,16 +37,19 @@ export function SiteNavigationProgress() {
 
   useEffect(() => {
     if (!active) return;
-    const max = window.setTimeout(() => setActive(false), 14_000);
+    const max = window.setTimeout(() => setActive(false), 8_000);
     return () => window.clearTimeout(max);
   }, [active]);
 
   useEffect(() => {
-    const onPointerDown = (e: PointerEvent) => {
+    const onClick = (e: MouseEvent) => {
       if (e.button !== 0) return;
+      if (e.defaultPrevented) return;
+      if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
       const el = e.target as HTMLElement | null;
       const a = el?.closest?.("a[href]") as HTMLAnchorElement | null;
       if (!a) return;
+      if (a.hasAttribute("download")) return;
       if (a.target && a.target !== "" && a.target !== "_self") return;
       const href = a.getAttribute("href");
       if (!href || href.startsWith("#")) return;
@@ -54,8 +58,8 @@ export function SiteNavigationProgress() {
       setActive(true);
     };
 
-    document.addEventListener("pointerdown", onPointerDown, true);
-    return () => document.removeEventListener("pointerdown", onPointerDown, true);
+    document.addEventListener("click", onClick, true);
+    return () => document.removeEventListener("click", onClick, true);
   }, [pathname, search]);
 
   if (!active) return null;
