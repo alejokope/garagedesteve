@@ -29,6 +29,13 @@ export const HOME_CONTENT_KEYS = [
 
 export type HomeContentKey = (typeof HOME_CONTENT_KEYS)[number];
 
+/** Claves de la home editables en Contenido → Página de inicio (sin testimonios). */
+export type HomeContentAdminKey = Exclude<HomeContentKey, "home.testimonials">;
+
+export const HOME_CONTENT_ADMIN_KEYS: HomeContentAdminKey[] = HOME_CONTENT_KEYS.filter(
+  (k): k is HomeContentAdminKey => k !== "home.testimonials",
+);
+
 /** `visible === false` en el payload de content_entries oculta el bloque en la home. */
 export function mergeHomeModuleVisible(payload: unknown): boolean {
   if (!payload || typeof payload !== "object") return true;

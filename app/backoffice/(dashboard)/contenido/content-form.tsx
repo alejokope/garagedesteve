@@ -100,7 +100,7 @@ export function ContentForm({
           {mode === "create" ? (
             <label className="block">
               <span className="mb-1.5 block text-xs font-medium uppercase tracking-wide text-slate-500">
-                Clave única (ej. home.testimonials)
+                Clave única (ej. home.faq)
               </span>
               <input
                 name="key"

@@ -1,7 +1,7 @@
-import type { HomeContentKey } from "@/lib/home-public-content";
+import type { HomeContentAdminKey } from "@/lib/home-public-content";
 
 export const SITE_HOME_SECTION_META: Record<
-  HomeContentKey,
+  HomeContentAdminKey,
   { anchorId: string; title: string; description: string; dbLabel: string }
 > = {
   "home.hero": {
@@ -37,12 +37,6 @@ export const SITE_HOME_SECTION_META: Record<
     title: "“Por qué elegirnos”",
     description: "Título de la sección y los motivos en tarjetas (podés marcar uno como destacado).",
     dbLabel: "Inicio — Por qué elegirnos",
-  },
-  "home.testimonials": {
-    anchorId: "inicio-testimonios",
-    title: "Testimonios de clientes",
-    description: "Títulos de la sección y cada opinión: texto, nombre, lugar, foto y si muestra verificado.",
-    dbLabel: "Inicio — Testimonios",
   },
   "home.faq": {
     anchorId: "inicio-faq",

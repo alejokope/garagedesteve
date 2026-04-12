@@ -16,7 +16,7 @@ import {
 } from "@/lib/backoffice/home-section-schemas";
 import { requireBackofficeSession } from "@/lib/backoffice/session";
 import { SITE_HOME_SECTION_META } from "@/lib/backoffice/site-content-sections-meta";
-import type { HomeContentKey } from "@/lib/home-public-content";
+import type { HomeContentAdminKey, HomeContentKey } from "@/lib/home-public-content";
 
 export type SaveHomeSectionResult = { ok: true } | { ok: false; error: string };
 
@@ -34,7 +34,10 @@ export async function saveHomeSection(
 ): Promise<SaveHomeSectionResult> {
   await requireBackofficeSession();
 
-  const meta = SITE_HOME_SECTION_META[key];
+  const dbLabel =
+    key === "home.testimonials"
+      ? "Inicio — Testimonios"
+      : SITE_HOME_SECTION_META[key as HomeContentAdminKey].dbLabel;
   let payloadToSave: unknown;
 
   switch (key) {
@@ -93,7 +96,7 @@ export async function saveHomeSection(
   try {
     await upsertContentEntryAdmin({
       key,
-      label: meta.dbLabel,
+      label: dbLabel,
       payload: payloadToSave,
     });
   } catch (e) {

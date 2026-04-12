@@ -4,7 +4,7 @@ import { notFound, redirect } from "next/navigation";
 import { getContentEntryAdmin } from "@/lib/backoffice/content-db";
 import { SITE_HOME_SECTION_META } from "@/lib/backoffice/site-content-sections-meta";
 import { FOOTER_CONTENT_KEY } from "@/lib/footer-content-schema";
-import { HOME_CONTENT_KEYS, type HomeContentKey } from "@/lib/home-public-content";
+import { HOME_CONTENT_KEYS } from "@/lib/home-public-content";
 
 import { ContentForm } from "../content-form";
 
@@ -23,8 +23,12 @@ export default async function EditarContenidoPage({ params }: PageProps) {
   }
 
   if (HOME_KEYS_SET.has(decoded)) {
-    const anchor = SITE_HOME_SECTION_META[decoded as HomeContentKey].anchorId;
-    redirect(`/backoffice/contenido#${anchor}`);
+    if (decoded === "home.testimonials") {
+      redirect("/backoffice/contenido");
+    }
+    redirect(
+      `/backoffice/contenido#${SITE_HOME_SECTION_META[decoded as keyof typeof SITE_HOME_SECTION_META].anchorId}`,
+    );
   }
 
   const entry = await getContentEntryAdmin(decoded);

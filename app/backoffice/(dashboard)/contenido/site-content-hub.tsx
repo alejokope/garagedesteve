@@ -20,10 +20,9 @@ import type {
   HomeFaqData,
   HomeHeroData,
   HomeServiceTechData,
-  HomeTestimonialsData,
   HomeWhyChooseData,
 } from "@/lib/home-types";
-import type { HomeContentKey } from "@/lib/home-public-content";
+import type { HomeContentAdminKey, HomeContentKey } from "@/lib/home-public-content";
 
 import { HomeCategoryTileImageUpload } from "./home-category-tile-image-upload";
 import { saveHomeSection } from "./home-section-actions";
@@ -139,7 +138,7 @@ function newServiceTile(): HomeCategoryTile {
 export type SiteContentHubProps = {
   /** Cambia cuando el servidor trae datos nuevos (tras guardar / recargar) */
   revision: string;
-  homeKeys: HomeContentKey[];
+  homeKeys: HomeContentAdminKey[];
   /** Valores ya combinados (por defecto + lo guardado): lo que ve el visitante */
   merged: {
     hero: HomeHeroData;
@@ -148,7 +147,6 @@ export type SiteContentHubProps = {
     featuredVisible: boolean;
     serviceTech: HomeServiceTechData;
     whyChoose: HomeWhyChooseData;
-    testimonials: HomeTestimonialsData;
     faq: HomeFaqData;
     ctaFinal: HomeCtaFinalData;
   };
@@ -197,7 +195,6 @@ export function SiteContentHub({
   const [featuredVisible, setFeaturedVisible] = useState(merged.featuredVisible);
   const [serviceTech, setServiceTech] = useState<HomeServiceTechData>(merged.serviceTech);
   const [whyChoose, setWhyChoose] = useState<HomeWhyChooseData>(merged.whyChoose);
-  const [testimonials, setTestimonials] = useState<HomeTestimonialsData>(merged.testimonials);
   const [faq, setFaq] = useState<HomeFaqData>(merged.faq);
   const [ctaFinal, setCtaFinal] = useState<HomeCtaFinalData>(merged.ctaFinal);
 
@@ -208,7 +205,6 @@ export function SiteContentHub({
     setFeaturedVisible(merged.featuredVisible);
     setServiceTech(merged.serviceTech);
     setWhyChoose(merged.whyChoose);
-    setTestimonials(merged.testimonials);
     setFaq(merged.faq);
     setCtaFinal(merged.ctaFinal);
     // `merged` va siempre acorde a `revision` enviada desde el servidor
@@ -222,7 +218,6 @@ export function SiteContentHub({
     if (featuredVisible !== merged.featuredVisible) return true;
     if (JSON.stringify(serviceTech) !== JSON.stringify(merged.serviceTech)) return true;
     if (JSON.stringify(whyChoose) !== JSON.stringify(merged.whyChoose)) return true;
-    if (JSON.stringify(testimonials) !== JSON.stringify(merged.testimonials)) return true;
     if (JSON.stringify(faq) !== JSON.stringify(merged.faq)) return true;
     if (JSON.stringify(ctaFinal) !== JSON.stringify(merged.ctaFinal)) return true;
     return false;
@@ -233,7 +228,6 @@ export function SiteContentHub({
     featuredVisible,
     serviceTech,
     whyChoose,
-    testimonials,
     faq,
     ctaFinal,
     merged,
@@ -250,7 +244,6 @@ export function SiteContentHub({
     setFeaturedVisible(merged.featuredVisible);
     setServiceTech(merged.serviceTech);
     setWhyChoose(merged.whyChoose);
-    setTestimonials(merged.testimonials);
     setFaq(merged.faq);
     setCtaFinal(merged.ctaFinal);
   }, [merged]);
@@ -279,9 +272,6 @@ export function SiteContentHub({
       if (JSON.stringify(whyChoose) !== JSON.stringify(merged.whyChoose)) {
         await run("home.why_choose", whyChoose);
       }
-      if (JSON.stringify(testimonials) !== JSON.stringify(merged.testimonials)) {
-        await run("home.testimonials", testimonials);
-      }
       if (JSON.stringify(faq) !== JSON.stringify(merged.faq)) await run("home.faq", faq);
       if (JSON.stringify(ctaFinal) !== JSON.stringify(merged.ctaFinal)) {
         await run("home.cta_final", ctaFinal);
@@ -301,7 +291,6 @@ export function SiteContentHub({
     featuredVisible,
     serviceTech,
     whyChoose,
-    testimonials,
     faq,
     ctaFinal,
     merged,
@@ -808,86 +797,6 @@ export function SiteContentHub({
               </div>
               <button type="button" className={`${btnGhost} mt-3`} onClick={() => setWhyChoose({ ...whyChoose, items: [...whyChoose.items, { title: "", body: "" }] })}>
                 + Agregar motivo
-              </button>
-            </SectionCard>
-          );
-        }
-
-        if (key === "home.testimonials") {
-          return (
-            <SectionCard
-              key={key}
-              anchorId={meta.anchorId}
-              title={meta.title}
-              description={meta.description}
-              hasCustomInDb={hasCustom}
-              visibleOnSite={testimonials.visible}
-            >
-              <ModuleVisibilityToggle
-                checked={testimonials.visible}
-                onChange={(v) => setTestimonials({ ...testimonials, visible: v })}
-              />
-              <label className="block">
-                <span className={labelClass}>Título de la sección</span>
-                <input className={inputClass} value={testimonials.sectionTitle} onChange={(e) => setTestimonials({ ...testimonials, sectionTitle: e.target.value })} />
-              </label>
-              <label className="mt-4 block">
-                <span className={labelClass}>Subtítulo</span>
-                <textarea className={`${inputClass} min-h-[72px] resize-y`} value={testimonials.sectionSubtitle} onChange={(e) => setTestimonials({ ...testimonials, sectionSubtitle: e.target.value })} />
-              </label>
-              <div className="mt-6 space-y-4">
-                {testimonials.items.map((item, i) => (
-                  <div key={i} className="rounded-xl border border-white/[0.08] p-4">
-                    <label className="block">
-                      <span className={labelClass}>Opinión</span>
-                      <textarea className={`${inputClass} min-h-[80px] resize-y`} value={item.quote} onChange={(e) => {
-                        const items = [...testimonials.items];
-                        items[i] = { ...items[i], quote: e.target.value };
-                        setTestimonials({ ...testimonials, items });
-                      }} />
-                    </label>
-                    <div className="mt-3 grid gap-3 sm:grid-cols-2">
-                      <label className="block">
-                        <span className={labelClass}>Nombre</span>
-                        <input className={inputClass} value={item.name} onChange={(e) => {
-                          const items = [...testimonials.items];
-                          items[i] = { ...items[i], name: e.target.value };
-                          setTestimonials({ ...testimonials, items });
-                        }} />
-                      </label>
-                      <label className="block">
-                        <span className={labelClass}>Lugar o dato (ej. ciudad)</span>
-                        <input className={inputClass} value={item.role} onChange={(e) => {
-                          const items = [...testimonials.items];
-                          items[i] = { ...items[i], role: e.target.value };
-                          setTestimonials({ ...testimonials, items });
-                        }} />
-                      </label>
-                    </div>
-                    <label className="mt-3 block">
-                      <span className={labelClass}>URL de la foto de perfil</span>
-                      <input className={inputClass} value={item.avatar} onChange={(e) => {
-                        const items = [...testimonials.items];
-                        items[i] = { ...items[i], avatar: e.target.value };
-                        setTestimonials({ ...testimonials, items });
-                      }} />
-                    </label>
-                    <label className="mt-3 flex cursor-pointer items-center gap-2 text-sm text-slate-300">
-                      <input type="checkbox" checked={Boolean(item.verified)} onChange={(e) => {
-                        const items = [...testimonials.items];
-                        items[i] = { ...items[i], verified: e.target.checked };
-                        setTestimonials({ ...testimonials, items });
-                      }} />
-                      Mostrar insignia de “verificado”
-                    </label>
-                    <button type="button" className="mt-2 text-xs text-red-300 hover:underline" onClick={() => setTestimonials({ ...testimonials, items: testimonials.items.filter((_, j) => j !== i) })}>
-                      Quitar testimonio
-                    </button>
-                  </div>
-                ))}
-              </div>
-              <button type="button" className={`${btnGhost} mt-3`} onClick={() => setTestimonials({ ...testimonials, items: [...testimonials.items, { quote: "", name: "", role: "", avatar: "", verified: true }] })}>
-                + Agregar testimonio
               </button>
             </SectionCard>
           );

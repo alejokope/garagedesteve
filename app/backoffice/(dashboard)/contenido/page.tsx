@@ -4,6 +4,7 @@ import { listContentEntriesAdmin } from "@/lib/backoffice/content-db";
 import { listProductsAdmin } from "@/lib/backoffice/products-db";
 import { SITE_HOME_SECTION_META } from "@/lib/backoffice/site-content-sections-meta";
 import {
+  HOME_CONTENT_ADMIN_KEYS,
   HOME_CONTENT_KEYS,
   mergeCategories,
   mergeCtaFinal,
@@ -12,7 +13,6 @@ import {
   mergeHero,
   mergeHomeModuleVisible,
   mergeServiceTech,
-  mergeTestimonials,
   mergeWhyChoose,
 } from "@/lib/home-public-content";
 
@@ -59,7 +59,7 @@ export default async function BackofficeContenidoPage() {
     hasRow[k] = rows.some((r) => r.key === k);
   }
 
-  const revision = HOME_CONTENT_KEYS.map((k) => rows.find((r) => r.key === k)?.updated_at ?? "—").join("|");
+  const revision = HOME_CONTENT_ADMIN_KEYS.map((k) => rows.find((r) => r.key === k)?.updated_at ?? "—").join("|");
 
   const merged = {
     hero: mergeHero(payloadByKey.get("home.hero")),
@@ -68,7 +68,6 @@ export default async function BackofficeContenidoPage() {
     featuredVisible: mergeHomeModuleVisible(payloadByKey.get("home.featured")),
     serviceTech: mergeServiceTech(payloadByKey.get("home.service_tech")),
     whyChoose: mergeWhyChoose(payloadByKey.get("home.why_choose")),
-    testimonials: mergeTestimonials(payloadByKey.get("home.testimonials")),
     faq: mergeFaq(payloadByKey.get("home.faq")),
     ctaFinal: mergeCtaFinal(payloadByKey.get("home.cta_final")),
   };
@@ -217,7 +216,7 @@ export default async function BackofficeContenidoPage() {
       <nav className="rounded-2xl border border-white/[0.08] bg-white/[0.02] px-4 py-4 sm:px-5">
         <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Ir a una sección</p>
         <ul className="mt-3 flex flex-wrap gap-2">
-          {HOME_CONTENT_KEYS.map((k) => {
+          {HOME_CONTENT_ADMIN_KEYS.map((k) => {
             const m = SITE_HOME_SECTION_META[k];
             return (
               <li key={k}>
@@ -240,7 +239,7 @@ export default async function BackofficeContenidoPage() {
       ) : (
         <SiteContentHub
           revision={revision}
-          homeKeys={[...HOME_CONTENT_KEYS]}
+          homeKeys={[...HOME_CONTENT_ADMIN_KEYS]}
           merged={merged}
           hasRow={hasRow}
           products={products.map((p) => ({ id: p.id, name: p.name, published: p.published }))}
