@@ -19,6 +19,8 @@ const nextConfig: NextConfig = {
     serverComponentsHmrCache: false,
   },
   images: {
+    /** Menos revalidaciones del optimizador → menos fetch al origen (p. ej. Supabase). */
+    minimumCacheTTL: 60 * 60 * 24 * 30,
     remotePatterns: [
       {
         protocol: "https",

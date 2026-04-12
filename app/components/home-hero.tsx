@@ -62,7 +62,7 @@ export function HomeHero({ data }: { data: HomeHeroData }) {
               alt={data.imageAlt}
               fill
               priority
-              sizes="(max-width: 1024px) 90vw, 480px"
+              sizes="(max-width: 1023px) min(92vw, 28rem), min(520px, 48vw)"
               className="object-contain object-center drop-shadow-[0_20px_40px_rgba(0,0,0,0.08)]"
             />
           </div>

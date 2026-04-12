@@ -97,7 +97,7 @@ function FavoriteRow({
           alt={product.imageAlt}
           fill
           className="object-cover object-center"
-          sizes="(max-width: 768px) 100vw, 33vw"
+          sizes="(max-width: 639px) 100vw, (max-width: 1023px) 50vw, 33vw"
         />
       </Link>
       <div className="flex flex-1 flex-col p-4 sm:p-5">

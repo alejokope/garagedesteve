@@ -39,7 +39,7 @@ export function FeaturedProductCard({ product }: { product: Product }) {
           src={product.image}
           alt={product.imageAlt}
           fill
-          sizes="(max-width: 640px) 100vw, 25vw"
+          sizes="(max-width: 639px) min(92vw, 20rem), (max-width: 1023px) 50vw, 25vw"
           className="object-cover object-center transition duration-500 group-hover:scale-[1.02]"
         />
         {product.condition === "used" ? (

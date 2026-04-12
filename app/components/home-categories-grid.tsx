@@ -58,7 +58,7 @@ function HomeCategoryTileCard({ tile }: { tile: HomeCategoryTile }) {
           src={src}
           alt={alt}
           fill
-          sizes="(max-width: 640px) 85vw, 33vw"
+          sizes="(max-width: 639px) min(92vw, 20rem), (max-width: 1023px) 50vw, 33vw"
           className="object-cover transition duration-500 group-hover:scale-[1.03]"
         />
       </div>

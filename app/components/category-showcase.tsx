@@ -76,7 +76,7 @@ export function CategoryShowcase() {
                 src={tile.image}
                 alt=""
                 fill
-                sizes="(max-width: 640px) 100vw, 33vw"
+                sizes="(max-width: 639px) 100vw, (max-width: 1023px) 50vw, 38vw"
                 className="object-cover transition duration-500 group-hover:scale-[1.03]"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/20 to-transparent" />

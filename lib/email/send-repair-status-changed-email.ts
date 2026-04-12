@@ -2,14 +2,9 @@ import "server-only";
 
 import { Resend } from "resend";
 
+import { publicSiteUrlForEmail } from "@/lib/email/public-site-url-for-email";
 import { REPAIR_STATUS_LABELS, type RepairStatus } from "@/lib/repairs-types";
 import { siteConfig } from "@/lib/site-config";
-
-function siteBaseUrl(): string {
-  const u = process.env.NEXT_PUBLIC_SITE_URL?.trim();
-  if (u) return u.replace(/\/$/, "");
-  return "http://localhost:3000";
-}
 
 function escapeHtml(s: string): string {
   return s
@@ -34,7 +29,7 @@ export async function sendRepairStatusChangedEmail(input: {
     return { ok: false, message: "Falta RESEND_FROM_EMAIL" };
   }
 
-  const base = siteBaseUrl();
+  const base = publicSiteUrlForEmail();
   const trackUrl = `${base}/servicio-tecnico#seguimiento`;
   const brand = siteConfig.brandName;
   const codeHtml = `<strong style="font-size:18px;letter-spacing:0.06em;">${escapeHtml(input.trackingCode)}</strong>`;

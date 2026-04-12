@@ -95,7 +95,13 @@ function SmallProductCard({
         />
       </div>
       <Link href={`/tienda/${p.id}`} className="relative aspect-square bg-neutral-50">
-        <Image src={p.image} alt={p.imageAlt} fill className="object-cover object-center" sizes="200px" />
+        <Image
+          src={p.image}
+          alt={p.imageAlt}
+          fill
+          className="object-cover object-center"
+          sizes="(max-width: 639px) 50vw, (max-width: 1023px) 50vw, 25vw"
+        />
       </Link>
       <div className="flex flex-1 flex-col p-4">
         {p.brand?.trim() ? (

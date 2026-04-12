@@ -264,7 +264,7 @@ export function CartPageView() {
                             src={p.image}
                             alt={p.imageAlt}
                             fill
-                            sizes="160px"
+                            sizes="(max-width: 640px) min(42vw, 11rem), 176px"
                             className="object-cover object-center"
                           />
                         </Link>

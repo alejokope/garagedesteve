@@ -4,6 +4,17 @@ import { createSupabaseServiceClient } from "@/lib/supabase/service";
 
 const MAX_BYTES = 5 * 1024 * 1024;
 
+/** max-age en Storage y CDN de Supabase; cada subida usa path único (UUID). */
+const PUBLIC_IMAGE_CACHE_CONTROL = `${60 * 60 * 24 * 365}`;
+
+function publicImageUploadOptions(contentType: string) {
+  return {
+    contentType: contentType || "image/jpeg",
+    upsert: false as const,
+    cacheControl: PUBLIC_IMAGE_CACHE_CONTROL,
+  };
+}
+
 export function getProductImagesBucket(): string {
   return process.env.NEXT_PUBLIC_SUPABASE_STORAGE_BUCKET?.trim() || "product-images";
 }
@@ -37,10 +48,7 @@ export async function uploadProductMainImage(productId: string, file: File): Pro
   const supabase = createSupabaseServiceClient();
   const bucket = getProductImagesBucket();
 
-  const { error } = await supabase.storage.from(bucket).upload(path, buf, {
-    contentType: file.type || "image/jpeg",
-    upsert: false,
-  });
+  const { error } = await supabase.storage.from(bucket).upload(path, buf, publicImageUploadOptions(file.type));
 
   if (error) throw new Error(error.message);
 
@@ -65,10 +73,7 @@ export async function uploadHomeCategoryImage(file: File): Promise<string> {
   const supabase = createSupabaseServiceClient();
   const bucket = getProductImagesBucket();
 
-  const { error } = await supabase.storage.from(bucket).upload(path, buf, {
-    contentType: file.type || "image/jpeg",
-    upsert: false,
-  });
+  const { error } = await supabase.storage.from(bucket).upload(path, buf, publicImageUploadOptions(file.type));
 
   if (error) throw new Error(error.message);
 
@@ -98,10 +103,7 @@ export async function uploadCategoryDefaultImage(categoryId: string, file: File)
   const supabase = createSupabaseServiceClient();
   const bucket = getProductImagesBucket();
 
-  const { error } = await supabase.storage.from(bucket).upload(path, buf, {
-    contentType: file.type || "image/jpeg",
-    upsert: false,
-  });
+  const { error } = await supabase.storage.from(bucket).upload(path, buf, publicImageUploadOptions(file.type));
 
   if (error) throw new Error(error.message);
 
@@ -126,10 +128,7 @@ export async function uploadProductGalleryImage(productId: string, file: File): 
   const supabase = createSupabaseServiceClient();
   const bucket = getProductImagesBucket();
 
-  const { error } = await supabase.storage.from(bucket).upload(path, buf, {
-    contentType: file.type || "image/jpeg",
-    upsert: false,
-  });
+  const { error } = await supabase.storage.from(bucket).upload(path, buf, publicImageUploadOptions(file.type));
 
   if (error) throw new Error(error.message);
 

@@ -2,13 +2,8 @@ import "server-only";
 
 import { Resend } from "resend";
 
+import { publicSiteUrlForEmail } from "@/lib/email/public-site-url-for-email";
 import { siteConfig } from "@/lib/site-config";
-
-function siteBaseUrl(): string {
-  const u = process.env.NEXT_PUBLIC_SITE_URL?.trim();
-  if (u) return u.replace(/\/$/, "");
-  return "http://localhost:3000";
-}
 
 function escapeHtml(s: string): string {
   return s
@@ -31,7 +26,7 @@ export async function sendRepairCreatedEmail(input: {
     return { ok: false, message: "Falta RESEND_FROM_EMAIL (remitente verificado en Resend)" };
   }
 
-  const base = siteBaseUrl();
+  const base = publicSiteUrlForEmail();
   const trackUrl = `${base}/servicio-tecnico#seguimiento`;
   const brand = siteConfig.brandName;
   const codeHtml = `<strong style="font-size:20px;letter-spacing:0.08em;">${escapeHtml(input.trackingCode)}</strong>`;
