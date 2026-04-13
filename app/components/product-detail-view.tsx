@@ -1,10 +1,10 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 
 import { ProductFavoriteButton } from "@/app/components/product-favorite-button";
+import { StoreRemoteImage } from "@/app/components/store-remote-image";
 import { useCart } from "@/app/context/cart-context";
 import { useFloatingContact } from "@/app/context/floating-contact-context";
 import { useAckFlash } from "@/app/hooks/use-ack-flash";
@@ -98,7 +98,7 @@ function SmallProductCard({
         />
       </div>
       <Link href={`/tienda/${p.id}`} className="relative aspect-square bg-neutral-50">
-        <Image
+        <StoreRemoteImage
           src={catalogProductPreviewImage(p)}
           alt={p.imageAlt}
           fill
@@ -291,7 +291,7 @@ export function ProductDetailView({
                           : "border-neutral-200 hover:border-neutral-300"
                       }`}
                     >
-                      <Image
+                      <StoreRemoteImage
                         src={src}
                         alt=""
                         fill
@@ -346,7 +346,7 @@ export function ProductDetailView({
                     className="group relative aspect-square w-full cursor-zoom-in overflow-hidden rounded-2xl border border-[var(--border)] bg-white text-left shadow-sm transition hover:brightness-[1.02] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-from)] focus-visible:ring-offset-2"
                     aria-label={`Ver imagen ampliada: ${product.name}`}
                   >
-                    <Image
+                    <StoreRemoteImage
                       src={activeHeroSrc}
                       alt={product.imageAlt}
                       fill
@@ -613,7 +613,7 @@ export function ProductDetailView({
             className="relative h-[min(90dvh,100%)] w-full max-w-[min(96vw,1400px)]"
             onClick={(e) => e.stopPropagation()}
           >
-            <Image
+            <StoreRemoteImage
               src={activeHeroSrc}
               alt={product.imageAlt}
               fill

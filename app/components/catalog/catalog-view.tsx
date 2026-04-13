@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import {
@@ -14,6 +13,7 @@ import {
 } from "react";
 import type { TransitionEvent } from "react";
 import { ProductFavoriteButton } from "@/app/components/product-favorite-button";
+import { StoreRemoteImage } from "@/app/components/store-remote-image";
 import { useCart } from "@/app/context/cart-context";
 import { useAckFlash } from "@/app/hooks/use-ack-flash";
 import {
@@ -167,7 +167,7 @@ function CatalogCard({ p }: { p: EnrichedProduct }) {
         />
       </div>
       <Link href={`/tienda/${p.id}`} className="relative block aspect-[4/3] bg-neutral-50">
-        <Image
+        <StoreRemoteImage
           src={catalogProductPreviewImage(p)}
           alt={p.imageAlt}
           fill

@@ -1,12 +1,12 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { useMemo } from "react";
 import { useCatalogProducts } from "@/app/context/catalog-products-context";
 import { useCart } from "@/app/context/cart-context";
 import { useFavorites } from "@/app/context/favorites-context";
 import { ProductFavoriteButton } from "@/app/components/product-favorite-button";
+import { StoreRemoteImage } from "@/app/components/store-remote-image";
 import { useAckFlash } from "@/app/hooks/use-ack-flash";
 import { catalogProductPreviewImage, enrichProduct } from "@/lib/catalog";
 import type { Product } from "@/lib/data";
@@ -92,7 +92,7 @@ function FavoriteRow({
   return (
     <li className="flex flex-col overflow-hidden rounded-2xl border border-[var(--border)] bg-white shadow-sm">
       <Link href={`/tienda/${product.id}`} className="relative block aspect-[4/3] bg-neutral-50">
-        <Image
+        <StoreRemoteImage
           src={catalogProductPreviewImage(product)}
           alt={product.imageAlt}
           fill

@@ -1,11 +1,11 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { useMemo, useState, type ReactNode } from "react";
 import { useCatalogProducts } from "@/app/context/catalog-products-context";
 import { useFloatingContact } from "@/app/context/floating-contact-context";
 import { useSiteContact } from "@/app/context/site-contact-context";
+import { StoreRemoteImage } from "@/app/components/store-remote-image";
 import { useCart } from "@/app/context/cart-context";
 import { cartLineDisplayName, cartLineUnitPrice } from "@/lib/cart-line";
 import { computeCartFreeShipping } from "@/lib/cart-free-shipping";
@@ -158,7 +158,7 @@ export function CartPageView() {
                       className="flex gap-4 rounded-2xl border border-[var(--border)] bg-white p-4 shadow-sm sm:gap-5 sm:p-5"
                     >
                       <div className="relative h-24 w-24 shrink-0 overflow-hidden rounded-xl bg-neutral-100 sm:h-28 sm:w-28">
-                        <Image
+                        <StoreRemoteImage
                           src={lineImage}
                           alt={line.product.imageAlt}
                           fill
@@ -268,7 +268,7 @@ export function CartPageView() {
                         className="w-[min(11rem,42vw)] shrink-0 rounded-2xl border border-[var(--border)] bg-white p-3 shadow-sm"
                       >
                         <Link href={`/tienda/${p.id}`} className="relative block aspect-square bg-neutral-50">
-                          <Image
+                          <StoreRemoteImage
                             src={p.image}
                             alt={p.imageAlt}
                             fill
