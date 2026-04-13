@@ -273,11 +273,10 @@ export function ProductDetailView({
       <div className="mx-auto max-w-6xl px-4 py-10 sm:px-8">
         <div className="grid gap-10 lg:grid-cols-2 lg:gap-14">
           <div>
-            <div className="flex gap-3 sm:gap-4">
+            <div className="flex flex-col gap-3 sm:flex-row sm:gap-4">
               {heroSources.length > 1 ? (
                 <div
-                  className="flex w-12 shrink-0 flex-col gap-2 overflow-y-auto pr-0.5 sm:w-16"
-                  style={{ maxHeight: "min(72vw, 420px)" }}
+                  className="order-2 flex max-w-full shrink-0 gap-2 overflow-x-auto overflow-y-hidden [-ms-overflow-style:none] [scrollbar-width:none] pb-0.5 sm:order-1 sm:max-h-[min(72vw,420px)] sm:w-16 sm:flex-col sm:overflow-y-auto sm:overflow-x-hidden sm:pb-0 sm:pr-0.5 [&::-webkit-scrollbar]:hidden"
                   aria-label="Miniaturas del carrusel"
                 >
                   {heroSources.map((src, i) => (
@@ -285,7 +284,7 @@ export function ProductDetailView({
                       key={`${src}-${i}`}
                       type="button"
                       onClick={() => setHeroIdx(i)}
-                      className={`relative aspect-square w-full shrink-0 overflow-hidden rounded-lg border-2 transition ${
+                      className={`relative h-16 w-16 shrink-0 overflow-hidden rounded-lg border-2 transition sm:aspect-square sm:h-auto sm:w-full ${
                         i === safeHeroIdx
                           ? "border-[var(--brand-from)] ring-2 ring-[var(--brand-from)]/25"
                           : "border-neutral-200 hover:border-neutral-300"
@@ -302,7 +301,7 @@ export function ProductDetailView({
                   ))}
                 </div>
               ) : null}
-              <div className="relative min-w-0 flex-1">
+              <div className="relative order-1 min-w-0 flex-1 sm:order-2">
                 {heroSources.length > 1 ? (
                   <>
                     <button

@@ -293,6 +293,54 @@ export const shopStockConditions: { id: ProductStockCondition; label: string }[]
   { id: "used", label: "Usado" },
 ];
 
+/**
+ * Categorías que tienen al menos un producto en el listado; la etiqueta viene del diccionario
+ * (Listas → Categorías) cuando existe.
+ */
+export function categoryFilterOptionsFromProducts(
+  products: Product[],
+  dictionary: { id: string; label: string }[],
+): { id: string; label: string }[] {
+  const idsInCatalog = new Set(products.map((p) => p.category).filter(Boolean));
+  if (idsInCatalog.size === 0) return [];
+  const dictLabel = new Map(dictionary.map((d) => [d.id, d.label]));
+  const ids = [...idsInCatalog].sort((a, b) =>
+    (dictLabel.get(a) ?? categoryLabelForProduct(a)).localeCompare(
+      dictLabel.get(b) ?? categoryLabelForProduct(b),
+      "es",
+      { sensitivity: "base" },
+    ),
+  );
+  return ids.map((id) => ({
+    id,
+    label: dictLabel.get(id) ?? categoryLabelForProduct(id),
+  }));
+}
+
+/** Condición de stock solo si hay al menos un producto en ese estado. */
+export function stockFilterOptionsFromProducts(
+  products: Product[],
+): { id: ProductStockCondition; label: string }[] {
+  let hasListedNew = false;
+  let hasUsed = false;
+  for (const p of products) {
+    if (p.condition === "used") hasUsed = true;
+    else hasListedNew = true;
+  }
+  return shopStockConditions.filter((c) => (c.id === "used" ? hasUsed : hasListedNew));
+}
+
+/** Etiquetas de catálogo (nuevo / oferta / más vendido) presentes en el listado enriquecido. */
+export function estadoFilterOptionsFromEnriched(
+  list: EnrichedProduct[],
+): { id: CatalogEstado; label: string }[] {
+  const seen = new Set<CatalogEstado>();
+  for (const p of list) {
+    seen.add(p.estado);
+  }
+  return shopEstados.filter((e) => seen.has(e.id));
+}
+
 export type SortKey = "relevancia" | "precio-asc" | "novedad";
 
 export function filterEnriched(

@@ -20,8 +20,9 @@ import {
   PAGE_SIZE,
   brandFilterOptionsFromProducts,
   catalogCategoriesFromUrl,
-  categoryLabelForProduct,
+  categoryFilterOptionsFromProducts,
   type CatalogEstado,
+  estadoFilterOptionsFromEnriched,
   type EnrichedProduct,
   parseBrandFilterKeysFromUrlParam,
   type ProductStockCondition,
@@ -30,9 +31,8 @@ import {
   catalogProductPreviewImage,
   enrichProduct,
   filterEnriched,
-  shopEstados,
-  shopStockConditions,
   sortEnriched,
+  stockFilterOptionsFromProducts,
 } from "@/lib/catalog";
 import { useCatalogProducts } from "@/app/context/catalog-products-context";
 import { SiteRouteLoading } from "@/app/components/site/site-route-loading";
@@ -338,12 +338,20 @@ export function CatalogView() {
     [catalogProducts],
   );
 
-  const catalogCategoryOptions = useMemo(() => {
-    if (categoryFilterOptions.length > 0) return categoryFilterOptions;
-    const ids = [...new Set(catalogProducts.map((p) => p.category))].filter(Boolean);
-    ids.sort((a, b) => a.localeCompare(b, "es", { sensitivity: "base" }));
-    return ids.map((id) => ({ id, label: categoryLabelForProduct(id) }));
-  }, [categoryFilterOptions, catalogProducts]);
+  const catalogCategoryOptions = useMemo(
+    () => categoryFilterOptionsFromProducts(catalogProducts, categoryFilterOptions),
+    [catalogProducts, categoryFilterOptions],
+  );
+
+  const stockFilterOptions = useMemo(
+    () => stockFilterOptionsFromProducts(catalogProducts),
+    [catalogProducts],
+  );
+
+  const estadoFilterOptions = useMemo(
+    () => estadoFilterOptionsFromEnriched(enriched),
+    [enriched],
+  );
 
   /** Filtros solo en memoria: no usar router (evita navegaciones /tienda en cada tecla). */
   const [q, setQ] = useState(() => searchParams.get("q") ?? "");
@@ -602,9 +610,6 @@ export function CatalogView() {
     <div className="space-y-6">
       <div>
         <p className="text-[11px] font-bold uppercase tracking-wider text-neutral-500">Marca</p>
-        <p className="mt-1 text-[11px] leading-snug text-neutral-400">
-          Se generan desde el campo marca de cada producto. “Otras marcas” = sin marca definida.
-        </p>
         <div className="mt-2 flex flex-wrap gap-2">
           {brandFilterOptions.length === 0 ? (
             <span className="text-xs text-neutral-400">No hay marcas en el catálogo.</span>
@@ -633,23 +638,27 @@ export function CatalogView() {
       <div>
         <p className="text-[11px] font-bold uppercase tracking-wider text-neutral-500">Categoría</p>
         <div className="mt-2 flex flex-col gap-2">
-          {catalogCategoryOptions.map((t) => {
-            const on = categorias.includes(t.id);
-            return (
-              <button
-                key={t.id}
-                type="button"
-                onClick={() => toggleCategoria(t.id)}
-                className={`rounded-lg border px-3 py-2 text-left text-xs font-medium transition ${
-                  on
-                    ? "border-[var(--brand-from)] bg-[var(--brand-from)]/10 text-[var(--brand-from)]"
-                    : "border-neutral-200 bg-neutral-50 text-neutral-600 hover:border-neutral-300"
-                }`}
-              >
-                {t.label}
-              </button>
-            );
-          })}
+          {catalogCategoryOptions.length === 0 ? (
+            <span className="text-xs text-neutral-400">No hay categorías en el catálogo cargado.</span>
+          ) : (
+            catalogCategoryOptions.map((t) => {
+              const on = categorias.includes(t.id);
+              return (
+                <button
+                  key={t.id}
+                  type="button"
+                  onClick={() => toggleCategoria(t.id)}
+                  className={`rounded-lg border px-3 py-2 text-left text-xs font-medium transition ${
+                    on
+                      ? "border-[var(--brand-from)] bg-[var(--brand-from)]/10 text-[var(--brand-from)]"
+                      : "border-neutral-200 bg-neutral-50 text-neutral-600 hover:border-neutral-300"
+                  }`}
+                >
+                  {t.label}
+                </button>
+              );
+            })
+          )}
         </div>
       </div>
 
@@ -685,23 +694,27 @@ export function CatalogView() {
       <div>
         <p className="text-[11px] font-bold uppercase tracking-wider text-neutral-500">Condición</p>
         <div className="mt-2 flex flex-wrap gap-2">
-          {shopStockConditions.map((c) => {
-            const on = stockConditions.includes(c.id);
-            return (
-              <button
-                key={c.id}
-                type="button"
-                onClick={() => toggleStockCondition(c.id)}
-                className={`rounded-lg border px-3 py-2 text-xs font-medium transition ${
-                  on
-                    ? "border-[var(--brand-from)] bg-[var(--brand-from)]/10 text-[var(--brand-from)]"
-                    : "border-neutral-200 bg-neutral-50 text-neutral-600 hover:border-neutral-300"
-                }`}
-              >
-                {c.label}
-              </button>
-            );
-          })}
+          {stockFilterOptions.length === 0 ? (
+            <span className="text-xs text-neutral-400">Sin opciones para este catálogo.</span>
+          ) : (
+            stockFilterOptions.map((c) => {
+              const on = stockConditions.includes(c.id);
+              return (
+                <button
+                  key={c.id}
+                  type="button"
+                  onClick={() => toggleStockCondition(c.id)}
+                  className={`rounded-lg border px-3 py-2 text-xs font-medium transition ${
+                    on
+                      ? "border-[var(--brand-from)] bg-[var(--brand-from)]/10 text-[var(--brand-from)]"
+                      : "border-neutral-200 bg-neutral-50 text-neutral-600 hover:border-neutral-300"
+                  }`}
+                >
+                  {c.label}
+                </button>
+              );
+            })
+          )}
         </div>
       </div>
 
@@ -711,23 +724,27 @@ export function CatalogView() {
           Destacados en catálogo (oferta, más vendido, etc.)
         </p>
         <div className="mt-2 flex flex-wrap gap-2">
-          {shopEstados.map((e) => {
-            const on = estados.includes(e.id);
-            return (
-              <button
-                key={e.id}
-                type="button"
-                onClick={() => toggleEstados(e.id)}
-                className={`rounded-lg border px-3 py-2 text-xs font-medium transition ${
-                  on
-                    ? "border-[var(--brand-from)] bg-[var(--brand-from)]/10 text-[var(--brand-from)]"
-                    : "border-neutral-200 bg-neutral-50 text-neutral-600 hover:border-neutral-300"
-                }`}
-              >
-                {e.label}
-              </button>
-            );
-          })}
+          {estadoFilterOptions.length === 0 ? (
+            <span className="text-xs text-neutral-400">Sin etiquetas en el catálogo cargado.</span>
+          ) : (
+            estadoFilterOptions.map((e) => {
+              const on = estados.includes(e.id);
+              return (
+                <button
+                  key={e.id}
+                  type="button"
+                  onClick={() => toggleEstados(e.id)}
+                  className={`rounded-lg border px-3 py-2 text-xs font-medium transition ${
+                    on
+                      ? "border-[var(--brand-from)] bg-[var(--brand-from)]/10 text-[var(--brand-from)]"
+                      : "border-neutral-200 bg-neutral-50 text-neutral-600 hover:border-neutral-300"
+                  }`}
+                >
+                  {e.label}
+                </button>
+              );
+            })
+          )}
         </div>
       </div>
     </div>
