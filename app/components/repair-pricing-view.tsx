@@ -301,7 +301,7 @@ export function RepairPricingView({
                     <table className="min-w-full text-left text-sm">
                       <thead>
                         <tr className="border-b border-neutral-100 bg-neutral-50/80 text-xs uppercase tracking-wide text-neutral-500">
-                          <th className="px-4 py-3 font-semibold">Modelo</th>
+                          <th className="whitespace-nowrap px-4 py-3 font-semibold">Modelo</th>
                           {showBrand ? (
                             <th className="px-4 py-3 font-semibold">Repuesto</th>
                           ) : null}
@@ -320,7 +320,7 @@ export function RepairPricingView({
                               key={`${cat.id}-${row.deviceId || row.model}-${i}`}
                               className="border-b border-neutral-100 last:border-0"
                             >
-                              <td className="px-4 py-3 font-medium text-neutral-900">
+                              <td className="whitespace-nowrap px-4 py-3 font-medium text-neutral-900 align-middle">
                                 {modelDisplay}
                               </td>
                               {showBrand ? (
