@@ -12,6 +12,11 @@ import {
 import { requireBackofficeSession } from "@/lib/backoffice/session";
 import { uploadProductMainImage } from "@/lib/backoffice/storage/product-images";
 
+function isEphemeralImageUrl(u: string): boolean {
+  const t = u.trim();
+  return t.startsWith("blob:") || t.startsWith("data:");
+}
+
 function parseJsonField(raw: string, label: string): { ok: true; value: unknown } | { ok: false; error: string } {
   const t = raw.trim();
   if (!t) return { ok: true, value: null };
@@ -48,7 +53,8 @@ export async function saveProduct(
       if (Array.isArray(parsed)) {
         gallery_images = parsed
           .filter((x): x is string => typeof x === "string" && x.trim().length > 0)
-          .map((x) => x.trim());
+          .map((x) => x.trim())
+          .filter((x) => !isEphemeralImageUrl(x));
       } else {
         return { error: "Fotos extra: JSON inválido" };
       }
@@ -74,6 +80,12 @@ export async function saveProduct(
 
   if (!image) {
     return { error: "Subí una imagen principal (archivo) o editá un producto que ya tenga foto." };
+  }
+  if (isEphemeralImageUrl(image)) {
+    return {
+      error:
+        "La imagen principal no puede ser una URL temporal del navegador (blob:). Volvé a elegir el archivo o guardá de nuevo: la foto se sube al almacenamiento al guardar.",
+    };
   }
 
   if (!(await categoryExistsActive(categoryRaw))) {

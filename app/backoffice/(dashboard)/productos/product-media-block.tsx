@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 
 import {
@@ -23,6 +23,13 @@ function dedupeUrls(urls: string[]): string[] {
   return out;
 }
 
+/** URLs que pueden guardarse en BD / R2 (nunca `blob:` ni `data:` de la vista previa local). */
+function storedProductImageUrl(raw: string | undefined): string {
+  const u = (raw ?? "").trim();
+  if (!u || u.startsWith("blob:") || u.startsWith("data:")) return "";
+  return u;
+}
+
 export function ProductMediaBlock({
   mode,
   productId,
@@ -39,15 +46,17 @@ export function ProductMediaBlock({
   initialAlt?: string;
   initialGalleryExtras?: string[];
   skipNativeValidation?: boolean;
-  /** Miniaturas alineadas al carrusel (índice 0 = principal); permite `blob:` en 0 mientras elegís archivo. */
+  /** Miniaturas del carrusel ya publicadas (misma fila que guarda el cliente); sin `blob:` de vista previa. */
   onCarouselThumbsChange?: (thumbSrcs: string[]) => void;
   /** Subidas no disparan `change` del formulario: avisá para mostrar la barra de guardar. */
   onMarkDirty?: () => void;
 }) {
-  const mainUrl = (initialImage ?? "").trim();
+  const mainUrl = storedProductImageUrl(initialImage);
   const [filePreview, setFilePreview] = useState<string | null>(null);
   const [hasPendingMainFile, setHasPendingMainFile] = useState(false);
-  const [extras, setExtras] = useState<string[]>(() => dedupeUrls(initialGalleryExtras ?? []));
+  const [extras, setExtras] = useState<string[]>(() =>
+    dedupeUrls((initialGalleryExtras ?? []).map((x) => storedProductImageUrl(x)).filter(Boolean)),
+  );
   const fileRef = useRef<HTMLInputElement>(null);
   const extrasInputRef = useRef<HTMLInputElement>(null);
 
@@ -69,31 +78,12 @@ export function ProductMediaBlock({
     return dedupeUrls(parts);
   }, [mainUrl, extras]);
 
-  const thumbStrip = useMemo(() => {
-    const base = networkCarousel.length
-      ? [...networkCarousel]
-      : mainUrl && !mainUrl.startsWith("blob:")
-        ? [mainUrl]
-        : [];
-    if (filePreview?.startsWith("blob:")) {
-      if (!base.length) return [filePreview];
-      const out = [...base];
-      out[0] = filePreview;
-      return out;
-    }
-    return base.length ? base : [];
-  }, [networkCarousel, filePreview, mainUrl]);
-
-  const emitThumbs = useCallback(() => {
-    onCarouselThumbsChange?.(thumbStrip);
-  }, [onCarouselThumbsChange, thumbStrip]);
-
   useEffect(() => {
-    emitThumbs();
-  }, [emitThumbs]);
+    onCarouselThumbsChange?.(networkCarousel);
+  }, [onCarouselThumbsChange, networkCarousel]);
 
   const appendExtraUrl = (url: string) => {
-    const u = url.trim();
+    const u = storedProductImageUrl(url);
     if (!u) return;
     setExtras((prev) => dedupeUrls([...prev, u]));
     onMarkDirty?.();
