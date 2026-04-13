@@ -113,6 +113,15 @@ export async function getRepairAdmin(id: string): Promise<RepairRow | null> {
   return data ? (data as RepairRow) : null;
 }
 
+/** Borra la reparación; historial y mensajes se eliminan por `on delete cascade` en la migración. */
+export async function deleteRepairAdmin(id: string): Promise<void> {
+  const supabase = createSupabaseServiceClient();
+  const trimmed = id.trim();
+  if (!trimmed) throw new Error("ID inválido");
+  const { error } = await supabase.from("repairs").delete().eq("id", trimmed);
+  if (error) throw new Error(error.message);
+}
+
 export async function listRepairHistoryAdmin(repairId: string): Promise<RepairStatusHistoryRow[]> {
   const supabase = createSupabaseServiceClient();
   const { data, error } = await supabase

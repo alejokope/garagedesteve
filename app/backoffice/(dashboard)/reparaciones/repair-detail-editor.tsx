@@ -12,6 +12,7 @@ import {
   updateRepairDetailsAction,
   updateRepairStatusAction,
 } from "@/app/backoffice/(dashboard)/reparaciones/actions";
+import { DeleteRepairForm } from "@/app/backoffice/(dashboard)/reparaciones/delete-repair-form";
 import type {
   RepairRow,
   RepairStatusHistoryRow,
@@ -458,6 +459,17 @@ export function RepairDetailEditor({
             ))}
           </ul>
         )}
+      </section>
+
+      <section className="rounded-2xl border border-red-500/25 bg-red-500/[0.06] p-6">
+        <h2 className="font-display text-lg font-semibold text-red-100/95">Zona peligrosa</h2>
+        <p className="mt-2 text-sm text-red-200/80">
+          Eliminar la reparación borra el caso, el historial de estados y los mensajes visibles en el seguimiento por
+          código. El cliente ya no podrá consultar este código.
+        </p>
+        <div className="mt-4">
+          <DeleteRepairForm id={repair.id} trackingCode={repair.tracking_code} />
+        </div>
       </section>
 
       <p>

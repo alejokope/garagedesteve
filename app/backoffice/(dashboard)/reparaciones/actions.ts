@@ -6,6 +6,7 @@ import { redirect } from "next/navigation";
 import {
   addRepairMessageAdmin,
   createRepairAdmin,
+  deleteRepairAdmin,
   getRepairAdmin,
   updateRepairDetailsAdmin,
   updateRepairStatusAdmin,
@@ -122,6 +123,17 @@ export async function addRepairTrackingMessageAction(formData: FormData) {
   await addRepairMessageAdmin({ repairId, body });
   revalidatePath("/backoffice/reparaciones");
   revalidatePath(`/backoffice/reparaciones/${repairId}`);
+}
+
+export async function deleteRepairAction(formData: FormData) {
+  await requireBackofficeSession();
+  const id = String(formData.get("id") ?? "").trim();
+  if (!id) redirect("/backoffice/reparaciones");
+
+  await deleteRepairAdmin(id);
+
+  revalidatePath("/backoffice/reparaciones");
+  redirect("/backoffice/reparaciones");
 }
 
 export async function resendRepairTrackingEmailAction(

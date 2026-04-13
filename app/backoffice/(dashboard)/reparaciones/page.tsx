@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { DeleteRepairForm } from "@/app/backoffice/(dashboard)/reparaciones/delete-repair-form";
 import { listRepairsAdmin } from "@/lib/backoffice/repairs-db";
 import { repairStatusBackofficeBadgeClass } from "@/lib/repair-status-ui";
 import { REPAIR_STATUS_LABELS } from "@/lib/repairs-types";
@@ -97,12 +98,19 @@ export default async function BackofficeReparacionesPage() {
                   </span>
                 </div>
                 <p className="mt-3 text-[11px] text-slate-500">Alta: {formatShortDate(r.created_at)}</p>
-                <Link
-                  href={`/backoffice/reparaciones/${r.id}`}
-                  className="mt-4 flex min-h-11 w-full items-center justify-center rounded-xl bg-violet-600/90 text-sm font-semibold text-white hover:bg-violet-600"
-                >
-                  Abrir ficha
-                </Link>
+                <div className="mt-4 flex flex-col gap-2">
+                  <Link
+                    href={`/backoffice/reparaciones/${r.id}`}
+                    className="flex min-h-11 w-full items-center justify-center rounded-xl bg-violet-600/90 text-sm font-semibold text-white hover:bg-violet-600"
+                  >
+                    Abrir ficha
+                  </Link>
+                  <DeleteRepairForm
+                    id={r.id}
+                    trackingCode={r.tracking_code}
+                    className="w-full rounded-xl border border-red-500/35 bg-red-500/10 py-2.5 text-sm font-medium text-red-200/95 hover:bg-red-500/20"
+                  />
+                </div>
               </li>
             ))}
           </ul>
@@ -137,12 +145,15 @@ export default async function BackofficeReparacionesPage() {
                       {formatShortDate(r.created_at)}
                     </td>
                     <td className="px-4 py-3 text-right">
-                      <Link
-                        href={`/backoffice/reparaciones/${r.id}`}
-                        className="text-sm font-medium text-violet-300 hover:text-violet-200"
-                      >
-                        Abrir
-                      </Link>
+                      <div className="inline-flex flex-wrap items-center justify-end gap-2">
+                        <Link
+                          href={`/backoffice/reparaciones/${r.id}`}
+                          className="text-sm font-medium text-violet-300 hover:text-violet-200"
+                        >
+                          Abrir
+                        </Link>
+                        <DeleteRepairForm id={r.id} trackingCode={r.tracking_code} />
+                      </div>
                     </td>
                   </tr>
                 ))}
