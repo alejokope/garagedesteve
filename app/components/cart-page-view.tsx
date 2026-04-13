@@ -11,6 +11,8 @@ import { cartLineDisplayName, cartLineUnitPrice } from "@/lib/cart-line";
 import { computeCartFreeShipping } from "@/lib/cart-free-shipping";
 import { enrichProduct } from "@/lib/catalog";
 import { formatMoneyUsd } from "@/lib/format";
+import { productCarouselUrls } from "@/lib/product-carousel";
+import { resolveVariantPrimaryImageUrl } from "@/lib/product-variants";
 import { buildWhatsAppOrderMessage, whatsappUrl } from "@/lib/whatsapp";
 
 function formatCartMoney(n: number) {
@@ -144,6 +146,12 @@ export function CartPageView() {
                 {items.map((line) => {
                   const unit = cartLineUnitPrice(line);
                   const lineTotal = unit > 0 ? unit * line.qty : 0;
+                  const lineImage = resolveVariantPrimaryImageUrl(
+                    line.product.image,
+                    line.product.variantGroups,
+                    line.variantSelections ?? {},
+                    productCarouselUrls(line.product),
+                  );
                   return (
                     <li
                       key={line.lineKey}
@@ -151,7 +159,7 @@ export function CartPageView() {
                     >
                       <div className="relative h-24 w-24 shrink-0 overflow-hidden rounded-xl bg-neutral-100 sm:h-28 sm:w-28">
                         <Image
-                          src={line.product.image}
+                          src={lineImage}
                           alt={line.product.imageAlt}
                           fill
                           sizes="(max-width: 640px) 96px, 112px"

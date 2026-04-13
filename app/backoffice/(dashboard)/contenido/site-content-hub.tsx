@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { useBackofficeSaveBarReporter } from "@/app/components/backoffice/backoffice-save-bar";
-import type { ProductRow } from "@/lib/backoffice/products-db";
+import type { ProductRow } from "@/lib/backoffice/product-row-shared";
 import { SITE_HOME_SECTION_META } from "@/lib/backoffice/site-content-sections-meta";
 import {
   HOME_CATEGORY_TILE_ASPECT_LABEL,

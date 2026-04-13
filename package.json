@@ -15,9 +15,16 @@
     "inject:marcas-usados": "tsx scripts/inject-otras-iphone-usados.ts",
     "inject:marcas-usados:dry": "tsx scripts/inject-otras-iphone-usados.ts --dry-run",
     "delete:all-products": "tsx scripts/delete-all-products.ts",
-    "delete:all-products:dry": "tsx scripts/delete-all-products.ts --dry-run"
+    "delete:all-products:dry": "tsx scripts/delete-all-products.ts --dry-run",
+    "restore:seven-demo": "tsx scripts/restore-seven-demo-products.ts --yes",
+    "restore:seven-demo:dry": "tsx scripts/restore-seven-demo-products.ts --dry-run",
+    "seed:test-catalog": "tsx scripts/seed-test-catalog-products.ts",
+    "seed:test-catalog:dry": "tsx scripts/seed-test-catalog-products.ts --dry-run",
+    "seed:gallery-iphone17": "tsx scripts/seed-gallery-iphone17-colors.ts",
+    "seed:gallery-iphone17:dry": "tsx scripts/seed-gallery-iphone17-colors.ts --dry-run"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.1029.0",
     "@supabase/ssr": "^0.9.0",
     "@supabase/supabase-js": "^2.100.0",
     "next": "16.2.0",

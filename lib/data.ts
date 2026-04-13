@@ -28,6 +28,8 @@ export type Product = {
   badge?: string;
   image: string;
   imageAlt: string;
+  /** URLs extra del carrusel (además de `image`); orden = galería en ficha. */
+  galleryImages?: string[];
   /**
    * Características seleccionables (color, almacenamiento, etc.).
    * Mismo shape que puede devolver un BO en el futuro.

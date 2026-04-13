@@ -8,7 +8,7 @@ import { useCart } from "@/app/context/cart-context";
 import { useFavorites } from "@/app/context/favorites-context";
 import { ProductFavoriteButton } from "@/app/components/product-favorite-button";
 import { useAckFlash } from "@/app/hooks/use-ack-flash";
-import { enrichProduct } from "@/lib/catalog";
+import { catalogProductPreviewImage, enrichProduct } from "@/lib/catalog";
 import type { Product } from "@/lib/data";
 import { formatMoneyUsd } from "@/lib/format";
 
@@ -93,7 +93,7 @@ function FavoriteRow({
     <li className="flex flex-col overflow-hidden rounded-2xl border border-[var(--border)] bg-white shadow-sm">
       <Link href={`/tienda/${product.id}`} className="relative block aspect-[4/3] bg-neutral-50">
         <Image
-          src={product.image}
+          src={catalogProductPreviewImage(product)}
           alt={product.imageAlt}
           fill
           className="object-cover object-center"

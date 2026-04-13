@@ -10,7 +10,18 @@ function supabaseHost(): string | null {
   }
 }
 
+function mediaPublicHost(): string | null {
+  const u = process.env.NEXT_PUBLIC_MEDIA_URL_BASE?.trim();
+  if (!u) return null;
+  try {
+    return new URL(u).hostname;
+  } catch {
+    return null;
+  }
+}
+
 const host = supabaseHost();
+const mediaHost = mediaPublicHost();
 
 const nextConfig: NextConfig = {
   // En dev, sin esto las respuestas de red (p. ej. Supabase) pueden quedar
@@ -33,6 +44,15 @@ const nextConfig: NextConfig = {
               protocol: "https" as const,
               hostname: host,
               pathname: "/storage/v1/object/public/**",
+            },
+          ]
+        : []),
+      ...(mediaHost
+        ? [
+            {
+              protocol: "https" as const,
+              hostname: mediaHost,
+              pathname: "/**",
             },
           ]
         : []),

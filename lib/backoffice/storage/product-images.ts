@@ -1,22 +1,28 @@
 import "server-only";
 
-import { createSupabaseServiceClient } from "@/lib/supabase/service";
+import type { MediaGallerySource } from "@/lib/backoffice/media-gallery-db";
+import { insertMediaGalleryRow } from "@/lib/backoffice/media-gallery-db";
+import {
+  getR2BucketName,
+  isR2Configured,
+  publicMediaUrlForKey,
+  putR2PublicObject,
+} from "@/lib/backoffice/storage/r2-client";
 
 const MAX_BYTES = 5 * 1024 * 1024;
 
-/** max-age en Storage y CDN de Supabase; cada subida usa path único (UUID). */
-const PUBLIC_IMAGE_CACHE_CONTROL = `${60 * 60 * 24 * 365}`;
-
-function publicImageUploadOptions(contentType: string) {
-  return {
-    contentType: contentType || "image/jpeg",
-    upsert: false as const,
-    cacheControl: PUBLIC_IMAGE_CACHE_CONTROL,
-  };
+function assertR2OrThrow(): void {
+  if (!isR2Configured()) {
+    throw new Error(
+      "R2 no está configurado. Completá R2_ACCOUNT_ID, R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY, R2_BUCKET y NEXT_PUBLIC_MEDIA_URL_BASE (ver env.example).",
+    );
+  }
 }
 
+/** @deprecated Usá `getR2BucketName()` desde `r2-client`; se mantiene por compat. */
 export function getProductImagesBucket(): string {
-  return process.env.NEXT_PUBLIC_SUPABASE_STORAGE_BUCKET?.trim() || "product-images";
+  assertR2OrThrow();
+  return getR2BucketName();
 }
 
 function extFromFile(file: File): string {
@@ -29,6 +35,43 @@ function extFromFile(file: File): string {
 
 function safeProductPathSegment(productId: string): string {
   return productId.replace(/[^a-zA-Z0-9-_]/g, "-").slice(0, 120) || "producto";
+}
+
+function safeVariantPathSegment(raw: string): string {
+  return raw.replace(/[^a-zA-Z0-9-_]/g, "-").slice(0, 80) || "x";
+}
+
+async function registerPublicUpload(
+  bucket: string,
+  path: string,
+  publicUrl: string,
+  buf: Buffer,
+  contentType: string,
+  source: MediaGallerySource,
+): Promise<string | null> {
+  return insertMediaGalleryRow({
+    bucket,
+    storage_path: path,
+    public_url: publicUrl,
+    bytes: buf.byteLength,
+    content_type: contentType || null,
+    source,
+  });
+}
+
+async function uploadImageBytes(
+  storageKey: string,
+  buf: Buffer,
+  contentType: string,
+  source: MediaGallerySource,
+): Promise<string> {
+  assertR2OrThrow();
+  const bucket = getR2BucketName();
+  const key = storageKey.replace(/^\/+/, "");
+  await putR2PublicObject(key, buf, contentType);
+  const url = publicMediaUrlForKey(key);
+  void (await registerPublicUpload(bucket, key, url, buf, contentType, source));
+  return url;
 }
 
 export async function uploadProductMainImage(productId: string, file: File): Promise<string> {
@@ -45,15 +88,7 @@ export async function uploadProductMainImage(productId: string, file: File): Pro
   const path = `products/${safe}/main-${uid}.${ext}`;
   const buf = Buffer.from(await file.arrayBuffer());
 
-  const supabase = createSupabaseServiceClient();
-  const bucket = getProductImagesBucket();
-
-  const { error } = await supabase.storage.from(bucket).upload(path, buf, publicImageUploadOptions(file.type));
-
-  if (error) throw new Error(error.message);
-
-  const { data } = supabase.storage.from(bucket).getPublicUrl(path);
-  return data.publicUrl;
+  return uploadImageBytes(path, buf, file.type, "product-main");
 }
 
 /** Imágenes de tarjetas “Categorías” en la home (`content_entries` → `home.categories`). */
@@ -70,15 +105,7 @@ export async function uploadHomeCategoryImage(file: File): Promise<string> {
   const path = `home/categories/${uid}.${ext}`;
   const buf = Buffer.from(await file.arrayBuffer());
 
-  const supabase = createSupabaseServiceClient();
-  const bucket = getProductImagesBucket();
-
-  const { error } = await supabase.storage.from(bucket).upload(path, buf, publicImageUploadOptions(file.type));
-
-  if (error) throw new Error(error.message);
-
-  const { data } = supabase.storage.from(bucket).getPublicUrl(path);
-  return data.publicUrl;
+  return uploadImageBytes(path, buf, file.type, "home-category");
 }
 
 function safeCategoryPathSegment(categoryId: string): string {
@@ -100,15 +127,7 @@ export async function uploadCategoryDefaultImage(categoryId: string, file: File)
   const path = `catalog/defaults/${safe}-${uid}.${ext}`;
   const buf = Buffer.from(await file.arrayBuffer());
 
-  const supabase = createSupabaseServiceClient();
-  const bucket = getProductImagesBucket();
-
-  const { error } = await supabase.storage.from(bucket).upload(path, buf, publicImageUploadOptions(file.type));
-
-  if (error) throw new Error(error.message);
-
-  const { data } = supabase.storage.from(bucket).getPublicUrl(path);
-  return data.publicUrl;
+  return uploadImageBytes(path, buf, file.type, "category-default");
 }
 
 export async function uploadProductGalleryImage(productId: string, file: File): Promise<string> {
@@ -125,13 +144,55 @@ export async function uploadProductGalleryImage(productId: string, file: File): 
   const path = `products/${safe}/gallery-${uid}.${ext}`;
   const buf = Buffer.from(await file.arrayBuffer());
 
-  const supabase = createSupabaseServiceClient();
-  const bucket = getProductImagesBucket();
+  return uploadImageBytes(path, buf, file.type, "product-gallery");
+}
 
-  const { error } = await supabase.storage.from(bucket).upload(path, buf, publicImageUploadOptions(file.type));
+/** Foto de variante (color, etc.) bajo la carpeta del producto. */
+export async function uploadProductVariantOptionImage(
+  productId: string,
+  variantGroupId: string,
+  optionId: string,
+  file: File,
+): Promise<string> {
+  if (file.size > MAX_BYTES) {
+    throw new Error("La imagen no puede superar 5 MB");
+  }
+  if (!file.type.startsWith("image/")) {
+    throw new Error("Subí un archivo de imagen (JPG, PNG, WebP o GIF)");
+  }
 
-  if (error) throw new Error(error.message);
+  const safe = safeProductPathSegment(productId);
+  const g = safeVariantPathSegment(variantGroupId);
+  const o = safeVariantPathSegment(optionId);
+  const uid = crypto.randomUUID();
+  const ext = extFromFile(file);
+  const path = `products/${safe}/variant-${g}-${o}-${uid}.${ext}`;
+  const buf = Buffer.from(await file.arrayBuffer());
 
-  const { data } = supabase.storage.from(bucket).getPublicUrl(path);
-  return data.publicUrl;
+  return uploadImageBytes(path, buf, file.type, "variant-option");
+}
+
+/** Subida desde la página Galería (sin producto asociado). */
+export async function uploadMediaGalleryInboxImage(
+  file: File,
+): Promise<{ url: string; id: string | null }> {
+  if (file.size > MAX_BYTES) {
+    throw new Error("La imagen no puede superar 5 MB");
+  }
+  if (!file.type.startsWith("image/")) {
+    throw new Error("Subí un archivo de imagen (JPG, PNG, WebP o GIF)");
+  }
+
+  const uid = crypto.randomUUID();
+  const ext = extFromFile(file);
+  const path = `gallery/inbox/${uid}.${ext}`;
+  const buf = Buffer.from(await file.arrayBuffer());
+
+  assertR2OrThrow();
+  const bucket = getR2BucketName();
+  const key = path.replace(/^\/+/, "");
+  await putR2PublicObject(key, buf, file.type);
+  const url = publicMediaUrlForKey(key);
+  const id = await registerPublicUpload(bucket, key, url, buf, file.type, "media-inbox");
+  return { url, id };
 }

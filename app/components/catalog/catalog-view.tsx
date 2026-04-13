@@ -27,6 +27,7 @@ import {
   type ProductStockCondition,
   type ShopBrandFilterId,
   type SortKey,
+  catalogProductPreviewImage,
   enrichProduct,
   filterEnriched,
   shopEstados,
@@ -167,7 +168,7 @@ function CatalogCard({ p }: { p: EnrichedProduct }) {
       </div>
       <Link href={`/tienda/${p.id}`} className="relative block aspect-[4/3] bg-neutral-50">
         <Image
-          src={p.image}
+          src={catalogProductPreviewImage(p)}
           alt={p.imageAlt}
           fill
           sizes="(max-width: 639px) 100vw, (max-width: 1279px) 50vw, 34vw"

@@ -40,6 +40,23 @@ export async function saveProduct(
   let image = String(formData.get("image") ?? "").trim();
   const image_alt = String(formData.get("image_alt") ?? "").trim();
 
+  const galleryRaw = String(formData.get("gallery_images") ?? "").trim();
+  let gallery_images: string[] = [];
+  if (galleryRaw) {
+    try {
+      const parsed = JSON.parse(galleryRaw) as unknown;
+      if (Array.isArray(parsed)) {
+        gallery_images = parsed
+          .filter((x): x is string => typeof x === "string" && x.trim().length > 0)
+          .map((x) => x.trim());
+      } else {
+        return { error: "Fotos extra: JSON inválido" };
+      }
+    } catch {
+      return { error: "Fotos extra: JSON inválido" };
+    }
+  }
+
   if (imageFile instanceof File && imageFile.size > 0) {
     try {
       image = await uploadProductMainImage(id, imageFile);
@@ -47,6 +64,9 @@ export async function saveProduct(
       return { error: e instanceof Error ? e.message : "No se pudo subir la imagen principal" };
     }
   }
+
+  const mainTrim = image.trim();
+  gallery_images = gallery_images.filter((u) => u && u !== mainTrim);
 
   if (!name || !short || !image_alt) {
     return { error: "Completá nombre, resumen y texto alternativo de la imagen" };
@@ -120,6 +140,7 @@ export async function saveProduct(
       badge: badgeRaw || null,
       image,
       image_alt,
+      gallery_images,
       variant_groups,
       detail,
       compare_at_price,

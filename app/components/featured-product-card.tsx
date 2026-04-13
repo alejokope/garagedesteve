@@ -1,5 +1,6 @@
 "use client";
 
+import { catalogProductPreviewImage } from "@/lib/catalog";
 import type { Product } from "@/lib/data";
 import { formatMoneyUsd } from "@/lib/format";
 import Image from "next/image";
@@ -36,7 +37,7 @@ export function FeaturedProductCard({ product }: { product: Product }) {
       </div>
       <Link href={`/tienda/${product.id}`} className="relative block aspect-[5/4] bg-neutral-50 sm:aspect-square">
         <Image
-          src={product.image}
+          src={catalogProductPreviewImage(product)}
           alt={product.imageAlt}
           fill
           sizes="(max-width: 639px) min(92vw, 20rem), (max-width: 1023px) 50vw, 25vw"

@@ -8,10 +8,11 @@ import { ProductFavoriteButton } from "@/app/components/product-favorite-button"
 import { useCart } from "@/app/context/cart-context";
 import { useFloatingContact } from "@/app/context/floating-contact-context";
 import { useAckFlash } from "@/app/hooks/use-ack-flash";
-import { enrichProduct } from "@/lib/catalog";
+import { catalogProductPreviewImage, enrichProduct } from "@/lib/catalog";
 import type { Product } from "@/lib/data";
 import { getProductById } from "@/lib/data";
 import { formatMoneyUsd } from "@/lib/format";
+import { productCarouselUrls } from "@/lib/product-carousel";
 import {
   buildFallbackDetail,
   getDetailPairs,
@@ -20,9 +21,11 @@ import {
   type ProductDetailPair,
 } from "@/lib/product-detail-data";
 import {
+  colorVariantGalleryUrls,
   defaultVariantSelections,
   describeVariantSelections,
   getVariantUiKind,
+  resolveColorCarouselHeroIndex,
   resolveVariantPrice,
   type VariantSelections,
 } from "@/lib/product-variants";
@@ -96,7 +99,7 @@ function SmallProductCard({
       </div>
       <Link href={`/tienda/${p.id}`} className="relative aspect-square bg-neutral-50">
         <Image
-          src={p.image}
+          src={catalogProductPreviewImage(p)}
           alt={p.imageAlt}
           fill
           className="object-cover object-center"
@@ -141,10 +144,42 @@ export function ProductDetailView({
   const detail = useMemo(() => resolveProductDetail(product), [product]);
   const enriched = useMemo(() => enrichProduct(product), [product]);
 
-  const groups = product.variantGroups ?? [];
+  const groups = useMemo(
+    () => (Array.isArray(product.variantGroups) ? product.variantGroups : []),
+    [product.variantGroups],
+  );
   const [selections, setSelections] = useState<VariantSelections>(() =>
     defaultVariantSelections(groups),
   );
+
+  const productCarousel = useMemo(() => productCarouselUrls(product), [product]);
+  const colorSlides = useMemo(
+    () => colorVariantGalleryUrls(groups, selections, productCarousel),
+    [groups, selections, productCarousel],
+  );
+  const heroSources = useMemo(() => {
+    if (colorSlides.length) return colorSlides;
+    const main = product.image?.trim();
+    return main ? [main] : [];
+  }, [colorSlides, product.image]);
+
+  const [heroIdx, setHeroIdx] = useState(0);
+  const safeHeroIdx =
+    heroSources.length > 0 ? Math.min(heroIdx, heroSources.length - 1) : 0;
+  const activeHeroSrc = heroSources[safeHeroIdx] ?? product.image ?? "";
+
+  const colorSelectionKey = useMemo(() => {
+    const cg = groups.find((g) => getVariantUiKind(g) === "color");
+    return cg ? String(selections[cg.id] ?? "") : "";
+  }, [groups, selections]);
+
+  useEffect(() => {
+    if (!heroSources.length) return;
+    const idx = resolveColorCarouselHeroIndex(groups, selections, heroSources.length);
+    setHeroIdx(idx);
+    // Solo al cambiar el color (o el carrusel), no al cambiar otras variantes (p. ej. GB).
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [colorSelectionKey, heroSources.length, product.id]);
 
   const displayPrice = resolveVariantPrice(
     product.price,
@@ -191,13 +226,20 @@ export function ProductDetailView({
 
   const detailPairs = useMemo(() => getDetailPairs(detail), [detail]);
 
-  const mainImageSrc = product.image?.trim() ?? "";
   const [lightboxOpen, setLightboxOpen] = useState(false);
 
   useEffect(() => {
     if (!lightboxOpen) return;
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") setLightboxOpen(false);
+        if (heroSources.length > 1 && (e.key === "ArrowRight" || e.key === "ArrowLeft")) {
+        e.preventDefault();
+        setHeroIdx((i) => {
+          const len = heroSources.length;
+          if (e.key === "ArrowRight") return (i + 1) % len;
+          return (i - 1 + len) % len;
+        });
+      }
     };
     document.addEventListener("keydown", onKey);
     const prevOverflow = document.body.style.overflow;
@@ -206,7 +248,7 @@ export function ProductDetailView({
       document.removeEventListener("keydown", onKey);
       document.body.style.overflow = prevOverflow;
     };
-  }, [lightboxOpen]);
+  }, [lightboxOpen, heroSources.length]);
 
   return (
     <div className="bg-[#f9fafb]">
@@ -231,28 +273,99 @@ export function ProductDetailView({
       <div className="mx-auto max-w-6xl px-4 py-10 sm:px-8">
         <div className="grid gap-10 lg:grid-cols-2 lg:gap-14">
           <div>
-            {mainImageSrc ? (
-              <button
-                type="button"
-                onClick={() => setLightboxOpen(true)}
-                className="group relative aspect-square w-full cursor-zoom-in overflow-hidden rounded-2xl border border-[var(--border)] bg-white text-left shadow-sm transition hover:brightness-[1.02] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-from)] focus-visible:ring-offset-2"
-                aria-label={`Ver imagen ampliada: ${product.name}`}
-              >
-                <Image
-                  src={product.image}
-                  alt={product.imageAlt}
-                  fill
-                  priority
-                  className="object-cover object-center transition duration-300 group-hover:scale-[1.02]"
-                  sizes="(max-width: 1024px) 100vw, 50vw"
-                />
-                <span className="pointer-events-none absolute bottom-3 right-3 rounded-lg bg-black/60 px-2.5 py-1 text-[11px] font-semibold tracking-wide text-white opacity-0 shadow-sm backdrop-blur-sm transition group-hover:opacity-100">
-                  Ampliar
-                </span>
-              </button>
-            ) : (
-              <div className="relative aspect-square overflow-hidden rounded-2xl border border-[var(--border)] bg-neutral-100 shadow-sm" aria-hidden />
-            )}
+            <div className="flex gap-3 sm:gap-4">
+              {heroSources.length > 1 ? (
+                <div
+                  className="flex w-12 shrink-0 flex-col gap-2 overflow-y-auto pr-0.5 sm:w-16"
+                  style={{ maxHeight: "min(72vw, 420px)" }}
+                  aria-label="Miniaturas del carrusel"
+                >
+                  {heroSources.map((src, i) => (
+                    <button
+                      key={`${src}-${i}`}
+                      type="button"
+                      onClick={() => setHeroIdx(i)}
+                      className={`relative aspect-square w-full shrink-0 overflow-hidden rounded-lg border-2 transition ${
+                        i === safeHeroIdx
+                          ? "border-[var(--brand-from)] ring-2 ring-[var(--brand-from)]/25"
+                          : "border-neutral-200 hover:border-neutral-300"
+                      }`}
+                    >
+                      <Image
+                        src={src}
+                        alt=""
+                        fill
+                        sizes="64px"
+                        className="object-cover object-center"
+                      />
+                    </button>
+                  ))}
+                </div>
+              ) : null}
+              <div className="relative min-w-0 flex-1">
+                {heroSources.length > 1 ? (
+                  <>
+                    <button
+                      type="button"
+                      aria-label="Foto anterior"
+                      onClick={() =>
+                        setHeroIdx((i) => {
+                          const len = heroSources.length;
+                          return (i - 1 + len) % len;
+                        })
+                      }
+                      className="absolute left-2 top-1/2 z-10 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-neutral-200/90 bg-white/95 text-neutral-700 shadow-md transition hover:bg-white"
+                    >
+                      <span className="sr-only">Anterior</span>
+                      <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" aria-hidden>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+                      </svg>
+                    </button>
+                    <button
+                      type="button"
+                      aria-label="Foto siguiente"
+                      onClick={() =>
+                        setHeroIdx((i) => {
+                          const len = heroSources.length;
+                          return (i + 1) % len;
+                        })
+                      }
+                      className="absolute right-2 top-1/2 z-10 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-neutral-200/90 bg-white/95 text-neutral-700 shadow-md transition hover:bg-white"
+                    >
+                      <span className="sr-only">Siguiente</span>
+                      <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" aria-hidden>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                      </svg>
+                    </button>
+                  </>
+                ) : null}
+                {activeHeroSrc ? (
+                  <button
+                    type="button"
+                    onClick={() => setLightboxOpen(true)}
+                    className="group relative aspect-square w-full cursor-zoom-in overflow-hidden rounded-2xl border border-[var(--border)] bg-white text-left shadow-sm transition hover:brightness-[1.02] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-from)] focus-visible:ring-offset-2"
+                    aria-label={`Ver imagen ampliada: ${product.name}`}
+                  >
+                    <Image
+                      src={activeHeroSrc}
+                      alt={product.imageAlt}
+                      fill
+                      priority
+                      className="object-cover object-center transition duration-300 group-hover:scale-[1.02]"
+                      sizes="(max-width: 1024px) 100vw, 50vw"
+                    />
+                    <span className="pointer-events-none absolute bottom-3 right-3 rounded-lg bg-black/60 px-2.5 py-1 text-[11px] font-semibold tracking-wide text-white opacity-0 shadow-sm backdrop-blur-sm transition group-hover:opacity-100">
+                      Ampliar
+                    </span>
+                  </button>
+                ) : (
+                  <div
+                    className="relative aspect-square w-full overflow-hidden rounded-2xl border border-[var(--border)] bg-neutral-100 shadow-sm"
+                    aria-hidden
+                  />
+                )}
+              </div>
+            </div>
           </div>
 
           <div>
@@ -475,7 +588,7 @@ export function ProductDetailView({
 
       </div>
 
-      {lightboxOpen && mainImageSrc ? (
+      {lightboxOpen && activeHeroSrc ? (
         <div
           className="fixed inset-0 z-[300] flex items-center justify-center bg-black/92 p-4 sm:p-10"
           role="dialog"
@@ -501,7 +614,7 @@ export function ProductDetailView({
             onClick={(e) => e.stopPropagation()}
           >
             <Image
-              src={product.image}
+              src={activeHeroSrc}
               alt={product.imageAlt}
               fill
               className="object-contain"

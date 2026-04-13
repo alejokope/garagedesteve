@@ -3,6 +3,7 @@
 import Link from "next/link";
 import {
   useActionState,
+  useCallback,
   useEffect,
   useMemo,
   useState,
@@ -13,7 +14,9 @@ import { toast } from "sonner";
 
 import { useBackofficeSaveBarReporter } from "@/app/components/backoffice/backoffice-save-bar";
 import { categories } from "@/lib/data";
-import type { ProductRow } from "@/lib/backoffice/products-db";
+import type { ProductRow } from "@/lib/backoffice/product-row-shared";
+import { parseGalleryImagesColumn, productRowToProduct } from "@/lib/backoffice/product-row-shared";
+import { productCarouselUrls } from "@/lib/product-carousel";
 import type { VariantKindDefinitionRow, VariantPricingModeLabelRow } from "@/lib/catalog-dictionary-types";
 
 import { saveProduct } from "./actions";
@@ -24,7 +27,7 @@ import {
   ProductFormWizardCreate,
   validateCreateWizardStep,
 } from "./product-form-wizard";
-import { ProductImageSection } from "./product-image-section";
+import { ProductMediaBlock } from "./product-media-block";
 import { VariantGroupsEditor } from "./variant-groups-editor";
 
 const fallbackCategories = categories
@@ -99,6 +102,24 @@ export function ProductForm({
   const [wizardMode, setWizardMode] = useState(mode === "create");
   const [wizardStep, setWizardStep] = useState(0);
   const [formDirty, setFormDirty] = useState(false);
+  const [carouselThumbs, setCarouselThumbs] = useState<string[]>(() =>
+    initial ? productCarouselUrls(productRowToProduct(initial)) : [],
+  );
+
+  const markFormDirty = useCallback(() => setFormDirty(true), []);
+
+  /** Misma galería puede llegar con otro `[]` en memoria tras `router.refresh()`; sin esto se resetean extras locales. */
+  const initialGalleryImagesKey = initial
+    ? JSON.stringify(initial.gallery_images ?? null)
+    : "null";
+
+  const initialGalleryList = useMemo(() => {
+    try {
+      return parseGalleryImagesColumn(JSON.parse(initialGalleryImagesKey));
+    } catch {
+      return [];
+    }
+  }, [initialGalleryImagesKey]);
 
   const showClassicProductBar = !(mode === "create" && wizardMode);
 
@@ -284,13 +305,23 @@ export function ProductForm({
     </FieldCard>
   );
 
+  /** Remount solo si cambian datos de servidor (evita borrar extras locales por un `[]` nuevo tras `router.refresh()`). */
+  const productMediaBlockKey =
+    mode === "edit" && initial?.id
+      ? `${initial.id}|${JSON.stringify(initial.image ?? null)}|${initialGalleryImagesKey}`
+      : `create|${initialGalleryImagesKey}`;
+
   const imageBlock = (
-    <ProductImageSection
+    <ProductMediaBlock
+      key={productMediaBlockKey}
       mode={mode}
       productId={productIdForUploads}
-      initialUrl={initial?.image}
+      initialImage={initial?.image}
       initialAlt={initial?.image_alt}
+      initialGalleryExtras={initialGalleryList}
       skipNativeValidation={suppressHtmlRequired}
+      onCarouselThumbsChange={setCarouselThumbs}
+      onMarkDirty={markFormDirty}
     />
   );
 
@@ -339,7 +370,8 @@ export function ProductForm({
           <Link href={LISTAS_TIPOS_OPCION} className="text-violet-200 underline hover:text-white">
             Listas → Tipos de opción
           </Link>
-          .
+          . Grupo tipo <strong className="text-slate-200">color</strong>: enlazá cada tono a una foto del carrusel del
+          producto (paso de imágenes). Color por defecto: misma regla en catálogo.
         </p>
       </div>
       <FieldCard>
@@ -347,6 +379,8 @@ export function ProductForm({
           initialGroups={initial?.variant_groups}
           kindDefinitions={kindDefinitions}
           pricingModes={pricingModeLabels}
+          carouselThumbSrcs={carouselThumbs}
+          onMarkDirty={markFormDirty}
         />
       </FieldCard>
     </div>
@@ -371,7 +405,7 @@ export function ProductForm({
       <div className="rounded-2xl border border-violet-500/25 bg-gradient-to-br from-violet-500/15 to-indigo-500/10 p-5">
         <p className="text-lg font-semibold text-white">Rápido y guiado</p>
         <p className="mt-2 text-sm leading-relaxed text-slate-300">
-          Primero el nombre y el ID, después categoría y precio, una foto, y listo para publicar. Las ofertas,
+          Primero el nombre y el ID, después categoría y precio, las fotos del producto, y listo para publicar. Las ofertas,
           variantes y el texto extra en la página del producto son opcionales.
         </p>
       </div>

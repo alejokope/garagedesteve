@@ -31,9 +31,9 @@ const CREATE_STEPS: ProductWizardStepMeta[] = [
   },
   {
     id: "image",
-    label: "Foto",
-    title: "Imagen principal",
-    hint: "Subí archivo y describí la imagen. El ID del paso 1 tiene que estar listo.",
+    label: "Fotos",
+    title: "Imagen principal y carrusel",
+    hint: "Principal obligatoria; podés sumar más fotos. El ID del paso 1 tiene que estar listo para subir extras.",
   },
   {
     id: "promo",

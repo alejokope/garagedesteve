@@ -1,6 +1,45 @@
 import type { CategoryId, Product, ProductStockCondition } from "@/lib/data";
+import { productCarouselUrls } from "@/lib/product-carousel";
+import {
+  defaultVariantSelections,
+  getVariantUiKind,
+  optionVariantImageUrls,
+  resolveVariantPrimaryImageUrl,
+} from "@/lib/product-variants";
 
 export type { ProductStockCondition };
+
+/**
+ * Miniatura en grillas: si hay grupo **color**, solo usa fotos de la opción por defecto de ese color;
+ * si no tiene fotos, **siempre** la imagen principal del producto (no mezcla con fotos de otros grupos).
+ * Sin grupo color, conserva la lógica general de variantes.
+ */
+export function catalogProductPreviewImage(p: Product): string {
+  const groups = p.variantGroups ?? [];
+  const sel = defaultVariantSelections(p.variantGroups);
+  const carousel = productCarouselUrls(p);
+  const colorGroup = groups.find((g) => getVariantUiKind(g) === "color");
+  if (colorGroup) {
+    const oid = sel[colorGroup.id];
+    const opt = oid ? colorGroup.options.find((o) => o.id === oid) : undefined;
+    const urls = opt ? optionVariantImageUrls(opt) : [];
+    const first = urls[0]?.trim();
+    if (first) return first;
+    if (opt && carousel.length) {
+      const raw = opt.carouselIndex;
+      const idx =
+        typeof raw === "number" &&
+        Number.isInteger(raw) &&
+        raw >= 0 &&
+        raw < carousel.length
+          ? raw
+          : 0;
+      return carousel[idx] ?? (p.image ?? "").trim();
+    }
+    return (p.image ?? "").trim();
+  }
+  return resolveVariantPrimaryImageUrl(p.image ?? "", groups, sel, carousel);
+}
 
 /**
  * Clave interna para filtrar por marca (minúsculas, espacios colapsados).

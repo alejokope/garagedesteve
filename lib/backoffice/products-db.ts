@@ -1,29 +1,14 @@
 import "server-only";
 
-import type { Product } from "@/lib/data";
-import type { ProductVariantGroup } from "@/lib/product-variants";
+import type { ProductRow } from "@/lib/backoffice/product-row-shared";
+import {
+  parseGalleryImagesColumn,
+  productRowToProduct,
+} from "@/lib/backoffice/product-row-shared";
 import { createSupabaseServiceClient } from "@/lib/supabase/service";
 
-export type ProductRow = {
-  id: string;
-  name: string;
-  short: string;
-  category: string;
-  brand: string | null;
-  price: number;
-  stock_condition: string | null;
-  badge: string | null;
-  image: string;
-  image_alt: string;
-  variant_groups: unknown;
-  detail: unknown | null;
-  compare_at_price: number | null;
-  discount_percent: number | null;
-  published: boolean;
-  sort_order: number;
-  created_at: string;
-  updated_at: string;
-};
+export type { ProductRow } from "@/lib/backoffice/product-row-shared";
+export { parseGalleryImagesColumn, productRowToProduct } from "@/lib/backoffice/product-row-shared";
 
 function num(v: unknown): number {
   if (typeof v === "number" && !Number.isNaN(v)) return v;
@@ -52,6 +37,7 @@ function mapRow(r: Record<string, unknown>): ProductRow {
     badge: r.badge != null ? String(r.badge) : null,
     image: r.image != null && String(r.image) !== "" ? String(r.image) : "",
     image_alt: r.image_alt != null ? String(r.image_alt) : "",
+    gallery_images: r.gallery_images ?? [],
     variant_groups: r.variant_groups,
     detail: r.detail ?? null,
     compare_at_price: r.compare_at_price != null ? num(r.compare_at_price) : null,
@@ -105,32 +91,6 @@ export async function getProductAdmin(id: string): Promise<ProductRow | null> {
   return mapRow(data as Record<string, unknown>);
 }
 
-/** Para la tienda pública: fila Supabase → tipo `Product` del sitio. */
-export function productRowToProduct(row: ProductRow): Product {
-  const condition =
-    row.stock_condition === "new" || row.stock_condition === "used"
-      ? row.stock_condition
-      : undefined;
-  return {
-    id: row.id,
-    name: row.name,
-    short: row.short,
-    category: row.category,
-    ...(row.brand ? { brand: row.brand } : {}),
-    price: row.price,
-    condition,
-    badge: row.badge ?? undefined,
-    image: row.image,
-    imageAlt: row.image_alt,
-    variantGroups: Array.isArray(row.variant_groups)
-      ? (row.variant_groups as ProductVariantGroup[])
-      : undefined,
-    detail: row.detail ?? undefined,
-    compareAtPrice: row.compare_at_price,
-    discountPercent: row.discount_percent,
-  };
-}
-
 export type ProductUpsertInput = {
   id: string;
   name: string;
@@ -142,6 +102,7 @@ export type ProductUpsertInput = {
   badge: string | null;
   image: string;
   image_alt: string;
+  gallery_images: string[];
   variant_groups: unknown;
   detail: unknown | null;
   compare_at_price: number | null;
@@ -163,6 +124,7 @@ export async function upsertProductAdmin(row: ProductUpsertInput): Promise<void>
     badge: row.badge,
     image: row.image,
     image_alt: row.image_alt,
+    gallery_images: row.gallery_images,
     variant_groups: row.variant_groups,
     detail: row.detail,
     compare_at_price: row.compare_at_price,

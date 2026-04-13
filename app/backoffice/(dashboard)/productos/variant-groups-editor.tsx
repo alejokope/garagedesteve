@@ -3,13 +3,14 @@
 import { useMemo, useState } from "react";
 
 import type { VariantKindDefinitionRow, VariantPricingModeLabelRow } from "@/lib/catalog-dictionary-types";
-import type {
-  ProductVariantGroup,
-  ProductVariantOption,
-  ProductVariantPricingMode,
-  VariantUiKind,
+import {
+  getVariantUiKind,
+  optionVariantImageUrls,
+  type ProductVariantGroup,
+  type ProductVariantOption,
+  type ProductVariantPricingMode,
+  type VariantUiKind,
 } from "@/lib/product-variants";
-import { getVariantUiKind } from "@/lib/product-variants";
 
 function newOptionId(): string {
   return `opt-${crypto.randomUUID().slice(0, 8)}`;
@@ -36,12 +37,42 @@ function emptyGroup(
   };
 }
 
+function migrateOptionImages(opt: ProductVariantOption): ProductVariantOption {
+  const urls = optionVariantImageUrls(opt);
+  const next: ProductVariantOption = { ...opt };
+  delete next.imageUrl;
+  delete next.imageUrls;
+  if (urls.length) next.imageUrls = urls;
+  return next;
+}
+
 function normalizeGroups(raw: unknown): ProductVariantGroup[] {
   if (!Array.isArray(raw)) return [];
-  return (raw as ProductVariantGroup[]).map((g) => ({
-    ...g,
-    uiKind: g.uiKind ?? getVariantUiKind(g),
-  }));
+  return (raw as ProductVariantGroup[]).map((g) => {
+    const uiKind = g.uiKind ?? getVariantUiKind(g);
+    const pricingMode = g.pricingMode === "absolute" ? "absolute" : "delta";
+    const vk = getVariantUiKind({ ...g, uiKind });
+    const options = (g.options ?? []).map((o) => {
+      let x = normalizeOptionForMode(migrateOptionImages(o as ProductVariantOption), pricingMode);
+      if (
+        vk === "color" &&
+        !optionVariantImageUrls(x).length &&
+        (x.carouselIndex === undefined || x.carouselIndex === null)
+      ) {
+        x = { ...x, carouselIndex: 0 };
+      }
+      return x;
+    });
+    let defaultOptionId = g.defaultOptionId;
+    if (vk === "color") {
+      if (!defaultOptionId || !options.some((o) => o.id === defaultOptionId)) {
+        defaultOptionId = options[0]?.id;
+      }
+    } else {
+      defaultOptionId = undefined;
+    }
+    return { ...g, uiKind, options, defaultOptionId };
+  });
 }
 
 function normalizeOptionForMode(
@@ -49,21 +80,35 @@ function normalizeOptionForMode(
   mode: ProductVariantPricingMode,
 ): ProductVariantOption {
   if (mode === "absolute") {
-    const { priceDelta: _d, ...rest } = opt;
-    return { ...rest, price: opt.price ?? 0 };
+    const out: ProductVariantOption = { ...opt, price: opt.price ?? 0 };
+    delete out.priceDelta;
+    return out;
   }
-  const { price: _p, ...rest } = opt;
-  return { ...rest, priceDelta: opt.priceDelta ?? 0 };
+  const out: ProductVariantOption = { ...opt, priceDelta: opt.priceDelta ?? 0 };
+  delete out.price;
+  return out;
+}
+
+function clampCarouselIndex(idx: number, len: number): number {
+  if (len <= 0) return 0;
+  if (!Number.isFinite(idx)) return 0;
+  return Math.max(0, Math.min(Math.floor(idx), len - 1));
 }
 
 export function VariantGroupsEditor({
   initialGroups,
   kindDefinitions,
   pricingModes,
+  carouselThumbSrcs,
+  onMarkDirty,
 }: {
   initialGroups: unknown;
   kindDefinitions: VariantKindDefinitionRow[];
   pricingModes: VariantPricingModeLabelRow[];
+  /** Orden del carrusel del producto (misma longitud que índices `carouselIndex`). */
+  carouselThumbSrcs: string[];
+  /** JSON de variantes no dispara `change` del formulario. */
+  onMarkDirty?: () => void;
 }) {
   const defs = kindDefinitions.filter((d) => d.active);
   const modes = pricingModes.length
@@ -84,8 +129,10 @@ export function VariantGroupsEditor({
   );
 
   const json = useMemo(() => JSON.stringify(groups), [groups]);
+  const slotCount = carouselThumbSrcs.length;
 
   function updateGroup(i: number, patch: Partial<ProductVariantGroup>) {
+    onMarkDirty?.();
     setGroups((prev) => {
       const next = [...prev];
       const g = { ...next[i], ...patch };
@@ -98,6 +145,7 @@ export function VariantGroupsEditor({
   }
 
   function updateOption(gi: number, oi: number, patch: Partial<ProductVariantOption>) {
+    onMarkDirty?.();
     setGroups((prev) => {
       const next = [...prev];
       const g = { ...next[gi] };
@@ -110,14 +158,17 @@ export function VariantGroupsEditor({
   }
 
   function addGroup() {
+    onMarkDirty?.();
     setGroups((prev) => [...prev, emptyGroup(defs.length ? defs : kindDefinitions)]);
   }
 
   function removeGroup(i: number) {
+    onMarkDirty?.();
     setGroups((prev) => prev.filter((_, j) => j !== i));
   }
 
   function addOption(gi: number) {
+    onMarkDirty?.();
     setGroups((prev) => {
       const next = [...prev];
       const g = { ...next[gi] };
@@ -126,6 +177,9 @@ export function VariantGroupsEditor({
         g.pricingMode === "absolute"
           ? { id, label: `Opción ${g.options.length + 1}`, price: g.options[0]?.price ?? 0 }
           : { id, label: `Opción ${g.options.length + 1}`, priceDelta: 0 };
+      if (getVariantUiKind(g) === "color") {
+        base.carouselIndex = 0;
+      }
       g.options = [...g.options, base];
       next[gi] = g;
       return next;
@@ -133,11 +187,16 @@ export function VariantGroupsEditor({
   }
 
   function removeOption(gi: number, oi: number) {
+    onMarkDirty?.();
     setGroups((prev) => {
       const next = [...prev];
       const g = { ...next[gi] };
       if (g.options.length <= 1) return prev;
+      const removed = g.options[oi];
       g.options = g.options.filter((_, j) => j !== oi);
+      if (g.defaultOptionId === removed.id) {
+        g.defaultOptionId = g.options[0]?.id;
+      }
       next[gi] = g;
       return next;
     });
@@ -157,7 +216,14 @@ export function VariantGroupsEditor({
     const uiKind: VariantUiKind =
       (def?.ui_behavior as VariantUiKind) ||
       getVariantUiKind({ kind: kindId, uiKind: undefined });
-    updateGroup(gi, { kind: kindId, uiKind });
+    const patch: Partial<ProductVariantGroup> = { kind: kindId, uiKind };
+    if (uiKind !== "color") {
+      patch.defaultOptionId = undefined;
+    } else {
+      const g = groups[gi];
+      if (g?.options[0]) patch.defaultOptionId = g.defaultOptionId ?? g.options[0].id;
+    }
+    updateGroup(gi, patch);
   }
 
   return (
@@ -250,77 +316,160 @@ export function VariantGroupsEditor({
             </label>
           </div>
 
+          {getVariantUiKind(g) === "color" ? (
+            <div className="mt-4 rounded-xl border border-violet-500/20 bg-violet-500/[0.06] px-4 py-3">
+              <p className="text-xs font-semibold text-violet-100/95">Color por defecto en la tienda</p>
+              <p className="mt-1 text-[11px] text-slate-500">
+                Opción preseleccionada al abrir la ficha. Cada color se enlaza a una foto del carrusel del producto
+                (arriba en este formulario).
+              </p>
+              <div className="mt-3 flex flex-wrap gap-3">
+                {g.options.map((opt) => (
+                  <label key={opt.id} className="flex cursor-pointer items-center gap-2 text-sm text-slate-200">
+                    <input
+                      type="radio"
+                      name={`default-color-${g.id}`}
+                      checked={g.defaultOptionId === opt.id}
+                      onChange={() => updateGroup(gi, { defaultOptionId: opt.id })}
+                      className="border-white/30 text-violet-500 focus:ring-violet-500/40"
+                    />
+                    <span>{opt.label}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
+          ) : null}
+
           <div className="mt-5 space-y-3">
             <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
               Opciones del grupo
             </p>
-            {g.options.map((opt, oi) => (
-              <div
-                key={opt.id}
-                className="flex flex-col gap-3 rounded-xl border border-white/[0.06] bg-white/[0.03] p-4 sm:flex-row sm:flex-wrap sm:items-end"
-              >
-                <label className="min-w-[140px] flex-1">
-                  <span className="mb-1 block text-[11px] text-slate-500">Nombre visible</span>
-                  <input
-                    type="text"
-                    value={opt.label}
-                    onChange={(e) => updateOption(gi, oi, { label: e.target.value })}
-                    className="w-full rounded-lg border border-white/[0.1] bg-black/30 px-3 py-2 text-sm text-white outline-none focus:ring-2 focus:ring-violet-500/40"
-                  />
-                </label>
-
-                {getVariantUiKind(g) === "color" ? (
-                  <label className="flex items-center gap-2">
-                    <span className="text-[11px] text-slate-500">Color</span>
-                    <input
-                      type="color"
-                      value={opt.hex?.startsWith("#") ? opt.hex : "#888888"}
-                      onChange={(e) => updateOption(gi, oi, { hex: e.target.value })}
-                      className="h-10 w-14 cursor-pointer rounded border border-white/10 bg-transparent"
-                    />
-                  </label>
-                ) : null}
-
-                {g.pricingMode === "absolute" ? (
-                  <label className="min-w-[140px]">
-                    <span className="mb-1 block text-[11px] text-slate-500">Precio final (USD)</span>
-                    <input
-                      type="text"
-                      inputMode="numeric"
-                      value={opt.price ?? ""}
-                      onChange={(e) => {
-                        const n = Number(String(e.target.value).replace(/\s/g, "").replace(",", "."));
-                        updateOption(gi, oi, { price: Number.isNaN(n) ? 0 : n });
-                      }}
-                      className="w-full rounded-lg border border-white/[0.1] bg-black/30 px-3 py-2 text-sm text-white outline-none focus:ring-2 focus:ring-violet-500/40"
-                    />
-                  </label>
-                ) : (
-                  <label className="min-w-[140px]">
-                    <span className="mb-1 block text-[11px] text-slate-500">Suma al precio base (USD)</span>
-                    <input
-                      type="text"
-                      inputMode="numeric"
-                      value={opt.priceDelta ?? 0}
-                      onChange={(e) => {
-                        const n = Number(String(e.target.value).replace(/\s/g, "").replace(",", "."));
-                        updateOption(gi, oi, { priceDelta: Number.isNaN(n) ? 0 : n });
-                      }}
-                      className="w-full rounded-lg border border-white/[0.1] bg-black/30 px-3 py-2 text-sm text-white outline-none focus:ring-2 focus:ring-violet-500/40"
-                    />
-                  </label>
-                )}
-
-                <button
-                  type="button"
-                  className="rounded-lg border border-white/[0.08] px-3 py-2 text-xs text-slate-400 hover:bg-white/[0.06] hover:text-white"
-                  onClick={() => removeOption(gi, oi)}
-                  disabled={g.options.length <= 1}
+            {g.options.map((opt, oi) => {
+              const isColor = getVariantUiKind(g) === "color";
+              const legacyUrls = optionVariantImageUrls(opt);
+              const selectedIdx =
+                slotCount > 0
+                  ? clampCarouselIndex(
+                      typeof opt.carouselIndex === "number" ? opt.carouselIndex : 0,
+                      slotCount,
+                    )
+                  : 0;
+              return (
+                <div
+                  key={opt.id}
+                  className="flex flex-col gap-3 rounded-xl border border-white/[0.06] bg-white/[0.03] p-4 sm:flex-row sm:flex-wrap sm:items-end"
                 >
-                  Quitar opción
-                </button>
-              </div>
-            ))}
+                  <label className="min-w-[140px] flex-1">
+                    <span className="mb-1 block text-[11px] text-slate-500">Nombre visible</span>
+                    <input
+                      type="text"
+                      value={opt.label}
+                      onChange={(e) => updateOption(gi, oi, { label: e.target.value })}
+                      className="w-full rounded-lg border border-white/[0.1] bg-black/30 px-3 py-2 text-sm text-white outline-none focus:ring-2 focus:ring-violet-500/40"
+                    />
+                  </label>
+
+                  {isColor ? (
+                    <>
+                      <label className="flex items-center gap-2">
+                        <span className="text-[11px] text-slate-500">Muestra</span>
+                        <input
+                          type="color"
+                          value={opt.hex?.startsWith("#") ? opt.hex : "#888888"}
+                          onChange={(e) => updateOption(gi, oi, { hex: e.target.value })}
+                          className="h-10 w-14 cursor-pointer rounded border border-white/10 bg-transparent"
+                        />
+                      </label>
+                      <div className="w-full min-w-0 space-y-2 border-t border-white/[0.06] pt-3 sm:col-span-2">
+                        <span className="block text-[11px] font-medium text-slate-400">
+                          Foto del carrusel para este color
+                        </span>
+                        {legacyUrls.length ? (
+                          <p className="text-[11px] text-amber-200/90">
+                            Este color tiene fotos guardadas en el JSON (formato anterior). La tienda las sigue
+                            usando. Quitá esas URLs manualmente en JSON si querés pasar solo al carrusel del producto.
+                          </p>
+                        ) : null}
+                        {!legacyUrls.length && slotCount === 0 ? (
+                          <p className="text-[11px] text-slate-500">
+                            Subí al menos la imagen principal del producto (sección de fotos arriba) para elegir qué
+                            miniatura corresponde a este color.
+                          </p>
+                        ) : null}
+                        {!legacyUrls.length && slotCount > 0 ? (
+                          <div className="flex flex-wrap gap-2">
+                            {carouselThumbSrcs.map((src, ii) => (
+                              <button
+                                key={`${src}-${ii}`}
+                                type="button"
+                                title={`Foto ${ii + 1}`}
+                                onClick={() =>
+                                  updateOption(gi, oi, {
+                                    carouselIndex: ii,
+                                    imageUrls: undefined,
+                                    imageUrl: undefined,
+                                  })
+                                }
+                                className={`relative h-16 w-16 shrink-0 overflow-hidden rounded-lg border-2 transition ${
+                                  selectedIdx === ii
+                                    ? "border-violet-400 ring-2 ring-violet-500/30"
+                                    : "border-white/10 hover:border-white/25"
+                                }`}
+                              >
+                                {/* eslint-disable-next-line @next/next/no-img-element */}
+                                <img src={src} alt="" className="h-full w-full object-cover" />
+                                <span className="absolute bottom-0.5 left-0.5 rounded bg-black/70 px-1 text-[9px] font-medium text-white">
+                                  {ii + 1}
+                                </span>
+                              </button>
+                            ))}
+                          </div>
+                        ) : null}
+                      </div>
+                    </>
+                  ) : null}
+
+                  {g.pricingMode === "absolute" ? (
+                    <label className="min-w-[140px]">
+                      <span className="mb-1 block text-[11px] text-slate-500">Precio final (USD)</span>
+                      <input
+                        type="text"
+                        inputMode="numeric"
+                        value={opt.price ?? ""}
+                        onChange={(e) => {
+                          const n = Number(String(e.target.value).replace(/\s/g, "").replace(",", "."));
+                          updateOption(gi, oi, { price: Number.isNaN(n) ? 0 : n });
+                        }}
+                        className="w-full rounded-lg border border-white/[0.1] bg-black/30 px-3 py-2 text-sm text-white outline-none focus:ring-2 focus:ring-violet-500/40"
+                      />
+                    </label>
+                  ) : (
+                    <label className="min-w-[140px]">
+                      <span className="mb-1 block text-[11px] text-slate-500">Suma al precio base (USD)</span>
+                      <input
+                        type="text"
+                        inputMode="numeric"
+                        value={opt.priceDelta ?? 0}
+                        onChange={(e) => {
+                          const n = Number(String(e.target.value).replace(/\s/g, "").replace(",", "."));
+                          updateOption(gi, oi, { priceDelta: Number.isNaN(n) ? 0 : n });
+                        }}
+                        className="w-full rounded-lg border border-white/[0.1] bg-black/30 px-3 py-2 text-sm text-white outline-none focus:ring-2 focus:ring-violet-500/40"
+                      />
+                    </label>
+                  )}
+
+                  <button
+                    type="button"
+                    className="rounded-lg border border-white/[0.08] px-3 py-2 text-xs text-slate-400 hover:bg-white/[0.06] hover:text-white"
+                    onClick={() => removeOption(gi, oi)}
+                    disabled={g.options.length <= 1}
+                  >
+                    Quitar opción
+                  </button>
+                </div>
+              );
+            })}
             <button
               type="button"
               className="rounded-lg border border-dashed border-white/[0.15] bg-transparent px-4 py-2 text-sm text-violet-200/90 hover:bg-white/[0.04]"
