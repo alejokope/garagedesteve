@@ -13,7 +13,9 @@
     "inject:newdata:all": "tsx scripts/inject-all-newdata.ts",
     "inject:newdata:all:dry": "tsx scripts/inject-all-newdata.ts --dry-run",
     "inject:marcas-usados": "tsx scripts/inject-otras-iphone-usados.ts",
-    "inject:marcas-usados:dry": "tsx scripts/inject-otras-iphone-usados.ts --dry-run"
+    "inject:marcas-usados:dry": "tsx scripts/inject-otras-iphone-usados.ts --dry-run",
+    "delete:all-products": "tsx scripts/delete-all-products.ts",
+    "delete:all-products:dry": "tsx scripts/delete-all-products.ts --dry-run"
   },
   "dependencies": {
     "@supabase/ssr": "^0.9.0",

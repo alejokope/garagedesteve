@@ -307,7 +307,7 @@ export function RepairPricingView({
                           ) : null}
                           <th className="px-4 py-3 font-semibold">Precio</th>
                           <th className="px-4 py-3 font-semibold">Tiempo</th>
-                          <th className="px-4 py-3 font-semibold">Garantía</th>
+                          <th className="whitespace-nowrap px-4 py-3 font-semibold">Garantía</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -334,8 +334,8 @@ export function RepairPricingView({
                                 {priceText}
                               </td>
                               <td className="px-4 py-3 text-neutral-600">{row.time}</td>
-                              <td className="px-4 py-3">
-                                <span className="inline-flex rounded-full bg-emerald-50 px-2.5 py-0.5 text-xs font-semibold text-emerald-800 ring-1 ring-emerald-200/80">
+                              <td className="whitespace-nowrap px-4 py-3 align-middle">
+                                <span className="inline-flex whitespace-nowrap rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-800 ring-1 ring-emerald-200/80">
                                   {row.warrantyLabel}
                                 </span>
                               </td>
