@@ -46,7 +46,10 @@ export function ProductMediaBlock({
   initialAlt?: string;
   initialGalleryExtras?: string[];
   skipNativeValidation?: boolean;
-  /** Miniaturas del carrusel ya publicadas (misma fila que guarda el cliente); sin `blob:` de vista previa. */
+  /**
+   * Misma fila que el carrusel en la tienda (principal + extras). Puede incluir `blob:` solo en vista previa
+   * local del archivo principal; el JSON de variantes guarda índices (`carouselIndex`), no esas URLs.
+   */
   onCarouselThumbsChange?: (thumbSrcs: string[]) => void;
   /** Subidas no disparan `change` del formulario: avisá para mostrar la barra de guardar. */
   onMarkDirty?: () => void;
@@ -78,9 +81,25 @@ export function ProductMediaBlock({
     return dedupeUrls(parts);
   }, [mainUrl, extras]);
 
+  /** Igual que en tienda: slot 0 = principal (URL o vista previa `blob` si elegiste archivo nuevo). */
+  const thumbStripForVariants = useMemo(() => {
+    const base = networkCarousel.length
+      ? [...networkCarousel]
+      : mainUrl
+        ? [mainUrl]
+        : [];
+    if (filePreview?.startsWith("blob:")) {
+      if (!base.length) return [filePreview];
+      const out = [...base];
+      out[0] = filePreview;
+      return out;
+    }
+    return base.length ? base : [];
+  }, [networkCarousel, filePreview, mainUrl]);
+
   useEffect(() => {
-    onCarouselThumbsChange?.(networkCarousel);
-  }, [onCarouselThumbsChange, networkCarousel]);
+    onCarouselThumbsChange?.(thumbStripForVariants);
+  }, [onCarouselThumbsChange, thumbStripForVariants]);
 
   const appendExtraUrl = (url: string) => {
     const u = storedProductImageUrl(url);

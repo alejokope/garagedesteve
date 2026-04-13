@@ -343,17 +343,16 @@ export function VariantGroupsEditor({
                         </span>
                         {legacyUrls.length ? (
                           <p className="text-[11px] text-amber-200/90">
-                            Este color tiene fotos guardadas en el JSON (formato anterior). La tienda las sigue
-                            usando. Quitá esas URLs manualmente en JSON si querés pasar solo al carrusel del producto.
+                            Este color tenía fotos propias en el JSON (formato anterior). Elegí una miniatura abajo para
+                            pasar al carrusel del producto: al elegir se borran esas URLs viejas al guardar.
                           </p>
                         ) : null}
-                        {!legacyUrls.length && slotCount === 0 ? (
+                        {slotCount === 0 ? (
                           <p className="text-[11px] text-slate-500">
                             Subí al menos la imagen principal del producto (sección de fotos arriba) para elegir qué
                             miniatura corresponde a este color.
                           </p>
-                        ) : null}
-                        {!legacyUrls.length && slotCount > 0 ? (
+                        ) : (
                           <div className="flex flex-wrap gap-2">
                             {carouselThumbSrcs.map((src, ii) => (
                               <button
@@ -374,14 +373,14 @@ export function VariantGroupsEditor({
                                 }`}
                               >
                                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                                <img src={src} alt="" className="h-full w-full object-cover" />
+                                <img src={src} alt="" className="h-full w-full object-contain bg-black/40" />
                                 <span className="absolute bottom-0.5 left-0.5 rounded bg-black/70 px-1 text-[9px] font-medium text-white">
                                   {ii + 1}
                                 </span>
                               </button>
                             ))}
                           </div>
-                        ) : null}
+                        )}
                       </div>
                     </>
                   ) : null}

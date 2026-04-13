@@ -102,7 +102,7 @@ function SmallProductCard({
           src={catalogProductPreviewImage(p)}
           alt={p.imageAlt}
           fill
-          className="object-cover object-center"
+          className="object-contain object-center p-1.5"
           sizes="(max-width: 639px) 50vw, (max-width: 1023px) 50vw, 25vw"
         />
       </Link>

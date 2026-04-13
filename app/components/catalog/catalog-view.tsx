@@ -172,7 +172,7 @@ function CatalogCard({ p }: { p: EnrichedProduct }) {
           alt={p.imageAlt}
           fill
           sizes="(max-width: 639px) 100vw, (max-width: 1279px) 50vw, 34vw"
-          className="object-cover object-center transition duration-500 group-hover:scale-[1.02]"
+          className="object-contain object-center p-2 transition duration-500 group-hover:scale-[1.02]"
         />
         <div className="absolute right-2 top-2 flex flex-col items-end gap-1.5">
           {showDiscount ? (
