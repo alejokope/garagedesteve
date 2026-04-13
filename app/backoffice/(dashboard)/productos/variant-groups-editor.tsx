@@ -63,15 +63,7 @@ function normalizeGroups(raw: unknown): ProductVariantGroup[] {
       }
       return x;
     });
-    let defaultOptionId = g.defaultOptionId;
-    if (vk === "color") {
-      if (!defaultOptionId || !options.some((o) => o.id === defaultOptionId)) {
-        defaultOptionId = options[0]?.id;
-      }
-    } else {
-      defaultOptionId = undefined;
-    }
-    return { ...g, uiKind, options, defaultOptionId };
+    return { ...g, uiKind, options, defaultOptionId: undefined };
   });
 }
 
@@ -192,11 +184,7 @@ export function VariantGroupsEditor({
       const next = [...prev];
       const g = { ...next[gi] };
       if (g.options.length <= 1) return prev;
-      const removed = g.options[oi];
       g.options = g.options.filter((_, j) => j !== oi);
-      if (g.defaultOptionId === removed.id) {
-        g.defaultOptionId = g.options[0]?.id;
-      }
       next[gi] = g;
       return next;
     });
@@ -216,14 +204,7 @@ export function VariantGroupsEditor({
     const uiKind: VariantUiKind =
       (def?.ui_behavior as VariantUiKind) ||
       getVariantUiKind({ kind: kindId, uiKind: undefined });
-    const patch: Partial<ProductVariantGroup> = { kind: kindId, uiKind };
-    if (uiKind !== "color") {
-      patch.defaultOptionId = undefined;
-    } else {
-      const g = groups[gi];
-      if (g?.options[0]) patch.defaultOptionId = g.defaultOptionId ?? g.options[0].id;
-    }
-    updateGroup(gi, patch);
+    updateGroup(gi, { kind: kindId, uiKind, defaultOptionId: undefined });
   }
 
   return (
@@ -315,30 +296,6 @@ export function VariantGroupsEditor({
               </span>
             </label>
           </div>
-
-          {getVariantUiKind(g) === "color" ? (
-            <div className="mt-4 rounded-xl border border-violet-500/20 bg-violet-500/[0.06] px-4 py-3">
-              <p className="text-xs font-semibold text-violet-100/95">Color por defecto en la tienda</p>
-              <p className="mt-1 text-[11px] text-slate-500">
-                Opción preseleccionada al abrir la ficha. Cada color se enlaza a una foto del carrusel del producto
-                (arriba en este formulario).
-              </p>
-              <div className="mt-3 flex flex-wrap gap-3">
-                {g.options.map((opt) => (
-                  <label key={opt.id} className="flex cursor-pointer items-center gap-2 text-sm text-slate-200">
-                    <input
-                      type="radio"
-                      name={`default-color-${g.id}`}
-                      checked={g.defaultOptionId === opt.id}
-                      onChange={() => updateGroup(gi, { defaultOptionId: opt.id })}
-                      className="border-white/30 text-violet-500 focus:ring-violet-500/40"
-                    />
-                    <span>{opt.label}</span>
-                  </label>
-                ))}
-              </div>
-            </div>
-          ) : null}
 
           <div className="mt-5 space-y-3">
             <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">

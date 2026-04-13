@@ -10,8 +10,8 @@ import {
 export type { ProductStockCondition };
 
 /**
- * Miniatura en grillas: si hay grupo **color**, solo usa fotos de la opción por defecto de ese color;
- * si no tiene fotos, **siempre** la imagen principal del producto (no mezcla con fotos de otros grupos).
+ * Miniatura en grillas: si hay grupo **color**, usa la opción enlazada a la primera miniatura del carrusel
+ * (`carouselIndex === 0`) vía `defaultVariantSelections`; si no hay match, la primera opción.
  * Sin grupo color, conserva la lógica general de variantes.
  */
 export function catalogProductPreviewImage(p: Product): string {

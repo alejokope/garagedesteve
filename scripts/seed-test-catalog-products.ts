@@ -63,7 +63,6 @@ function tripleOptionIphoneVariantGroups(prefix: string, prices: { g128: number;
       uiKind: "color",
       label: "Color",
       pricingMode: "delta" as const,
-      defaultOptionId: `${prefix}-c-natural`,
       options: [
         {
           id: `${prefix}-c-natural`,
@@ -234,7 +233,6 @@ const TEST_PRODUCTS: ProductRow[] = [
         uiKind: "color",
         label: "Color",
         pricingMode: "delta",
-        defaultOptionId: "bo-test-ipad-gris",
         options: [
           { id: "bo-test-ipad-gris", label: "Gris espacial", hex: "#636366", priceDelta: 0, carouselIndex: 0 },
           { id: "bo-test-ipad-azul", label: "Azul", hex: "#64A5D9", priceDelta: 0, carouselIndex: 0 },

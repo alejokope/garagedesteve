@@ -371,7 +371,7 @@ export function ProductForm({
             Listas → Tipos de opción
           </Link>
           . Grupo tipo <strong className="text-slate-200">color</strong>: enlazá cada tono a una foto del carrusel del
-          producto (paso de imágenes). Color por defecto: misma regla en catálogo.
+          producto (paso de imágenes). En la tienda, el color inicial sigue la miniatura del carrusel (índice 0).
         </p>
       </div>
       <FieldCard>

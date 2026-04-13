@@ -54,7 +54,7 @@ export type ProductVariantGroup = {
   pricingMode: ProductVariantPricingMode;
   options: ProductVariantOption[];
   /**
-   * Opción preseleccionada al abrir la ficha (debe existir en `options`). Útil para color por defecto.
+   * Legado: ya no se usa en el BO. La preselección de **color** sigue el `carouselIndex` (p. ej. 0 = primera foto).
    */
   defaultOptionId?: string;
 };
@@ -201,15 +201,18 @@ export function defaultVariantSelections(
   if (!groups?.length) return {};
   const out: VariantSelections = {};
   for (const g of groups) {
-    const explicit =
-      g.defaultOptionId && g.options.some((o) => o.id === g.defaultOptionId)
-        ? g.options.find((o) => o.id === g.defaultOptionId)
-        : undefined;
-    const preferred =
-      explicit ??
-      (getVariantUiKind(g) === "storage"
-        ? (g.options.find((o) => o.label.includes("256")) ?? g.options[0])
-        : g.options[0]);
+    const vk = getVariantUiKind(g);
+    let preferred: ProductVariantOption | undefined;
+    if (vk === "color") {
+      preferred =
+        g.options.find(
+          (o) => typeof o.carouselIndex === "number" && Math.floor(o.carouselIndex) === 0,
+        ) ?? g.options[0];
+    } else if (vk === "storage") {
+      preferred = g.options.find((o) => o.label.includes("256")) ?? g.options[0];
+    } else {
+      preferred = g.options[0];
+    }
     if (preferred) out[g.id] = preferred.id;
   }
   return out;
