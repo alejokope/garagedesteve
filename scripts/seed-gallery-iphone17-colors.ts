@@ -179,7 +179,7 @@ async function main() {
   if (dry) {
     console.log("\n[--dry-run] Nada subido. Quitá el flag para ejecutar de verdad.");
   } else {
-    console.log("\nListo. Revisá /backoffice/galeria");
+    console.log("\nListo. Las filas quedaron en media_gallery_items (Supabase).");
   }
 }
 

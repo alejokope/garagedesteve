@@ -39,7 +39,6 @@ const nav = [
   { href: "/backoffice", label: "Inicio", icon: HomeIcon },
   { href: "/backoffice/contenido", label: "Contenido", icon: ContentIcon },
   { href: "/backoffice/productos", label: "Productos", icon: BoxIcon },
-  { href: "/backoffice/galeria", label: "Galería", icon: PhotoStackIcon },
   { href: "/backoffice/reparaciones", label: "Reparaciones", icon: ClipboardIcon },
   { href: "/backoffice/servicio-tecnico/precios", label: "Servicio — Precios", icon: WrenchIcon },
   { href: "/backoffice/listas/categorias", label: "Listas", icon: ListIcon },
@@ -94,28 +93,6 @@ function BoxIcon({ className }: { className?: string }) {
         strokeLinejoin="round"
       />
       <path d="M12 12l9-4.5M12 12v9M12 12L3 7.5" stroke="currentColor" strokeWidth="1.75" />
-    </svg>
-  );
-}
-
-function PhotoStackIcon({ className }: { className?: string }) {
-  return (
-    <svg className={className} viewBox="0 0 24 24" fill="none" aria-hidden>
-      <rect
-        x="3"
-        y="5"
-        width="14"
-        height="12"
-        rx="2"
-        stroke="currentColor"
-        strokeWidth="1.75"
-      />
-      <path
-        d="M7 3h11a2 2 0 012 2v11"
-        stroke="currentColor"
-        strokeWidth="1.75"
-        strokeLinecap="round"
-      />
     </svg>
   );
 }

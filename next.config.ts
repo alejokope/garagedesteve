@@ -38,6 +38,12 @@ const nextConfig: NextConfig = {
         hostname: "images.unsplash.com",
         pathname: "/**",
       },
+      /** URLs públicas tipo `https://pub-xxxx.r2.dev/...` (aunque el dominio custom en env sea otro). */
+      {
+        protocol: "https",
+        hostname: "*.r2.dev",
+        pathname: "/**",
+      },
       ...(host
         ? [
             {

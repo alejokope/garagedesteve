@@ -1,41 +1,10 @@
 "use server";
 
-import { deleteMediaGalleryItemById, listMediaGalleryPage } from "@/lib/backoffice/media-gallery-db";
 import {
-  uploadMediaGalleryInboxImage,
   uploadProductGalleryImage,
   uploadProductVariantOptionImage,
 } from "@/lib/backoffice/storage/product-images";
 import { requireBackofficeSession } from "@/lib/backoffice/session";
-
-export async function listMediaGalleryPageAction(page: number) {
-  await requireBackofficeSession();
-  return listMediaGalleryPage(page);
-}
-
-export async function deleteMediaGalleryItemAction(
-  id: string,
-): Promise<{ ok: true } | { error: string }> {
-  await requireBackofficeSession();
-  return deleteMediaGalleryItemById(id);
-}
-
-export async function uploadMediaGalleryInboxAction(
-  _prev: { ok?: boolean; url?: string; id?: string | null; error?: string } | null,
-  formData: FormData,
-): Promise<{ ok?: boolean; url?: string; id?: string | null; error?: string }> {
-  await requireBackofficeSession();
-  const file = formData.get("file");
-  if (!(file instanceof File) || file.size === 0) {
-    return { error: "Elegí un archivo de imagen." };
-  }
-  try {
-    const { url, id } = await uploadMediaGalleryInboxImage(file);
-    return { ok: true, url, id };
-  } catch (e) {
-    return { error: e instanceof Error ? e.message : "No se pudo subir" };
-  }
-}
 
 export async function uploadVariantOptionImageAction(
   _prev: { ok?: boolean; url?: string; error?: string } | null,
@@ -78,7 +47,7 @@ export async function uploadGalleryImageAction(
   const file = formData.get("file");
 
   if (!productId) {
-    return { error: "Completá el ID del producto (arriba) antes de subir fotos a la galería." };
+    return { error: "Completá el ID del producto (arriba) antes de subir fotos al carrusel." };
   }
   if (!(file instanceof File) || file.size === 0) {
     return { error: "Elegí un archivo de imagen." };

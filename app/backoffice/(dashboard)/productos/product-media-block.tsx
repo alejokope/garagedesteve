@@ -3,7 +3,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 
-import { MediaGalleryPicker } from "@/app/components/backoffice/media-gallery-picker";
 import {
   PRODUCT_IMAGE_MAX_EDGE_PX,
   compressProductImageFile,
@@ -42,14 +41,13 @@ export function ProductMediaBlock({
   skipNativeValidation?: boolean;
   /** Miniaturas alineadas al carrusel (índice 0 = principal); permite `blob:` en 0 mientras elegís archivo. */
   onCarouselThumbsChange?: (thumbSrcs: string[]) => void;
-  /** Subidas / galería no disparan `change` del formulario: avisá para mostrar la barra de guardar. */
+  /** Subidas no disparan `change` del formulario: avisá para mostrar la barra de guardar. */
   onMarkDirty?: () => void;
 }) {
-  const [pickedMain, setPickedMain] = useState(() => (initialImage ?? "").trim());
+  const mainUrl = (initialImage ?? "").trim();
   const [filePreview, setFilePreview] = useState<string | null>(null);
   const [hasPendingMainFile, setHasPendingMainFile] = useState(false);
   const [extras, setExtras] = useState<string[]>(() => dedupeUrls(initialGalleryExtras ?? []));
-  const [galleryOpen, setGalleryOpen] = useState<"main" | "extra" | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
   const extrasInputRef = useRef<HTMLInputElement>(null);
 
@@ -63,21 +61,19 @@ export function ProductMediaBlock({
     };
   }, [filePreview]);
 
-  const hiddenMainValue = hasPendingMainFile
-    ? ((initialImage ?? pickedMain).trim() || pickedMain.trim())
-    : pickedMain.trim() || (initialImage ?? "").trim();
+  const hiddenMainValue = mainUrl;
 
   const networkCarousel = useMemo(() => {
-    const main = (pickedMain || initialImage || "").trim();
+    const main = mainUrl;
     const parts = [main, ...extras].filter((u) => u && !u.startsWith("blob:"));
     return dedupeUrls(parts);
-  }, [pickedMain, initialImage, extras]);
+  }, [mainUrl, extras]);
 
   const thumbStrip = useMemo(() => {
     const base = networkCarousel.length
       ? [...networkCarousel]
-      : (pickedMain || initialImage || "").trim() && !(pickedMain || initialImage || "").trim().startsWith("blob:")
-        ? [(pickedMain || initialImage || "").trim()]
+      : mainUrl && !mainUrl.startsWith("blob:")
+        ? [mainUrl]
         : [];
     if (filePreview?.startsWith("blob:")) {
       if (!base.length) return [filePreview];
@@ -86,7 +82,7 @@ export function ProductMediaBlock({
       return out;
     }
     return base.length ? base : [];
-  }, [networkCarousel, filePreview, pickedMain, initialImage]);
+  }, [networkCarousel, filePreview, mainUrl]);
 
   const emitThumbs = useCallback(() => {
     onCarouselThumbsChange?.(thumbStrip);
@@ -187,10 +183,10 @@ export function ProductMediaBlock({
           <p className="text-xs font-medium text-violet-200/90">Imagen principal</p>
           <div className="mt-2 flex flex-col gap-4 sm:flex-row sm:items-start">
             <div className="relative h-40 w-full max-w-[200px] overflow-hidden rounded-xl border border-white/[0.1] bg-black/40 sm:h-44">
-              {filePreview || pickedMain || initialImage ? (
+              {filePreview || mainUrl ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
-                  src={filePreview ?? (pickedMain || initialImage || "")}
+                  src={filePreview ?? mainUrl}
                   alt=""
                   className="h-full w-full object-cover"
                 />
@@ -201,23 +197,6 @@ export function ProductMediaBlock({
               )}
             </div>
             <div className="min-w-0 flex-1 space-y-3">
-              <div className="flex flex-wrap gap-2">
-                <button
-                  type="button"
-                  onClick={() => setGalleryOpen("main")}
-                  className="rounded-lg border border-violet-500/40 bg-violet-500/15 px-3 py-2 text-xs font-medium text-violet-100/95 hover:bg-violet-500/25"
-                >
-                  Elegir de galería
-                </button>
-                <a
-                  href="/backoffice/galeria"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="rounded-lg border border-white/[0.1] px-3 py-2 text-xs text-slate-400 hover:bg-white/[0.05] hover:text-slate-200"
-                >
-                  Ver galería completa
-                </a>
-              </div>
               <label className="block">
                 <span className="mb-1.5 block text-xs font-medium text-slate-400">
                   Archivo principal (se optimiza en el navegador antes de guardar)
@@ -284,13 +263,6 @@ export function ProductMediaBlock({
             {PRODUCT_IMAGE_MAX_EDGE_PX}px, JPEG alta calidad, tope ~2,4&nbsp;MB) para equilibrar peso y nitidez.
           </p>
           <div className="mt-3 flex flex-wrap gap-2">
-            <button
-              type="button"
-              onClick={() => setGalleryOpen("extra")}
-              className="rounded-lg border border-violet-500/40 bg-violet-500/15 px-3 py-2 text-xs font-medium text-violet-100/95 hover:bg-violet-500/25"
-            >
-              + Desde galería
-            </button>
             <div className="inline-flex min-w-0 max-w-md flex-col gap-1.5">
               <span className="text-xs font-medium text-slate-400">Subir varias</span>
               <input
@@ -312,7 +284,7 @@ export function ProductMediaBlock({
               </button>
               {!canUploadToProductFolder ? (
                 <p className="text-[11px] text-amber-200/85">
-                  Necesitás el ID del producto para subir archivos nuevos; igual podés usar &quot;Desde galería&quot;.
+                  Necesitás el ID del producto para subir fotos extra al carrusel.
                 </p>
               ) : null}
             </div>
@@ -375,24 +347,6 @@ export function ProductMediaBlock({
           />
         </label>
       </div>
-
-      <MediaGalleryPicker
-        open={galleryOpen != null}
-        onClose={() => setGalleryOpen(null)}
-        onPick={(url) => {
-          if (galleryOpen === "main") {
-            setPickedMain(url);
-            setFilePreview(null);
-            setHasPendingMainFile(false);
-            if (fileRef.current) fileRef.current.value = "";
-            onMarkDirty?.();
-          } else if (galleryOpen === "extra") {
-            appendExtraUrl(url);
-          }
-          setGalleryOpen(null);
-        }}
-        title={galleryOpen === "extra" ? "Elegir imagen para el carrusel" : "Elegir imagen principal"}
-      />
     </section>
   );
 }
