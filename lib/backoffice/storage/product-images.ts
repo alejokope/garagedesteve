@@ -2,7 +2,7 @@ import "server-only";
 
 import {
   getR2BucketName,
-  isR2Configured,
+  missingR2EnvKeys,
   publicMediaUrlForKey,
   putR2PublicObject,
 } from "@/lib/backoffice/storage/r2-client";
@@ -10,9 +10,10 @@ import {
 const MAX_BYTES = 5 * 1024 * 1024;
 
 function assertR2OrThrow(): void {
-  if (!isR2Configured()) {
+  if (missingR2EnvKeys().length > 0) {
+    const missing = missingR2EnvKeys().join(", ");
     throw new Error(
-      "R2 no está configurado. Completá R2_ACCOUNT_ID, R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY, R2_BUCKET y NEXT_PUBLIC_MEDIA_URL_BASE (ver env.example).",
+      `R2 no está configurado. Falta o está vacío: ${missing}. Ver env.example; en Vercel usá Production + redeploy.`,
     );
   }
 }
