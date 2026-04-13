@@ -112,7 +112,7 @@ export function ProductMediaBlock({
     input.value = "";
     if (!snapshot.length) return;
     if (!pid) {
-      toast.error("Completá el ID del producto (paso Nombre) para subir más fotos al carrusel.");
+      toast.error("Completá el ID del producto (Nombre y textos) para subir más fotos al carrusel.");
       return;
     }
     void (async () => {
@@ -239,7 +239,7 @@ export function ProductMediaBlock({
               {mode === "create" && !pid ? (
                 <p className="text-xs text-amber-200/90">
                   Podés elegir la foto principal ya mismo; para <strong className="font-medium text-amber-100/95">más fotos
-                  del carrusel</strong> completá el ID del producto (paso Nombre).
+                  del carrusel</strong> completá el ID del producto arriba (Nombre y textos).
                 </p>
               ) : null}
             </div>

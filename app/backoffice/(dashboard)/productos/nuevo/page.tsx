@@ -29,8 +29,8 @@ export default async function NuevoProductoPage() {
             Nuevo producto
           </h1>
           <p className="mt-3 max-w-2xl text-sm leading-relaxed text-slate-400">
-            Primero completá nombre, categoría y precio (Paso 1). Las variantes y el texto extra en la página del
-            producto son opcionales: solo si lo necesitás. La categoría se gestiona en{" "}
+            Completá el formulario en una sola página (podés usar &quot;Saltar a&quot; para ir a Datos, Variantes o
+            Página del producto). Las variantes y el texto extra son opcionales. La categoría se gestiona en{" "}
             <Link href="/backoffice/listas/categorias" className="text-violet-300 underline hover:text-violet-200">
               Listas → Categorías
             </Link>

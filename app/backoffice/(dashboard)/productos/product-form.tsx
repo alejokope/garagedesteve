@@ -1,15 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import {
-  useActionState,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-  type FormEvent,
-  type ReactNode,
-} from "react";
+import { useActionState, useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
 import { toast } from "sonner";
 
 import { useBackofficeSaveBarReporter } from "@/app/components/backoffice/backoffice-save-bar";
@@ -22,11 +14,6 @@ import type { VariantKindDefinitionRow, VariantPricingModeLabelRow } from "@/lib
 import { saveProduct } from "./actions";
 import { ProductDetailEditor } from "./product-detail-editor";
 import { ProductFormSections } from "./product-form-sections";
-import {
-  getCreateWizardSteps,
-  ProductFormWizardCreate,
-  validateCreateWizardStep,
-} from "./product-form-wizard";
 import { ProductMediaBlock } from "./product-media-block";
 import { VariantGroupsEditor } from "./variant-groups-editor";
 
@@ -53,7 +40,8 @@ function CategoryHelper({ hasDbCategories }: { hasDbCategories: boolean }) {
       <p className="font-semibold text-white">¿En qué parte del catálogo va este producto?</p>
       <p className="mt-1.5 text-slate-300">
         La <strong className="text-white">categoría</strong> es el filtro de la tienda (iPhone, iPad, AirPods…). No tiene
-        nada que ver con las variantes de color o memoria: eso va en el paso <span className="text-slate-200">Variantes</span>
+        nada que ver con las variantes de color o memoria: eso va en la sección{" "}
+        <span className="text-slate-200">Variantes</span>
         , si hace falta.
       </p>
       <p className="mt-2 text-slate-400">
@@ -99,8 +87,6 @@ export function ProductForm({
       toast.error("No se pudo guardar el producto", { description: state.error });
     }
   }, [state?.error]);
-  const [wizardMode, setWizardMode] = useState(mode === "create");
-  const [wizardStep, setWizardStep] = useState(0);
   const [formDirty, setFormDirty] = useState(false);
   const [carouselThumbs, setCarouselThumbs] = useState<string[]>(() =>
     initial ? productCarouselUrls(productRowToProduct(initial)) : [],
@@ -121,14 +107,11 @@ export function ProductForm({
     }
   }, [initialGalleryImagesKey]);
 
-  const showClassicProductBar = !(mode === "create" && wizardMode);
-
   useEffect(() => {
     setFormDirty(false);
-  }, [mode, initial?.id, wizardMode]);
+  }, [mode, initial?.id]);
 
   const productSaveBarSnapshot = useMemo(() => {
-    if (!showClassicProductBar) return null;
     if (!formDirty && !pending && !state?.error) return null;
     return {
       isDirty: formDirty || Boolean(state?.error),
@@ -139,15 +122,13 @@ export function ProductForm({
         if (el instanceof HTMLFormElement) el.requestSubmit();
       },
     };
-  }, [showClassicProductBar, formDirty, pending, state?.error]);
+  }, [formDirty, pending, state?.error]);
 
   useBackofficeSaveBarReporter(productSaveBarSnapshot);
 
   const productIdForUploads = mode === "create" ? draftId.trim() : (initial?.id ?? "");
   const categoryOptions = categoryOptionsProp.length ? categoryOptionsProp : fallbackCategories;
   const hasDbCategories = categoryOptionsProp.length > 0;
-  const suppressHtmlRequired = mode === "create" && wizardMode;
-
   const selectCategoryOptions = useMemo(() => {
     const c = initial?.category?.trim();
     if (mode === "edit" && c && !categoryOptions.some((o) => o.id === c)) {
@@ -164,7 +145,7 @@ export function ProductForm({
       ? initial.category.trim()
       : (selectCategoryOptions[0]?.id ?? "iphone");
 
-  const req = !suppressHtmlRequired;
+  const req = true;
 
   const identityBlock = (
     <FieldCard>
@@ -319,7 +300,7 @@ export function ProductForm({
       initialImage={initial?.image}
       initialAlt={initial?.image_alt}
       initialGalleryExtras={initialGalleryList}
-      skipNativeValidation={suppressHtmlRequired}
+      skipNativeValidation={false}
       onCarouselThumbsChange={setCarouselThumbs}
       onMarkDirty={markFormDirty}
     />
@@ -371,7 +352,7 @@ export function ProductForm({
             Listas → Tipos de opción
           </Link>
           . Grupo tipo <strong className="text-slate-200">color</strong>: enlazá cada tono a una foto del carrusel del
-          producto (paso de imágenes). En la tienda, el color inicial sigue la miniatura del carrusel (índice 0).
+          producto (sección de fotos). En la tienda, el color inicial sigue la miniatura del carrusel (índice 0).
         </p>
       </div>
       <FieldCard>
@@ -400,33 +381,6 @@ export function ProductForm({
     </div>
   );
 
-  const introBlock = (
-    <div className="grid gap-4 sm:grid-cols-2">
-      <div className="rounded-2xl border border-violet-500/25 bg-gradient-to-br from-violet-500/15 to-indigo-500/10 p-5">
-        <p className="text-lg font-semibold text-white">Rápido y guiado</p>
-        <p className="mt-2 text-sm leading-relaxed text-slate-300">
-          Primero el nombre y el ID, después categoría y precio, las fotos del producto, y listo para publicar. Las ofertas,
-          variantes y el texto extra en la página del producto son opcionales.
-        </p>
-      </div>
-      <div className="rounded-2xl border border-white/[0.08] bg-black/20 p-5">
-        <p className="text-sm font-semibold text-white">Tips</p>
-        <ul className="mt-3 list-inside list-disc space-y-2 text-sm text-slate-400">
-          <li>El ID no se puede cambiar después: elegí algo estable (ej. modelo-color).</li>
-          <li>Sin categoría en el menú: creala en Listas antes o después y volvé acá.</li>
-          <li>Un solo guardado al final incluye variantes y texto de la página.</li>
-        </ul>
-      </div>
-    </div>
-  );
-
-  const reviewBlock = (
-    <p className="text-center text-sm text-slate-400">
-      Revisá el resumen arriba y pulsá <strong className="text-slate-200">Guardar producto</strong> cuando estés
-      listo.
-    </p>
-  );
-
   const bloqueEsencialClasico = (
     <div className="space-y-6">
       {identityBlock}
@@ -436,41 +390,11 @@ export function ProductForm({
     </div>
   );
 
-  const wizardStepsMeta = getCreateWizardSteps();
-  const wizardStepBodies =
-    mode === "create"
-      ? [
-          introBlock,
-          identityBlock,
-          storeBlock,
-          imageBlock,
-          promoBlock,
-          variantsBlock,
-          detailBlock,
-          reviewBlock,
-        ]
-      : [];
-
-  const onFormSubmit = (e: FormEvent<HTMLFormElement>) => {
-    if (mode !== "create" || !wizardMode) return;
-    const form = e.currentTarget;
-    for (let s = 1; s <= 3; s++) {
-      const err = validateCreateWizardStep(s, form);
-      if (err) {
-        e.preventDefault();
-        window.alert(`${err}\n\nTe llevamos al paso correspondiente.`);
-        setWizardStep(s);
-        return;
-      }
-    }
-  };
-
   return (
     <form
       id="bo-product-form"
       key={mode === "edit" ? (initial?.id ?? "edit") : "create"}
       action={formAction}
-      onSubmit={onFormSubmit}
       onChange={() => setFormDirty(true)}
       className="pb-28"
     >
@@ -492,98 +416,39 @@ export function ProductForm({
         </p>
       ) : null}
 
-      {mode === "create" ? (
-        <div className="mb-6 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-white/[0.1] bg-white/[0.04] px-4 py-3 sm:px-5">
-          <div>
-            <p className="text-sm font-medium text-white">Modo de creación</p>
-            <p className="text-xs text-slate-500">Asistente paso a paso o formulario completo en una página.</p>
-          </div>
-          <div className="flex rounded-xl border border-white/[0.1] p-1">
-            <button
-              type="button"
-              onClick={() => {
-                if (!wizardMode) {
-                  const ok = window.confirm(
-                    "Al volver al asistente el formulario se arma de nuevo: si escribiste algo en modo página única sin guardar, copiá los datos o guardá antes. ¿Continuar?",
-                  );
-                  if (!ok) return;
-                  setWizardStep(0);
-                }
-                setWizardMode(true);
-              }}
-              className={`rounded-lg px-4 py-2 text-sm font-medium transition ${
-                wizardMode ? "bg-violet-600 text-white shadow-md" : "text-slate-400 hover:text-white"
-              }`}
-            >
-              Asistente
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                if (wizardMode && wizardStep > 0) {
-                  const ok = window.confirm(
-                    "Al pasar a una sola página el formulario se reconstruye: lo escrito en el asistente sin guardar puede perderse. ¿Continuar?",
-                  );
-                  if (!ok) return;
-                }
-                setWizardMode(false);
-              }}
-              className={`rounded-lg px-4 py-2 text-sm font-medium transition ${
-                !wizardMode ? "bg-violet-600 text-white shadow-md" : "text-slate-400 hover:text-white"
-              }`}
-            >
-              Una página
-            </button>
-          </div>
-        </div>
-      ) : null}
+      <ProductFormSections
+        sections={[
+          {
+            id: "datos",
+            step: "Datos",
+            title: "Datos del producto en la tienda",
+            subtitle: "Nombre, categoría, precio, foto y publicación.",
+            content: bloqueEsencialClasico,
+          },
+          {
+            id: "variantes",
+            step: "Variantes",
+            title: "Variantes (color, memoria…)",
+            subtitle: "Solo si hay opciones con distinto precio.",
+            optional: true,
+            content: variantsBlock,
+          },
+          {
+            id: "texto",
+            step: "Página del producto",
+            title: "Texto en la página del producto",
+            subtitle: "Viñetas, garantía y productos relacionados. Opcional.",
+            optional: true,
+            content: detailBlock,
+          },
+        ]}
+      />
 
-      {mode === "create" && wizardMode ? (
-        <ProductFormWizardCreate
-          formId="bo-product-form"
-          steps={wizardStepsMeta}
-          stepIndex={wizardStep}
-          onStepChange={setWizardStep}
-          stepBodies={wizardStepBodies}
-          pending={pending}
-          onPreferClassic={() => setWizardMode(false)}
-        />
-      ) : (
-        <>
-          <ProductFormSections
-            sections={[
-              {
-                id: "datos",
-                step: "Paso 1",
-                title: "Datos del producto en la tienda",
-                subtitle: "Nombre, categoría, precio, foto y publicación.",
-                content: bloqueEsencialClasico,
-              },
-              {
-                id: "variantes",
-                step: "Paso 2",
-                title: "Variantes (color, memoria…)",
-                subtitle: "Solo si hay opciones con distinto precio.",
-                optional: true,
-                content: variantsBlock,
-              },
-              {
-                id: "texto",
-                step: "Paso 3",
-                title: "Texto en la página del producto",
-                subtitle: "Viñetas, garantía y productos relacionados. Opcional.",
-                optional: true,
-                content: detailBlock,
-              },
-            ]}
-          />
-
-          <p className="rounded-xl border border-violet-500/20 bg-violet-950/20 px-4 py-3 text-sm text-slate-300">
-            Los cambios quedan en el navegador hasta que pulses <strong className="text-white">Guardar cambios</strong>{" "}
-            en la barra inferior (guarda todo el producto de una vez).
-          </p>
-        </>
-      )}
+      <p className="rounded-xl border border-violet-500/20 bg-violet-950/20 px-4 py-3 text-sm text-slate-300">
+        Los cambios quedan en el navegador hasta que pulses{" "}
+        <strong className="text-white">{mode === "create" ? "Guardar producto" : "Guardar cambios"}</strong> en la barra
+        inferior (se guarda todo de una vez).
+      </p>
     </form>
   );
 }

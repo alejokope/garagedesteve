@@ -49,8 +49,8 @@ export function ProductFormSections({ sections }: { sections: ProductFormSection
           ))}
         </div>
         <p className="mt-3 text-xs leading-relaxed text-slate-500">
-          Es <span className="text-slate-300">un solo formulario</span>: no hace falta guardar en cada paso. Al final
-          pulsá <span className="text-slate-300">Guardar producto</span> y se guarda todo junto.
+          Es <span className="text-slate-300">un solo formulario</span>: no hace falta guardar por secciones. Al final
+          pulsá guardar en la barra inferior y se persiste todo junto.
         </p>
       </nav>
 
