@@ -1,3 +1,4 @@
+import type { SellableVariant } from "./sellable-variants";
 import type { ProductVariantGroup } from "./product-variants";
 
 export type CategoryId =
@@ -35,6 +36,11 @@ export type Product = {
    * Mismo shape que puede devolver un BO en el futuro.
    */
   variantGroups?: ProductVariantGroup[];
+  /**
+   * Combinaciones que realmente existen (capacidad+color+…). Vacío/absente = todas
+   * las mezclas de `variantGroups` (comportamiento anterior).
+   */
+  sellableVariants?: SellableVariant[];
   /** JSONB `detail` desde Supabase (ficha larga); si falta, se usa `lib/product-detail-data`. */
   detail?: unknown;
   /** Promoción real desde Supabase (precio tachado + %). Sin datos → no se muestra oferta. */

@@ -225,6 +225,7 @@ async function main() {
     image_alt: "Producto",
     gallery_images: [] as string[],
     variant_groups: p.variant_groups,
+    sellable_variants: [] as unknown[],
     detail: null as unknown,
     compare_at_price: null as number | null,
     discount_percent: null as number | null,

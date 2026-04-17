@@ -513,6 +513,7 @@ function rowToPayload(
     image: PLACEHOLDER_IMAGE[category] ?? PLACEHOLDER_IMAGE.otros,
     image_alt: name,
     variant_groups: variantGroups,
+    sellable_variants: [] as unknown[],
     detail,
     compare_at_price: null as number | null,
     discount_percent: null as number | null,

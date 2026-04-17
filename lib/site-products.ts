@@ -19,7 +19,7 @@ function hasSupabaseEnv(): boolean {
  * La ficha carga `detail` con {@link getPublishedProductForSite}.
  */
 export const PUBLISHED_CATALOG_LIST_COLUMNS =
-  "id,name,short,category,brand,price,stock_condition,badge,image,image_alt,gallery_images,variant_groups,compare_at_price,discount_percent,published,sort_order" as const;
+  "id,name,short,category,brand,price,stock_condition,badge,image,image_alt,gallery_images,variant_groups,sellable_variants,compare_at_price,discount_percent,published,sort_order" as const;
 
 async function fetchCategoryImageDefaultsMap(): Promise<Map<string, CategoryImageDefault>> {
   if (!hasSupabaseEnv()) return new Map();

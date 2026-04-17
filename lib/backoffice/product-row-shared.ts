@@ -3,6 +3,7 @@
  */
 import type { Product } from "@/lib/data";
 import type { ProductVariantGroup } from "@/lib/product-variants";
+import { parseSellableVariants } from "@/lib/sellable-variants";
 
 export function parseGalleryImagesColumn(raw: unknown): string[] {
   if (!Array.isArray(raw)) return [];
@@ -32,6 +33,7 @@ export type ProductRow = {
   /** JSON array en BD (`gallery_images`). */
   gallery_images: unknown;
   variant_groups: unknown;
+  sellable_variants: unknown;
   detail: unknown | null;
   compare_at_price: number | null;
   discount_percent: number | null;
@@ -47,6 +49,7 @@ export function productRowToProduct(row: ProductRow): Product {
     row.stock_condition === "new" || row.stock_condition === "used"
       ? row.stock_condition
       : undefined;
+  const sellableVariants = parseSellableVariants(row.sellable_variants);
   return {
     id: row.id,
     name: row.name,
@@ -62,6 +65,7 @@ export function productRowToProduct(row: ProductRow): Product {
     variantGroups: Array.isArray(row.variant_groups)
       ? (row.variant_groups as ProductVariantGroup[])
       : undefined,
+    ...(sellableVariants.length ? { sellableVariants } : {}),
     detail: row.detail ?? undefined,
     compareAtPrice: row.compare_at_price,
     discountPercent: row.discount_percent,

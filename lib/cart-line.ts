@@ -1,14 +1,14 @@
 import type { CartItem } from "@/lib/types";
-import {
-  describeVariantSelections,
-  resolveVariantPrice,
-} from "@/lib/product-variants";
+import { describeVariantSelections } from "@/lib/product-variants";
+import { parseSellableVariants, resolvePriceWithSellableMatrix } from "@/lib/sellable-variants";
 
 export function cartLineUnitPrice(item: CartItem): number {
-  return resolveVariantPrice(
+  const rows = parseSellableVariants(item.product.sellableVariants);
+  return resolvePriceWithSellableMatrix(
     item.product.price,
     item.product.variantGroups,
     item.variantSelections ?? {},
+    rows,
   );
 }
 

@@ -11,6 +11,8 @@ import {
 } from "@/lib/backoffice/products-db";
 import { requireBackofficeSession } from "@/lib/backoffice/session";
 import { uploadProductMainImage } from "@/lib/backoffice/storage/product-images";
+import type { ProductVariantGroup } from "@/lib/product-variants";
+import { normalizeSellableRows, validateSellableMatrix } from "@/lib/sellable-variants";
 
 function isEphemeralImageUrl(u: string): boolean {
   const t = u.trim();
@@ -135,6 +137,15 @@ export async function saveProduct(
     return { error: "variant_groups debe ser un array JSON" };
   }
 
+  const svRaw = String(formData.get("sellable_variants") ?? "");
+  const svParsed = parseJsonField(svRaw, "sellable_variants");
+  if (!svParsed.ok) return { error: svParsed.error };
+  const sellable_variants = normalizeSellableRows(
+    svParsed.value === null ? [] : svParsed.value,
+  );
+  const matrixErr = validateSellableMatrix(variant_groups as ProductVariantGroup[], sellable_variants);
+  if (matrixErr) return { error: matrixErr };
+
   const detailRaw = String(formData.get("detail") ?? "");
   const detailParsed = parseJsonField(detailRaw, "detail");
   if (!detailParsed.ok) return { error: detailParsed.error };
@@ -154,6 +165,7 @@ export async function saveProduct(
       image_alt,
       gallery_images,
       variant_groups,
+      sellable_variants,
       detail,
       compare_at_price,
       discount_percent,

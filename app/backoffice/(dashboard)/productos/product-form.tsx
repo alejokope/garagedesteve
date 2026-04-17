@@ -354,10 +354,16 @@ export function ProductForm({
           . Grupo tipo <strong className="text-slate-200">color</strong>: enlazá cada tono a una foto del carrusel del
           producto (sección de fotos). En la tienda, el color inicial sigue la miniatura del carrusel (índice 0).
         </p>
+        <p className="mt-2 text-slate-500">
+          <strong className="text-slate-200">Combinaciones vendibles</strong> (abajo): usalas cuando no todas las
+          mezclas de color/capacidad existan. Si dejás esa lista vacía, el cliente puede combinar libremente los grupos
+          (como antes).
+        </p>
       </div>
       <FieldCard>
         <VariantGroupsEditor
           initialGroups={initial?.variant_groups}
+          initialSellableVariants={initial?.sellable_variants}
           kindDefinitions={kindDefinitions}
           pricingModes={pricingModeLabels}
           carouselThumbSrcs={carouselThumbs}

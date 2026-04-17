@@ -114,6 +114,7 @@ type ProductRow = {
   image_alt: string;
   gallery_images: string[];
   variant_groups: unknown;
+  sellable_variants: unknown[];
   detail: unknown | null;
   compare_at_price: number | null;
   discount_percent: number | null;
@@ -140,6 +141,7 @@ const TEST_PRODUCTS: ProductRow[] = [
       g256: 1199,
       g512: 1349,
     }),
+    sellable_variants: [],
     detail: null,
     compare_at_price: null,
     discount_percent: null,
@@ -164,6 +166,7 @@ const TEST_PRODUCTS: ProductRow[] = [
       g256: 749,
       g512: 829,
     }),
+    sellable_variants: [],
     detail: null,
     compare_at_price: 799,
     discount_percent: 14,
@@ -207,6 +210,7 @@ const TEST_PRODUCTS: ProductRow[] = [
         ],
       },
     ],
+    sellable_variants: [],
     detail: null,
     compare_at_price: null,
     discount_percent: null,
@@ -250,6 +254,7 @@ const TEST_PRODUCTS: ProductRow[] = [
         ],
       },
     ],
+    sellable_variants: [],
     detail: null,
     compare_at_price: null,
     discount_percent: null,
@@ -282,6 +287,7 @@ const TEST_PRODUCTS: ProductRow[] = [
         ],
       },
     ],
+    sellable_variants: [],
     detail: null,
     compare_at_price: null,
     discount_percent: null,
@@ -302,6 +308,7 @@ const TEST_PRODUCTS: ProductRow[] = [
     image_alt: "Hub USB-C de prueba",
     gallery_images: [],
     variant_groups: [],
+    sellable_variants: [],
     detail: null,
     compare_at_price: 59,
     discount_percent: 27,

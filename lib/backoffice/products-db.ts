@@ -39,6 +39,7 @@ function mapRow(r: Record<string, unknown>): ProductRow {
     image_alt: r.image_alt != null ? String(r.image_alt) : "",
     gallery_images: r.gallery_images ?? [],
     variant_groups: r.variant_groups,
+    sellable_variants: r.sellable_variants ?? [],
     detail: r.detail ?? null,
     compare_at_price: r.compare_at_price != null ? num(r.compare_at_price) : null,
     discount_percent:
@@ -104,6 +105,7 @@ export type ProductUpsertInput = {
   image_alt: string;
   gallery_images: string[];
   variant_groups: unknown;
+  sellable_variants: unknown;
   detail: unknown | null;
   compare_at_price: number | null;
   discount_percent: number | null;
@@ -126,6 +128,7 @@ export async function upsertProductAdmin(row: ProductUpsertInput): Promise<void>
     image_alt: row.image_alt,
     gallery_images: row.gallery_images,
     variant_groups: row.variant_groups,
+    sellable_variants: row.sellable_variants,
     detail: row.detail,
     compare_at_price: row.compare_at_price,
     discount_percent: row.discount_percent,

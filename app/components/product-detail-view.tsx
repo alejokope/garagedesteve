@@ -29,6 +29,13 @@ import {
   resolveVariantPrice,
   type VariantSelections,
 } from "@/lib/product-variants";
+import {
+  allowedOptionIdsForGroupIndex,
+  cascadeSelectionsFromIndex,
+  defaultSelectionsWithSellable,
+  parseSellableVariants,
+  resolvePriceWithSellableMatrix,
+} from "@/lib/sellable-variants";
 import { whatsappUrl } from "@/lib/whatsapp";
 
 function isProductDetailBlock(v: unknown): v is ProductDetailBlock {
@@ -148,9 +155,25 @@ export function ProductDetailView({
     () => (Array.isArray(product.variantGroups) ? product.variantGroups : []),
     [product.variantGroups],
   );
-  const [selections, setSelections] = useState<VariantSelections>(() =>
-    defaultVariantSelections(groups),
+  const sellableRows = useMemo(
+    () => parseSellableVariants(product.sellableVariants),
+    [product.sellableVariants],
   );
+  const variantGroupsSig = useMemo(
+    () => JSON.stringify(product.variantGroups ?? []),
+    [product.variantGroups],
+  );
+  const sellableSig = useMemo(
+    () => JSON.stringify(product.sellableVariants ?? []),
+    [product.sellableVariants],
+  );
+  const [selections, setSelections] = useState<VariantSelections>(() => {
+    const g = Array.isArray(product.variantGroups) ? product.variantGroups : [];
+    const sv = parseSellableVariants(product.sellableVariants);
+    return sv.length > 0
+      ? defaultSelectionsWithSellable(g, sv, () => defaultVariantSelections(g))
+      : defaultVariantSelections(g);
+  });
 
   const productCarousel = useMemo(() => productCarouselUrls(product), [product]);
   const colorSlides = useMemo(
@@ -181,10 +204,22 @@ export function ProductDetailView({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [colorSelectionKey, heroSources.length, product.id]);
 
-  const displayPrice = resolveVariantPrice(
+  useEffect(() => {
+    const g = Array.isArray(product.variantGroups) ? product.variantGroups : [];
+    const sv = parseSellableVariants(product.sellableVariants);
+    setSelections(
+      sv.length > 0
+        ? defaultSelectionsWithSellable(g, sv, () => defaultVariantSelections(g))
+        : defaultVariantSelections(g),
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- variantGroupsSig/sellableSig cubren cambios de definición
+  }, [product.id, variantGroupsSig, sellableSig]);
+
+  const displayPrice = resolvePriceWithSellableMatrix(
     product.price,
     groups,
     selections,
+    sellableRows,
   );
   const hasDbPromo =
     enriched.compareAtPrice != null &&
@@ -200,7 +235,12 @@ export function ProductDetailView({
   const { phoneDigits, brandName: businessName } = useFloatingContact();
 
   const setVariant = (groupId: string, optionId: string) => {
-    setSelections((prev) => ({ ...prev, [groupId]: optionId }));
+    setSelections((prev) => {
+      const gi = groups.findIndex((g) => g.id === groupId);
+      if (sellableRows.length === 0 || gi < 0) return { ...prev, [groupId]: optionId };
+      const next = { ...prev, [groupId]: optionId };
+      return cascadeSelectionsFromIndex(groups, sellableRows, next, gi + 1);
+    });
   };
 
   const variantSummary = describeVariantSelections(groups, selections);
@@ -415,82 +455,92 @@ export function ProductDetailView({
               ) : null}
             </div>
 
-            {groups.map((g) => (
-              <div key={g.id} className="mt-8">
-                <p className="text-xs font-bold uppercase tracking-wider text-neutral-500">
-                  {g.label}
-                </p>
-                {getVariantUiKind(g) === "color" ? (
-                  <div className="mt-3 flex flex-wrap gap-3">
-                    {g.options.map((opt) => (
-                      <button
-                        key={opt.id}
-                        type="button"
-                        title={opt.label}
-                        onClick={() => setVariant(g.id, opt.id)}
-                        className={`h-11 w-11 rounded-xl border-2 shadow-inner transition ${
-                          selections[g.id] === opt.id
-                            ? "border-[var(--brand-from)] ring-2 ring-[var(--brand-from)]/25"
-                            : "border-neutral-200"
-                        }`}
-                        style={
-                          opt.hex
-                            ? { backgroundColor: opt.hex }
-                            : undefined
-                        }
-                      />
-                    ))}
-                  </div>
-                ) : getVariantUiKind(g) === "storage" ? (
-                  <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-4">
-                    {g.options.map((opt) => {
-                      const showPrice =
-                        g.pricingMode === "absolute" && opt.price != null
-                          ? opt.price
-                          : resolveVariantPrice(product.price, [g], {
-                              [g.id]: opt.id,
-                            });
-                      return (
+            {groups.map((g, gi) => {
+              const allowed =
+                sellableRows.length > 0
+                  ? allowedOptionIdsForGroupIndex(groups, sellableRows, gi, selections)
+                  : null;
+              const visibleOptions = allowed ? g.options.filter((opt) => allowed.includes(opt.id)) : g.options;
+              return (
+                <div key={g.id} className="mt-8">
+                  <p className="text-xs font-bold uppercase tracking-wider text-neutral-500">
+                    {g.label}
+                  </p>
+                  {getVariantUiKind(g) === "color" ? (
+                    <div className="mt-3 flex flex-wrap gap-3">
+                      {visibleOptions.map((opt) => (
+                        <button
+                          key={opt.id}
+                          type="button"
+                          title={opt.label}
+                          onClick={() => setVariant(g.id, opt.id)}
+                          className={`h-11 w-11 rounded-xl border-2 shadow-inner transition ${
+                            selections[g.id] === opt.id
+                              ? "border-[var(--brand-from)] ring-2 ring-[var(--brand-from)]/25"
+                              : "border-neutral-200"
+                          }`}
+                          style={opt.hex ? { backgroundColor: opt.hex } : undefined}
+                        />
+                      ))}
+                    </div>
+                  ) : getVariantUiKind(g) === "storage" ? (
+                    <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-4">
+                      {visibleOptions.map((opt) => {
+                        const showPrice = (() => {
+                          if (sellableRows.length === 0) {
+                            return g.pricingMode === "absolute" && opt.price != null
+                              ? opt.price
+                              : resolveVariantPrice(product.price, [g], { [g.id]: opt.id });
+                          }
+                          const trial = { ...selections, [g.id]: opt.id };
+                          const full = cascadeSelectionsFromIndex(groups, sellableRows, trial, gi + 1);
+                          return resolvePriceWithSellableMatrix(
+                            product.price,
+                            groups,
+                            full,
+                            sellableRows,
+                          );
+                        })();
+                        return (
+                          <button
+                            key={opt.id}
+                            type="button"
+                            onClick={() => setVariant(g.id, opt.id)}
+                            className={`rounded-xl border-2 px-3 py-3 text-left transition ${
+                              selections[g.id] === opt.id
+                                ? "border-[var(--brand-from)] bg-[var(--brand-from)]/5"
+                                : "border-neutral-200 bg-white hover:border-neutral-300"
+                            }`}
+                          >
+                            <span className="block text-sm font-semibold text-neutral-900">{opt.label}</span>
+                            <span className="mt-1 block text-xs font-medium text-neutral-600">
+                              {formatMoneyUsd(showPrice)}
+                            </span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  ) : (
+                    <div className="mt-3 flex flex-wrap gap-2">
+                      {visibleOptions.map((opt) => (
                         <button
                           key={opt.id}
                           type="button"
                           onClick={() => setVariant(g.id, opt.id)}
-                          className={`rounded-xl border-2 px-3 py-3 text-left transition ${
+                          className={`rounded-xl border px-4 py-2.5 text-sm font-medium transition ${
                             selections[g.id] === opt.id
-                              ? "border-[var(--brand-from)] bg-[var(--brand-from)]/5"
-                              : "border-neutral-200 bg-white hover:border-neutral-300"
+                              ? "border-[var(--brand-from)] bg-[var(--brand-from)]/10 text-[var(--brand-from)]"
+                              : "border-neutral-200 bg-white text-neutral-700 hover:border-neutral-300"
                           }`}
                         >
-                          <span className="block text-sm font-semibold text-neutral-900">
-                            {opt.label}
-                          </span>
-                          <span className="mt-1 block text-xs font-medium text-neutral-600">
-                            {formatMoneyUsd(showPrice)}
-                          </span>
+                          {opt.label}
                         </button>
-                      );
-                    })}
-                  </div>
-                ) : (
-                  <div className="mt-3 flex flex-wrap gap-2">
-                    {g.options.map((opt) => (
-                      <button
-                        key={opt.id}
-                        type="button"
-                        onClick={() => setVariant(g.id, opt.id)}
-                        className={`rounded-xl border px-4 py-2.5 text-sm font-medium transition ${
-                          selections[g.id] === opt.id
-                            ? "border-[var(--brand-from)] bg-[var(--brand-from)]/10 text-[var(--brand-from)]"
-                            : "border-neutral-200 bg-white text-neutral-700 hover:border-neutral-300"
-                        }`}
-                      >
-                        {opt.label}
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
-            ))}
+                      ))}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
 
             <div className="mt-8 grid grid-cols-2 gap-4">
               <div className="flex items-center gap-3 rounded-xl border border-emerald-200 bg-emerald-50/80 px-4 py-3">

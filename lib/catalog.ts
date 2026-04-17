@@ -6,6 +6,10 @@ import {
   optionVariantImageUrls,
   resolveVariantPrimaryImageUrl,
 } from "@/lib/product-variants";
+import {
+  defaultSelectionsWithSellable,
+  parseSellableVariants,
+} from "@/lib/sellable-variants";
 
 export type { ProductStockCondition };
 
@@ -16,7 +20,11 @@ export type { ProductStockCondition };
  */
 export function catalogProductPreviewImage(p: Product): string {
   const groups = p.variantGroups ?? [];
-  const sel = defaultVariantSelections(p.variantGroups);
+  const sellable = parseSellableVariants(p.sellableVariants);
+  const sel =
+    sellable.length > 0
+      ? defaultSelectionsWithSellable(groups, sellable, () => defaultVariantSelections(p.variantGroups))
+      : defaultVariantSelections(p.variantGroups);
   const carousel = productCarouselUrls(p);
   const colorGroup = groups.find((g) => getVariantUiKind(g) === "color");
   if (colorGroup) {
