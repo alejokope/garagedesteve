@@ -7,10 +7,11 @@ import { useFloatingContact } from "@/app/context/floating-contact-context";
 import { useSiteContact } from "@/app/context/site-contact-context";
 import { StoreRemoteImage } from "@/app/components/store-remote-image";
 import { useCart } from "@/app/context/cart-context";
+import { useTradeIn } from "@/app/context/trade-in-context";
 import { cartLineDisplayName, cartLineUnitPrice } from "@/lib/cart-line";
 import { computeCartFreeShipping } from "@/lib/cart-free-shipping";
 import { enrichProduct } from "@/lib/catalog";
-import { formatMoneyUsd } from "@/lib/format";
+import { formatMoneyUsd, formatMoneyUsdCheckout } from "@/lib/format";
 import { productCarouselUrls } from "@/lib/product-carousel";
 import { resolveVariantPrimaryImageUrl } from "@/lib/product-variants";
 import { buildWhatsAppOrderMessage, whatsappUrl } from "@/lib/whatsapp";
@@ -22,6 +23,8 @@ function formatCartMoney(n: number) {
 
 export function CartPageView() {
   const { items, remove, setQty, total, clear } = useCart();
+  const { offer: tradeInOffer, applyInCheckout, setApplyInCheckout, hydrated: tradeInHydrated } =
+    useTradeIn();
   const { products: catalogProducts, status: catalogStatus } = useCatalogProducts();
   const [note, setNote] = useState("");
   const {
@@ -35,18 +38,53 @@ export function CartPageView() {
 
   const freeShippingMin = cartFreeShippingMinUsd;
 
+  const count = items.reduce((s, i) => s + i.qty, 0);
+  const subtotal = total;
+
+  const tradeInCreditUsd =
+    tradeInHydrated &&
+    tradeInOffer &&
+    applyInCheckout &&
+    tradeInOffer.currency === "USD"
+      ? tradeInOffer.price
+      : 0;
+  const adjustedSubtotalUsd = Math.max(0, subtotal - tradeInCreditUsd);
+  const whatsappOrderTotalUsd =
+    tradeInCreditUsd > 0 && applyInCheckout ? adjustedSubtotalUsd : subtotal;
+
   const waLink = useMemo(() => {
-    const text = buildWhatsAppOrderMessage(items, total, {
+    const tradeInDetail =
+      tradeInHydrated && applyInCheckout && tradeInOffer
+        ? {
+            offer: tradeInOffer,
+            subtotalUsd: subtotal,
+            creditUsd: tradeInCreditUsd,
+            adjustedUsd:
+              tradeInCreditUsd > 0 ? adjustedSubtotalUsd : subtotal,
+          }
+        : undefined;
+    const text = buildWhatsAppOrderMessage(items, whatsappOrderTotalUsd, {
       customerNote: note,
       cartMessageTemplate,
       templateVars: messageTemplateVars,
+      tradeInDetail,
     });
     if (!phoneDigits) return null;
     return whatsappUrl(phoneDigits, text);
-  }, [items, total, note, phoneDigits, cartMessageTemplate, messageTemplateVars]);
-
-  const count = items.reduce((s, i) => s + i.qty, 0);
-  const subtotal = total;
+  }, [
+    items,
+    subtotal,
+    whatsappOrderTotalUsd,
+    note,
+    phoneDigits,
+    cartMessageTemplate,
+    messageTemplateVars,
+    tradeInHydrated,
+    applyInCheckout,
+    tradeInOffer,
+    tradeInCreditUsd,
+    adjustedSubtotalUsd,
+  ]);
 
   const { showPromo: showFreeShippingPromo, hasFreeShipping, untilFree } = useMemo(
     () => computeCartFreeShipping(cartFreeShippingEnabled, freeShippingMin, subtotal),
@@ -250,6 +288,76 @@ export function CartPageView() {
                 />
               </div>
 
+              {tradeInHydrated && tradeInOffer ? (
+                <div className="rounded-2xl border border-neutral-200/90 bg-gradient-to-br from-neutral-900 to-zinc-900 p-5 text-white shadow-lg ring-1 ring-white/10 sm:p-6">
+                  <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+                    <div>
+                      <h2 className="font-display text-base font-semibold text-white sm:text-lg">
+                        Tu celu en parte de pago
+                      </h2>
+                      <p className="mt-1 text-xs leading-relaxed text-zinc-400 sm:text-sm">
+                        Si venís desde el simulador de{" "}
+                        <Link href="/vende-tu-equipo" className="font-medium text-emerald-400 underline-offset-2 hover:underline">
+                          vendé tu equipo
+                        </Link>
+                        , podés marcar acá que lo dejás a cuenta. El total del mensaje se ajusta en{" "}
+                        <span className="font-medium text-white">USD</span> cuando la referencia del
+                        usado también está en USD.
+                      </p>
+                    </div>
+                  </div>
+                  <div className="mt-4 rounded-xl border border-white/10 bg-black/25 px-4 py-3 text-sm">
+                    <p className="font-medium text-white">{tradeInOffer.modelDisplay}</p>
+                    <p className="mt-1 text-xs text-zinc-400">
+                      {tradeInOffer.capacityGb} GB · {tradeInOffer.batteryShort} · referencia{" "}
+                      {tradeInOffer.currency === "USD" ? (
+                        <span className="font-semibold text-emerald-300 tabular-nums">
+                          {formatMoneyUsd(tradeInOffer.price)}
+                        </span>
+                      ) : (
+                        <span className="font-semibold text-amber-200 tabular-nums">
+                          {new Intl.NumberFormat("es-AR", {
+                            style: "currency",
+                            currency: "ARS",
+                            maximumFractionDigits: 0,
+                          }).format(tradeInOffer.price)}{" "}
+                          <span className="font-normal text-zinc-500">
+                            (descuento en carrito en USD lo charlamos por WhatsApp)
+                          </span>
+                        </span>
+                      )}
+                    </p>
+                  </div>
+                  <label className="mt-4 flex cursor-pointer items-start gap-3 rounded-xl border border-white/10 bg-white/[0.04] p-3.5 transition hover:bg-white/[0.07]">
+                    <input
+                      type="checkbox"
+                      checked={applyInCheckout}
+                      onChange={(e) => setApplyInCheckout(e.target.checked)}
+                      className="mt-0.5 h-4 w-4 shrink-0 rounded border-white/30 bg-zinc-900 text-emerald-500 focus:ring-emerald-500/40"
+                    />
+                    <span className="text-sm leading-snug text-zinc-200">
+                      <span className="font-semibold text-white">
+                        Dejo este equipo a cuenta del pedido
+                      </span>
+                      {tradeInOffer.currency === "USD" && tradeInOffer.price > 0 ? (
+                        <span className="mt-1 block text-xs text-zinc-400">
+                          Se resta{" "}
+                          <span className="font-semibold text-emerald-300 tabular-nums">
+                            {formatMoneyUsd(tradeInOffer.price)}
+                          </span>{" "}
+                          del subtotal en el mensaje de WhatsApp.
+                        </span>
+                      ) : (
+                        <span className="mt-1 block text-xs text-zinc-400">
+                          En el mensaje se incluye toda la info del simulador para que lo vean al
+                          cotizar.
+                        </span>
+                      )}
+                    </span>
+                  </label>
+                </div>
+              ) : null}
+
               {upsellProducts.length > 0 ? (
                 <section aria-labelledby="upsell-heading" className="pt-2">
                   <h2
@@ -321,6 +429,14 @@ export function CartPageView() {
                       {subtotal > 0 ? formatCartMoney(subtotal) : "A convenir"}
                     </dd>
                   </div>
+                  {tradeInHydrated && applyInCheckout && tradeInOffer && tradeInCreditUsd > 0 ? (
+                    <div className="flex justify-between gap-4 text-emerald-800">
+                      <dt>Usado a cuenta (ref.)</dt>
+                      <dd className="font-semibold tabular-nums">
+                        −{formatCartMoney(tradeInCreditUsd)}
+                      </dd>
+                    </div>
+                  ) : null}
                   <div className="flex justify-between gap-4 text-neutral-600">
                     <dt>Envío</dt>
                     <dd
@@ -337,7 +453,11 @@ export function CartPageView() {
                     <div className="flex justify-between gap-4">
                       <dt className="font-display text-base font-semibold text-neutral-900">Total</dt>
                       <dd className="font-display text-xl font-bold tabular-nums text-neutral-900">
-                        {subtotal > 0 ? formatCartMoney(subtotal) : "A convenir"}
+                        {subtotal > 0
+                          ? tradeInCreditUsd > 0 && applyInCheckout
+                            ? formatMoneyUsdCheckout(adjustedSubtotalUsd)
+                            : formatCartMoney(subtotal)
+                          : "A convenir"}
                       </dd>
                     </div>
                     <p className="mt-2 text-xs text-neutral-500">
@@ -381,6 +501,7 @@ export function CartPageView() {
                   onClick={() => {
                     clear();
                     setNote("");
+                    setApplyInCheckout(false);
                   }}
                   className="mt-3 w-full rounded-xl border border-neutral-200 py-3 text-sm font-medium text-neutral-600 transition hover:bg-neutral-50"
                 >
@@ -420,7 +541,11 @@ export function CartPageView() {
             <div>
               <p className="text-[11px] font-medium uppercase tracking-wide text-neutral-500">Total</p>
               <p className="font-display text-lg font-bold tabular-nums text-neutral-900">
-                {subtotal > 0 ? formatCartMoney(subtotal) : "A convenir"}
+                {subtotal > 0
+                  ? tradeInCreditUsd > 0 && applyInCheckout
+                    ? formatMoneyUsdCheckout(adjustedSubtotalUsd)
+                    : formatCartMoney(subtotal)
+                  : "A convenir"}
               </p>
             </div>
             <a

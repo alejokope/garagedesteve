@@ -5,14 +5,16 @@ import {
   type RichTemplateVars,
 } from "@/lib/floating-contact-resolve";
 import { DEFAULT_CART_MESSAGE_TEMPLATE } from "@/lib/floating-contact-schema";
-import { formatMoneyUsd } from "@/lib/format";
+import { formatMoneyUsd, formatMoneyUsdCheckout } from "@/lib/format";
 import {
   defaultSiteContactPayload,
   formatOfficesForTemplate,
   pickupAreaShortLabel,
 } from "@/lib/site-contact-schema";
 import { siteConfig } from "@/lib/site-config";
+import { formatSellPrice } from "@/lib/sell-pricing-schema";
 import type { CartItem } from "@/lib/types";
+import type { TradeInSavedOffer } from "@/lib/trade-in-offer";
 
 export { whatsappUrl } from "@/lib/whatsapp-url";
 
@@ -51,6 +53,40 @@ export function buildCartNotaBlock(customerNote?: string): string {
   return `\n\nPreferencias / consultas: ${t}`;
 }
 
+export type TradeInWhatsAppDetail = {
+  offer: TradeInSavedOffer;
+  subtotalUsd: number;
+  creditUsd: number;
+  adjustedUsd: number;
+};
+
+export function buildTradeInWhatsAppAppend(d: TradeInWhatsAppDetail): string {
+  const o = d.offer;
+  const ref = formatSellPrice(o.price, o.currency);
+  const lines: string[] = [
+    "",
+    "─── Usado en parte de pago (simulador web) ───",
+    `· Equipo: ${o.modelDisplay} · ${o.capacityGb} GB`,
+    `· Batería (${o.batteryShort}): ${o.battery}`,
+    `· Condición referida: ${o.quality}`,
+    `· Valor referencia (${o.currency}): ${ref}`,
+    `· Subtotal productos (USD): ${formatOrderMoney(d.subtotalUsd)}`,
+  ];
+  if (d.creditUsd > 0) {
+    lines.push(`· Descuento referido usado (USD): −${formatOrderMoney(d.creditUsd)}`);
+    lines.push(
+      `· Total estimado a pagar (USD): ${formatMoneyUsdCheckout(d.adjustedUsd)}`,
+    );
+  } else {
+    lines.push(
+      "· Nota: la referencia del usado no está en USD; el descuento equivalente lo coordinamos por chat.",
+    );
+    lines.push(`· Total productos (USD): ${formatOrderMoney(d.subtotalUsd)}`);
+  }
+  lines.push("(Sujeto a revisión del equipo al momento de la entrega.)");
+  return lines.join("\n");
+}
+
 function fallbackTemplateVars(businessName?: string): FabTemplateVars {
   const marca = businessName?.trim() || siteConfig.brandName;
   const c = defaultSiteContactPayload();
@@ -81,6 +117,8 @@ export function buildWhatsAppOrderMessage(
     cartMessageTemplate?: string;
     /** Variables {{marca}}, {{sitio}}, etc.; si no hay, se arma desde sitio + env. */
     templateVars?: FabTemplateVars;
+    /** Si el cliente marcó dejar el usado a cuenta en el checkout. */
+    tradeInDetail?: TradeInWhatsAppDetail;
   },
 ) {
   const baseVars = opts?.templateVars ?? fallbackTemplateVars(opts?.businessName);
@@ -95,6 +133,9 @@ export function buildWhatsAppOrderMessage(
   }
   if (!template.includes("{{nota}}") && nota) {
     body = `${body.trimEnd()}${nota}`;
+  }
+  if (opts?.tradeInDetail) {
+    body = `${body.trimEnd()}${buildTradeInWhatsAppAppend(opts.tradeInDetail)}`;
   }
   return body;
 }

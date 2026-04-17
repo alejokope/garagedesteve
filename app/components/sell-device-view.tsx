@@ -1,5 +1,8 @@
 import Link from "next/link";
 
+import { SellQuoteExperience } from "@/app/components/sell-quote-experience";
+import type { SellPricingPayload } from "@/lib/sell-pricing-schema";
+
 const steps = [
   {
     title: "Escribinos por WhatsApp",
@@ -28,12 +31,18 @@ type Props = {
   whatsappHref: string | null;
   fallbackEmail: string;
   fallbackPhone: string;
+  sellPricing: SellPricingPayload;
 };
 
-export function SellDeviceView({ whatsappHref, fallbackEmail, fallbackPhone }: Props) {
+export function SellDeviceView({
+  whatsappHref,
+  fallbackEmail,
+  fallbackPhone,
+  sellPricing,
+}: Props) {
   return (
     <div className="border-b border-[var(--border)] bg-white">
-      <div className="mx-auto max-w-3xl px-5 pb-16 pt-[calc(4rem+env(safe-area-inset-top))] sm:px-8 sm:pb-20 sm:pt-20 lg:pt-24">
+      <div className="mx-auto max-w-5xl px-4 pb-16 pt-[calc(4rem+env(safe-area-inset-top))] sm:px-8 sm:pb-20 sm:pt-20 lg:pt-24">
         <p className="text-xs font-semibold uppercase tracking-[0.2em] text-neutral-400">
           Compra de usados
         </p>
@@ -46,7 +55,14 @@ export function SellDeviceView({ whatsappHref, fallbackEmail, fallbackPhone }: P
           (modelo, capacidad, año) y del{" "}
           <strong className="font-semibold text-neutral-950">estado real</strong>: pantalla, marcos, batería, si está
           liberado y sin iCloud, y qué accesorios incluye. Con eso te pasamos una{" "}
-          <strong className="font-semibold text-neutral-950">cotización por WhatsApp</strong>, sin compromiso.
+          <strong className="font-semibold text-neutral-950">cotización por WhatsApp</strong>, sin compromiso. También
+          podés usar la{" "}
+          <strong className="font-semibold text-neutral-950">experiencia guiada</strong> de abajo y guardar cotizaciones
+          en{" "}
+          <Link href="/cotizaciones-usados" className="font-semibold text-neutral-950 underline underline-offset-2">
+            Mis cotizaciones
+          </Link>
+          , como con favoritos.
         </p>
 
         {whatsappHref ? (
@@ -68,6 +84,12 @@ export function SellDeviceView({ whatsappHref, fallbackEmail, fallbackPhone }: P
             >
               Ver productos
             </Link>
+            <Link
+              href="/cotizaciones-usados"
+              className="inline-flex h-12 items-center justify-center rounded-xl border border-neutral-200 px-6 text-sm font-semibold text-neutral-800 transition hover:border-neutral-300 hover:bg-neutral-50"
+            >
+              Mis cotizaciones
+            </Link>
           </div>
         ) : (
           <p className="mt-10 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-950">
@@ -82,6 +104,12 @@ export function SellDeviceView({ whatsappHref, fallbackEmail, fallbackPhone }: P
             para cotizar tu equipo.
           </p>
         )}
+
+        {sellPricing.rows.length > 0 ? (
+          <div className="mt-12 sm:mt-14">
+            <SellQuoteExperience config={sellPricing} whatsappHref={whatsappHref} />
+          </div>
+        ) : null}
 
         <section className="mt-16 border-t border-[var(--border)] pt-14">
           <h2 className="font-display text-xl font-semibold text-neutral-950 sm:text-2xl">Cómo funciona</h2>

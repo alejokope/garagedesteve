@@ -16,6 +16,7 @@ import { ProductFavoriteButton } from "@/app/components/product-favorite-button"
 import { StoreRemoteImage } from "@/app/components/store-remote-image";
 import { useCart } from "@/app/context/cart-context";
 import { useAckFlash } from "@/app/hooks/use-ack-flash";
+import { useBottomSheetDynamicHeight } from "@/app/hooks/use-bottom-sheet-dynamic-height";
 import {
   PAGE_SIZE,
   brandFilterOptionsFromProducts,
@@ -46,7 +47,7 @@ const CATALOG_SORT_OPTIONS = [
 ] as const satisfies ReadonlyArray<readonly [SortKey, string]>;
 
 const CATALOG_SHEET_PANEL_CLASS =
-  "transform-gpu transition-transform duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] will-change-transform";
+  "transform-gpu transition-[transform,height] duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] will-change-transform motion-reduce:transition-none";
 const CATALOG_SHEET_BACKDROP_CLASS =
   "transition-opacity duration-300 ease-out will-change-opacity";
 
@@ -554,6 +555,19 @@ export function CatalogView() {
   const sortSheetAnim = useCatalogBottomSheet(sortSheetOpen, closeSortSheetComplete);
   const filtersSheetAnim = useCatalogBottomSheet(filtersOpen, closeFiltersSheetComplete);
 
+  const sortPanelRef = useRef<HTMLDivElement>(null);
+  const filtersPanelRef = useRef<HTMLDivElement>(null);
+  const sortSheetHeight = useBottomSheetDynamicHeight(
+    sortPanelRef,
+    sortSheetOpen,
+    sortSheetAnim.entered,
+  );
+  const filtersSheetHeight = useBottomSheetDynamicHeight(
+    filtersPanelRef,
+    filtersOpen,
+    filtersSheetAnim.entered,
+  );
+
   const sortRequestCloseRef = useRef(sortSheetAnim.requestClose);
   const filtersRequestCloseRef = useRef(filtersSheetAnim.requestClose);
   useLayoutEffect(() => {
@@ -974,13 +988,21 @@ export function CatalogView() {
 
       {sortSheetOpen ? (
         <div
+          ref={sortPanelRef}
           className={`fixed bottom-0 left-0 right-0 z-[95] flex max-h-[min(55dvh,420px)] flex-col rounded-t-2xl border border-[var(--border)] border-b-0 bg-white shadow-[0_-12px_48px_-12px_rgba(0,0,0,0.18)] lg:hidden ${CATALOG_SHEET_PANEL_CLASS} ${
             sortSheetAnim.entered ? "translate-y-0" : "translate-y-full"
           }`}
           role="dialog"
           aria-modal="true"
           aria-labelledby="catalog-sort-sheet-title"
-          onTransitionEnd={sortSheetAnim.onPanelTransitionEnd}
+          onTransitionEnd={(e) => {
+            if (e.target !== e.currentTarget) return;
+            if (e.propertyName === "height") {
+              sortSheetHeight.onHeightTransitionEnd(e);
+              return;
+            }
+            sortSheetAnim.onPanelTransitionEnd(e);
+          }}
         >
           <div className="flex shrink-0 items-center justify-between gap-3 border-b border-[var(--border)] px-4 py-3">
             <h2
@@ -1051,13 +1073,21 @@ export function CatalogView() {
 
       {filtersOpen ? (
         <div
+          ref={filtersPanelRef}
           className={`fixed bottom-0 left-0 right-0 z-[95] flex max-h-[min(90dvh,720px)] flex-col rounded-t-2xl border border-[var(--border)] border-b-0 bg-white shadow-[0_-12px_48px_-12px_rgba(0,0,0,0.18)] lg:hidden ${CATALOG_SHEET_PANEL_CLASS} ${
             filtersSheetAnim.entered ? "translate-y-0" : "translate-y-full"
           }`}
           role="dialog"
           aria-modal="true"
           aria-labelledby="catalog-filters-sheet-title"
-          onTransitionEnd={filtersSheetAnim.onPanelTransitionEnd}
+          onTransitionEnd={(e) => {
+            if (e.target !== e.currentTarget) return;
+            if (e.propertyName === "height") {
+              filtersSheetHeight.onHeightTransitionEnd(e);
+              return;
+            }
+            filtersSheetAnim.onPanelTransitionEnd(e);
+          }}
         >
             <div className="flex shrink-0 items-center gap-3 border-b border-[var(--border)] px-4 py-3">
               <div className="min-w-0 flex-1">

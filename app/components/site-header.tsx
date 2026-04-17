@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useCart } from "@/app/context/cart-context";
 import { useFavorites } from "@/app/context/favorites-context";
+import { useSellQuotes } from "@/app/context/sell-quotes-context";
 import { useShopFeedback } from "@/app/context/shop-feedback-context";
 import { siteConfig } from "@/lib/site-config";
 
@@ -49,6 +50,7 @@ export function SiteHeader() {
   const [menuOpen, setMenuOpen] = useState(false);
   const { count } = useCart();
   const { count: favCount } = useFavorites();
+  const { count: quotesCount } = useSellQuotes();
   const { cartPulseGeneration, favPulseGeneration } = useShopFeedback();
   /** Evita mismatch de hidratación si el HTML del servidor quedó cacheado (Turbopack/HMR) distinto al bundle del cliente. */
   const [desktopNavReady, setDesktopNavReady] = useState(false);
@@ -117,7 +119,7 @@ export function SiteHeader() {
           <div className="flex shrink-0 items-center gap-0.5 sm:gap-1">
             <Link
               href="/favoritos"
-              className="relative hidden h-11 w-11 items-center justify-center rounded-xl text-neutral-700 transition-colors hover:bg-neutral-100 sm:flex"
+              className="relative flex h-11 w-11 items-center justify-center rounded-xl text-neutral-700 transition-colors hover:bg-neutral-100"
               aria-label={`Favoritos${favCount ? `, ${favCount} guardados` : ""}`}
             >
               <span
@@ -146,6 +148,20 @@ export function SiteHeader() {
               {favCount > 0 ? (
                 <span className="absolute -right-0.5 -top-0.5 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-bold text-white shadow-sm">
                   {favCount > 99 ? "99+" : favCount}
+                </span>
+              ) : null}
+            </Link>
+            <Link
+              href="/cotizaciones-usados"
+              className="relative flex h-11 w-11 items-center justify-center rounded-xl text-neutral-700 transition-colors hover:bg-neutral-100"
+              aria-label={`Mis cotizaciones${quotesCount ? `, ${quotesCount} guardadas` : ""}`}
+            >
+              <svg className="h-[22px] w-[22px]" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" aria-hidden>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+              {quotesCount > 0 ? (
+                <span className="absolute -right-0.5 -top-0.5 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-emerald-600 px-1 text-[10px] font-bold text-white shadow-sm">
+                  {quotesCount > 99 ? "99+" : quotesCount}
                 </span>
               ) : null}
             </Link>

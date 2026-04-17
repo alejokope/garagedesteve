@@ -21,6 +21,25 @@ function WrenchIcon({ className }: { className?: string }) {
   );
 }
 
+function BanknoteIcon({ className }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" aria-hidden>
+      <path
+        d="M6 5h12a2 2 0 012 2v10a2 2 0 01-2 2H6a2 2 0 01-2-2V7a2 2 0 012-2z"
+        stroke="currentColor"
+        strokeWidth="1.75"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M9 9c0 1.5 1.5 2 3 2s3-.5 3-2M9 15h6M12 7v2"
+        stroke="currentColor"
+        strokeWidth="1.75"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
+
 function ClipboardIcon({ className }: { className?: string }) {
   return (
     <svg className={className} viewBox="0 0 24 24" fill="none" aria-hidden>
@@ -41,6 +60,7 @@ const nav = [
   { href: "/backoffice/productos", label: "Productos", icon: BoxIcon },
   { href: "/backoffice/reparaciones", label: "Reparaciones", icon: ClipboardIcon },
   { href: "/backoffice/servicio-tecnico/precios", label: "Servicio — Precios", icon: WrenchIcon },
+  { href: "/backoffice/vende-tu-equipo/precios", label: "Vendé — Simulador", icon: BanknoteIcon },
   { href: "/backoffice/listas/categorias", label: "Listas", icon: ListIcon },
 ] as const;
 
