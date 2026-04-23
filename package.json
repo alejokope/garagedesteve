@@ -19,7 +19,14 @@
     "restore:seven-demo": "tsx scripts/restore-seven-demo-products.ts --yes",
     "restore:seven-demo:dry": "tsx scripts/restore-seven-demo-products.ts --dry-run",
     "seed:test-catalog": "tsx scripts/seed-test-catalog-products.ts",
-    "seed:test-catalog:dry": "tsx scripts/seed-test-catalog-products.ts --dry-run"
+    "seed:test-catalog:dry": "tsx scripts/seed-test-catalog-products.ts --dry-run",
+    "build:products:tsv": "tsx scripts/build-products-from-price-tsv.ts",
+    "build:products:usados:tsv": "tsx scripts/build-products-from-usados-tsv.ts --write data/generated-usados-plancha.json",
+    "build:products:otras:tsv": "tsx scripts/build-products-from-otras-marcas-tsv.ts --write data/generated-otras-marcas.json",
+    "inject:products:json": "tsx scripts/inject-products-json.ts",
+    "inject:products:json:dry": "tsx scripts/inject-products-json.ts --dry-run",
+    "delete:products:json": "tsx scripts/delete-products-by-json.ts",
+    "delete:products:json:dry": "tsx scripts/delete-products-by-json.ts --dry-run"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1029.0",

@@ -1,0 +1,1526 @@
+[
+  {
+    "id": "otras-smartphones-a16-ds",
+    "name": "A16 DS",
+    "short": "Consultá garantía · Precios referencia USD",
+    "category": "smartphones",
+    "brand": "Samsung",
+    "price": 240,
+    "stock_condition": "new",
+    "badge": "Nuevo",
+    "image": "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800&q=80",
+    "image_alt": "A16 DS",
+    "variant_groups": [
+      {
+        "id": "color",
+        "kind": "color",
+        "uiKind": "color",
+        "label": "Color",
+        "pricingMode": "absolute",
+        "options": [
+          {
+            "id": "color-blue-black-light-gray-0",
+            "label": "Blue, Black. Light Gray,",
+            "price": 260
+          },
+          {
+            "id": "color-gray-1",
+            "label": "Gray",
+            "price": 240
+          }
+        ]
+      }
+    ],
+    "sellable_variants": [],
+    "detail": {
+      "images": [],
+      "longDescription": "Equipo nuevo. Consultá stock de colores y versiones.\n\nPrecios en USD referencia.",
+      "descriptionItems": [
+        "Equipo nuevo. Consultá stock de colores y versiones.",
+        "Precios en USD referencia."
+      ],
+      "specs": [],
+      "relatedIds": [],
+      "accessoryIds": [],
+      "reviews": []
+    },
+    "compare_at_price": null,
+    "discount_percent": null,
+    "published": true,
+    "sort_order": 5524,
+    "updated_at": "2026-04-23T18:55:54.662Z"
+  },
+  {
+    "id": "otras-smartphones-a26-ds",
+    "name": "A26 DS",
+    "short": "Consultá garantía · Precios referencia USD",
+    "category": "smartphones",
+    "brand": "Samsung",
+    "price": 330,
+    "stock_condition": "new",
+    "badge": "Nuevo",
+    "image": "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800&q=80",
+    "image_alt": "A26 DS",
+    "variant_groups": [],
+    "sellable_variants": [],
+    "detail": {
+      "images": [],
+      "longDescription": "Equipo nuevo. Consultá stock de colores y versiones.\n\nPrecios en USD referencia.",
+      "descriptionItems": [
+        "Equipo nuevo. Consultá stock de colores y versiones.",
+        "Precios en USD referencia."
+      ],
+      "specs": [],
+      "relatedIds": [],
+      "accessoryIds": [],
+      "reviews": []
+    },
+    "compare_at_price": null,
+    "discount_percent": null,
+    "published": true,
+    "sort_order": 5525,
+    "updated_at": "2026-04-23T18:55:54.662Z"
+  },
+  {
+    "id": "otras-smartphones-a36-ds",
+    "name": "A36 DS",
+    "short": "Consultá garantía · Precios referencia USD",
+    "category": "smartphones",
+    "brand": "Samsung",
+    "price": 390,
+    "stock_condition": "new",
+    "badge": "Nuevo",
+    "image": "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800&q=80",
+    "image_alt": "A36 DS",
+    "variant_groups": [],
+    "sellable_variants": [],
+    "detail": {
+      "images": [],
+      "longDescription": "Equipo nuevo. Consultá stock de colores y versiones.\n\nPrecios en USD referencia.",
+      "descriptionItems": [
+        "Equipo nuevo. Consultá stock de colores y versiones.",
+        "Precios en USD referencia."
+      ],
+      "specs": [],
+      "relatedIds": [],
+      "accessoryIds": [],
+      "reviews": []
+    },
+    "compare_at_price": null,
+    "discount_percent": null,
+    "published": true,
+    "sort_order": 5526,
+    "updated_at": "2026-04-23T18:55:54.662Z"
+  },
+  {
+    "id": "otras-smartphones-a56-ds-graph-gray",
+    "name": "A56 DS Graph/Gray",
+    "short": "Consultá garantía · Precios referencia USD",
+    "category": "smartphones",
+    "brand": "Samsung",
+    "price": 460,
+    "stock_condition": "new",
+    "badge": "Nuevo",
+    "image": "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800&q=80",
+    "image_alt": "A56 DS Graph/Gray",
+    "variant_groups": [],
+    "sellable_variants": [],
+    "detail": {
+      "images": [],
+      "longDescription": "Equipo nuevo. Consultá stock de colores y versiones.\n\nPrecios en USD referencia.",
+      "descriptionItems": [
+        "Equipo nuevo. Consultá stock de colores y versiones.",
+        "Precios en USD referencia."
+      ],
+      "specs": [],
+      "relatedIds": [],
+      "accessoryIds": [],
+      "reviews": []
+    },
+    "compare_at_price": null,
+    "discount_percent": null,
+    "published": true,
+    "sort_order": 5527,
+    "updated_at": "2026-04-23T18:55:54.662Z"
+  },
+  {
+    "id": "otras-audio-airpods-2da-generacion",
+    "name": "Airpods 2da generacion",
+    "short": "Consultá garantía · Precios referencia USD",
+    "category": "audio",
+    "brand": "Apple",
+    "price": 50,
+    "stock_condition": "new",
+    "badge": "Nuevo",
+    "image": "https://images.unsplash.com/photo-1606220945770-b2b6c2c2bfb0?w=800&q=80",
+    "image_alt": "Airpods 2da generacion",
+    "variant_groups": [],
+    "sellable_variants": [],
+    "detail": {
+      "images": [],
+      "longDescription": "Equipo nuevo. Consultá stock de colores y versiones.\n\nPrecios en USD referencia.",
+      "descriptionItems": [
+        "Equipo nuevo. Consultá stock de colores y versiones.",
+        "Precios en USD referencia."
+      ],
+      "specs": [],
+      "relatedIds": [],
+      "accessoryIds": [],
+      "reviews": []
+    },
+    "compare_at_price": null,
+    "discount_percent": null,
+    "published": true,
+    "sort_order": 5501,
+    "updated_at": "2026-04-23T18:55:54.662Z"
+  },
+  {
+    "id": "otras-audio-bose-quietcomfort-360",
+    "name": "Bose QuietComfort 360",
+    "short": "Consultá garantía · Precios referencia USD",
+    "category": "audio",
+    "brand": "Bose",
+    "price": 55,
+    "stock_condition": "new",
+    "badge": "Nuevo",
+    "image": "https://images.unsplash.com/photo-1606220945770-b2b6c2c2bfb0?w=800&q=80",
+    "image_alt": "Bose QuietComfort 360",
+    "variant_groups": [],
+    "sellable_variants": [],
+    "detail": {
+      "images": [],
+      "longDescription": "Equipo nuevo. Consultá stock de colores y versiones.\n\nPrecios en USD referencia.",
+      "descriptionItems": [
+        "Equipo nuevo. Consultá stock de colores y versiones.",
+        "Precios en USD referencia."
+      ],
+      "specs": [],
+      "relatedIds": [],
+      "accessoryIds": [],
+      "reviews": []
+    },
+    "compare_at_price": null,
+    "discount_percent": null,
+    "published": true,
+    "sort_order": 5502,
+    "updated_at": "2026-04-23T18:55:54.662Z"
+  },
+  {
+    "id": "otras-audio-bose-quietcomfort-45ii",
+    "name": "Bose QuietComfort 45II",
+    "short": "Consultá garantía · Precios referencia USD",
+    "category": "audio",
+    "brand": "Bose",
+    "price": 55,
+    "stock_condition": "new",
+    "badge": "Nuevo",
+    "image": "https://images.unsplash.com/photo-1606220945770-b2b6c2c2bfb0?w=800&q=80",
+    "image_alt": "Bose QuietComfort 45II",
+    "variant_groups": [],
+    "sellable_variants": [],
+    "detail": {
+      "images": [],
+      "longDescription": "Equipo nuevo. Consultá stock de colores y versiones.\n\nPrecios en USD referencia.",
+      "descriptionItems": [
+        "Equipo nuevo. Consultá stock de colores y versiones.",
+        "Precios en USD referencia."
+      ],
+      "specs": [],
+      "relatedIds": [],
+      "accessoryIds": [],
+      "reviews": []
+    },
+    "compare_at_price": null,
+    "discount_percent": null,
+    "published": true,
+    "sort_order": 5503,
+    "updated_at": "2026-04-23T18:55:54.662Z"
+  },
+  {
+    "id": "otras-audio-jbl-authentics-500",
+    "name": "JBL AUTHENTICS 500",
+    "short": "Consultá garantía · Precios referencia USD",
+    "category": "audio",
+    "brand": "Jbl",
+    "price": 710,
+    "stock_condition": "new",
+    "badge": "Nuevo",
+    "image": "https://images.unsplash.com/photo-1606220945770-b2b6c2c2bfb0?w=800&q=80",
+    "image_alt": "JBL AUTHENTICS 500",
+    "variant_groups": [],
+    "sellable_variants": [],
+    "detail": {
+      "images": [],
+      "longDescription": "Equipo nuevo. Consultá stock de colores y versiones.\n\nPrecios en USD referencia.",
+      "descriptionItems": [
+        "Equipo nuevo. Consultá stock de colores y versiones.",
+        "Precios en USD referencia."
+      ],
+      "specs": [],
+      "relatedIds": [],
+      "accessoryIds": [],
+      "reviews": []
+    },
+    "compare_at_price": null,
+    "discount_percent": null,
+    "published": true,
+    "sort_order": 5514,
+    "updated_at": "2026-04-23T18:55:54.662Z"
+  },
+  {
+    "id": "otras-audio-jbl-boombox-3",
+    "name": "JBL BOOMBOX 3",
+    "short": "Consultá garantía · Precios referencia USD",
+    "category": "audio",
+    "brand": "Jbl",
+    "price": 500,
+    "stock_condition": "new",
+    "badge": "Nuevo",
+    "image": "https://images.unsplash.com/photo-1606220945770-b2b6c2c2bfb0?w=800&q=80",
+    "image_alt": "JBL BOOMBOX 3",
+    "variant_groups": [],
+    "sellable_variants": [],
+    "detail": {
+      "images": [],
+      "longDescription": "Equipo nuevo. Consultá stock de colores y versiones.\n\nPrecios en USD referencia.",
+      "descriptionItems": [
+        "Equipo nuevo. Consultá stock de colores y versiones.",
+        "Precios en USD referencia."
+      ],
+      "specs": [],
+      "relatedIds": [],
+      "accessoryIds": [],
+      "reviews": []
+    },
+    "compare_at_price": null,
+    "discount_percent": null,
+    "published": true,
+    "sort_order": 5510,
+    "updated_at": "2026-04-23T18:55:54.662Z"
+  },
+  {
+    "id": "otras-audio-jbl-boombox-3-wifi",
+    "name": "JBL BOOMBOX 3 WIFI",
+    "short": "Consultá garantía · Precios referencia USD",
+    "category": "audio",
+    "brand": "Jbl",
+    "price": 540,
+    "stock_condition": "new",
+    "badge": "Nuevo",
+    "image": "https://images.unsplash.com/photo-1606220945770-b2b6c2c2bfb0?w=800&q=80",
+    "image_alt": "JBL BOOMBOX 3 WIFI",
+    "variant_groups": [],
+    "sellable_variants": [],
+    "detail": {
+      "images": [],
+      "longDescription": "Equipo nuevo. Consultá stock de colores y versiones.\n\nPrecios en USD referencia.",
+      "descriptionItems": [
+        "Equipo nuevo. Consultá stock de colores y versiones.",
+        "Precios en USD referencia."
+      ],
+      "specs": [],
+      "relatedIds": [],
+      "accessoryIds": [],
+      "reviews": []
+    },
+    "compare_at_price": null,
+    "discount_percent": null,
+    "published": true,
+    "sort_order": 5511,
+    "updated_at": "2026-04-23T18:55:54.662Z"
+  },
+  {
+    "id": "otras-audio-jbl-charge-5",
+    "name": "JBL CHARGE 5",
+    "short": "Consultá garantía · Precios referencia USD",
+    "category": "audio",
+    "brand": "Jbl",
+    "price": 190,
+    "stock_condition": "new",
+    "badge": "Nuevo",
+    "image": "https://images.unsplash.com/photo-1606220945770-b2b6c2c2bfb0?w=800&q=80",
+    "image_alt": "JBL CHARGE 5",
+    "variant_groups": [],
+    "sellable_variants": [],
+    "detail": {
+      "images": [],
+      "longDescription": "Equipo nuevo. Consultá stock de colores y versiones.\n\nPrecios en USD referencia.",
+      "descriptionItems": [
+        "Equipo nuevo. Consultá stock de colores y versiones.",
+        "Precios en USD referencia."
+      ],
+      "specs": [],
+      "relatedIds": [],
+      "accessoryIds": [],
+      "reviews": []
+    },
+    "compare_at_price": null,
+    "discount_percent": null,
+    "published": true,
+    "sort_order": 5508,
+    "updated_at": "2026-04-23T18:55:54.662Z"
+  },
+  {
+    "id": "otras-audio-jbl-charge-6",
+    "name": "JBL CHARGE 6",
+    "short": "Consultá garantía · Precios referencia USD",
+    "category": "audio",
+    "brand": "Jbl",
+    "price": 230,
+    "stock_condition": "new",
+    "badge": "Nuevo",
+    "image": "https://images.unsplash.com/photo-1606220945770-b2b6c2c2bfb0?w=800&q=80",
+    "image_alt": "JBL CHARGE 6",
+    "variant_groups": [],
+    "sellable_variants": [],
+    "detail": {
+      "images": [],
+      "longDescription": "Equipo nuevo. Consultá stock de colores y versiones.\n\nPrecios en USD referencia.",
+      "descriptionItems": [
+        "Equipo nuevo. Consultá stock de colores y versiones.",
+        "Precios en USD referencia."
+      ],
+      "specs": [],
+      "relatedIds": [],
+      "accessoryIds": [],
+      "reviews": []
+    },
+    "compare_at_price": null,
+    "discount_percent": null,
+    "published": true,
+    "sort_order": 5509,
+    "updated_at": "2026-04-23T18:55:54.662Z"
+  },
+  {
+    "id": "otras-audio-jbl-flip-7",
+    "name": "JBL FLIP 7",
+    "short": "Consultá garantía · Precios referencia USD",
+    "category": "audio",
+    "brand": "Jbl",
+    "price": 195,
+    "stock_condition": "new",
+    "badge": "Nuevo",
+    "image": "https://images.unsplash.com/photo-1606220945770-b2b6c2c2bfb0?w=800&q=80",
+    "image_alt": "JBL FLIP 7",
+    "variant_groups": [],
+    "sellable_variants": [],
+    "detail": {
+      "images": [],
+      "longDescription": "Equipo nuevo. Consultá stock de colores y versiones.\n\nPrecios en USD referencia.",
+      "descriptionItems": [
+        "Equipo nuevo. Consultá stock de colores y versiones.",
+        "Precios en USD referencia."
+      ],
+      "specs": [],
+      "relatedIds": [],
+      "accessoryIds": [],
+      "reviews": []
+    },
+    "compare_at_price": null,
+    "discount_percent": null,
+    "published": true,
+    "sort_order": 5507,
+    "updated_at": "2026-04-23T18:55:54.662Z"
+  },
+  {
+    "id": "otras-audio-jbl-partybox-essential-encore-2",
+    "name": "JBL PARTYBOX ESSENTIAL ENCORE 2",
+    "short": "Consultá garantía · Precios referencia USD",
+    "category": "audio",
+    "brand": "Jbl",
+    "price": 400,
+    "stock_condition": "new",
+    "badge": "Nuevo",
+    "image": "https://images.unsplash.com/photo-1606220945770-b2b6c2c2bfb0?w=800&q=80",
+    "image_alt": "JBL PARTYBOX ESSENTIAL ENCORE 2",
+    "variant_groups": [],
+    "sellable_variants": [],
+    "detail": {
+      "images": [],
+      "longDescription": "Equipo nuevo. Consultá stock de colores y versiones.\n\nPrecios en USD referencia.",
+      "descriptionItems": [
+        "Equipo nuevo. Consultá stock de colores y versiones.",
+        "Precios en USD referencia."
+      ],
+      "specs": [],
+      "relatedIds": [],
+      "accessoryIds": [],
+      "reviews": []
+    },
+    "compare_at_price": null,
+    "discount_percent": null,
+    "published": true,
+    "sort_order": 5512,
+    "updated_at": "2026-04-23T18:55:54.662Z"
+  },
+  {
+    "id": "otras-audio-jbl-rgb-tune-a8",
+    "name": "JBL RGB TUNE A8",
+    "short": "Consultá garantía · Precios referencia USD",
+    "category": "audio",
+    "brand": "Jbl",
+    "price": 55,
+    "stock_condition": "new",
+    "badge": "Nuevo",
+    "image": "https://images.unsplash.com/photo-1606220945770-b2b6c2c2bfb0?w=800&q=80",
+    "image_alt": "JBL RGB TUNE A8",
+    "variant_groups": [],
+    "sellable_variants": [],
+    "detail": {
+      "images": [],
+      "longDescription": "Equipo nuevo. Consultá stock de colores y versiones.\n\nPrecios en USD referencia.",
+      "descriptionItems": [
+        "Equipo nuevo. Consultá stock de colores y versiones.",
+        "Precios en USD referencia."
+      ],
+      "specs": [],
+      "relatedIds": [],
+      "accessoryIds": [],
+      "reviews": []
+    },
+    "compare_at_price": null,
+    "discount_percent": null,
+    "published": true,
+    "sort_order": 5505,
+    "updated_at": "2026-04-23T18:55:54.662Z"
+  },
+  {
+    "id": "otras-audio-jbl-soundbar-500-pro",
+    "name": "JBL SOUNDBAR 500 PRO",
+    "short": "Consultá garantía · Precios referencia USD",
+    "category": "audio",
+    "brand": "Jbl",
+    "price": 550,
+    "stock_condition": "new",
+    "badge": "Nuevo",
+    "image": "https://images.unsplash.com/photo-1606220945770-b2b6c2c2bfb0?w=800&q=80",
+    "image_alt": "JBL SOUNDBAR 500 PRO",
+    "variant_groups": [],
+    "sellable_variants": [],
+    "detail": {
+      "images": [],
+      "longDescription": "Equipo nuevo. Consultá stock de colores y versiones.\n\nPrecios en USD referencia.",
+      "descriptionItems": [
+        "Equipo nuevo. Consultá stock de colores y versiones.",
+        "Precios en USD referencia."
+      ],
+      "specs": [],
+      "relatedIds": [],
+      "accessoryIds": [],
+      "reviews": []
+    },
+    "compare_at_price": null,
+    "discount_percent": null,
+    "published": true,
+    "sort_order": 5513,
+    "updated_at": "2026-04-23T18:55:54.662Z"
+  },
+  {
+    "id": "otras-audio-jbl-tune-900",
+    "name": "JBL Tune 900",
+    "short": "Consultá garantía · Precios referencia USD",
+    "category": "audio",
+    "brand": "Jbl",
+    "price": 55,
+    "stock_condition": "new",
+    "badge": "Nuevo",
+    "image": "https://images.unsplash.com/photo-1606220945770-b2b6c2c2bfb0?w=800&q=80",
+    "image_alt": "JBL Tune 900",
+    "variant_groups": [],
+    "sellable_variants": [],
+    "detail": {
+      "images": [],
+      "longDescription": "Equipo nuevo. Consultá stock de colores y versiones.\n\nPrecios en USD referencia.",
+      "descriptionItems": [
+        "Equipo nuevo. Consultá stock de colores y versiones.",
+        "Precios en USD referencia."
+      ],
+      "specs": [],
+      "relatedIds": [],
+      "accessoryIds": [],
+      "reviews": []
+    },
+    "compare_at_price": null,
+    "discount_percent": null,
+    "published": true,
+    "sort_order": 5504,
+    "updated_at": "2026-04-23T18:55:54.662Z"
+  },
+  {
+    "id": "otras-audio-jbl-xtreme-4",
+    "name": "JBL XTREME 4",
+    "short": "Consultá garantía · Precios referencia USD",
+    "category": "audio",
+    "brand": "Jbl",
+    "price": 350,
+    "stock_condition": "new",
+    "badge": "Nuevo",
+    "image": "https://images.unsplash.com/photo-1606220945770-b2b6c2c2bfb0?w=800&q=80",
+    "image_alt": "JBL XTREME 4",
+    "variant_groups": [],
+    "sellable_variants": [],
+    "detail": {
+      "images": [],
+      "longDescription": "Equipo nuevo. Consultá stock de colores y versiones.\n\nPrecios en USD referencia.",
+      "descriptionItems": [
+        "Equipo nuevo. Consultá stock de colores y versiones.",
+        "Precios en USD referencia."
+      ],
+      "specs": [],
+      "relatedIds": [],
+      "accessoryIds": [],
+      "reviews": []
+    },
+    "compare_at_price": null,
+    "discount_percent": null,
+    "published": true,
+    "sort_order": 5506,
+    "updated_at": "2026-04-23T18:55:54.662Z"
+  },
+  {
+    "id": "otras-consolas-joystick-dualsense",
+    "name": "Joystick Dualsense",
+    "short": "Consultá garantía · Precios referencia USD",
+    "category": "consolas",
+    "brand": "Sony",
+    "price": 150,
+    "stock_condition": "new",
+    "badge": "Nuevo",
+    "image": "https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?w=800&q=80",
+    "image_alt": "Joystick Dualsense",
+    "variant_groups": [],
+    "sellable_variants": [],
+    "detail": {
+      "images": [],
+      "longDescription": "Equipo nuevo. Consultá stock de colores y versiones.\n\nPrecios en USD referencia.",
+      "descriptionItems": [
+        "Equipo nuevo. Consultá stock de colores y versiones.",
+        "Precios en USD referencia."
+      ],
+      "specs": [],
+      "relatedIds": [],
+      "accessoryIds": [],
+      "reviews": []
+    },
+    "compare_at_price": null,
+    "discount_percent": null,
+    "published": true,
+    "sort_order": 5523,
+    "updated_at": "2026-04-23T18:55:54.662Z"
+  },
+  {
+    "id": "otras-smartphones-motorola-edge-50-fusion",
+    "name": "Motorola Edge 50 Fusion",
+    "short": "Consultá garantía · Precios referencia USD",
+    "category": "smartphones",
+    "brand": "Motorola",
+    "price": 340,
+    "stock_condition": "new",
+    "badge": "Nuevo",
+    "image": "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800&q=80",
+    "image_alt": "Motorola Edge 50 Fusion",
+    "variant_groups": [],
+    "sellable_variants": [],
+    "detail": {
+      "images": [],
+      "longDescription": "Equipo nuevo. Consultá stock de colores y versiones.\n\nPrecios en USD referencia.",
+      "descriptionItems": [
+        "Equipo nuevo. Consultá stock de colores y versiones.",
+        "Precios en USD referencia."
+      ],
+      "specs": [],
+      "relatedIds": [],
+      "accessoryIds": [],
+      "reviews": []
+    },
+    "compare_at_price": null,
+    "discount_percent": null,
+    "published": true,
+    "sort_order": 5543,
+    "updated_at": "2026-04-23T18:55:54.663Z"
+  },
+  {
+    "id": "otras-smartphones-motorola-edge-50-pro",
+    "name": "Motorola Edge 50 Pro",
+    "short": "Consultá garantía · Precios referencia USD",
+    "category": "smartphones",
+    "brand": "Motorola",
+    "price": 560,
+    "stock_condition": "new",
+    "badge": "Nuevo",
+    "image": "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800&q=80",
+    "image_alt": "Motorola Edge 50 Pro",
+    "variant_groups": [],
+    "sellable_variants": [],
+    "detail": {
+      "images": [],
+      "longDescription": "Equipo nuevo. Consultá stock de colores y versiones.\n\nPrecios en USD referencia.",
+      "descriptionItems": [
+        "Equipo nuevo. Consultá stock de colores y versiones.",
+        "Precios en USD referencia."
+      ],
+      "specs": [],
+      "relatedIds": [],
+      "accessoryIds": [],
+      "reviews": []
+    },
+    "compare_at_price": null,
+    "discount_percent": null,
+    "published": true,
+    "sort_order": 5544,
+    "updated_at": "2026-04-23T18:55:54.663Z"
+  },
+  {
+    "id": "otras-smartphones-motorola-g15",
+    "name": "Motorola G15",
+    "short": "Consultá garantía · Precios referencia USD",
+    "category": "smartphones",
+    "brand": "Motorola",
+    "price": 230,
+    "stock_condition": "new",
+    "badge": "Nuevo",
+    "image": "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800&q=80",
+    "image_alt": "Motorola G15",
+    "variant_groups": [],
+    "sellable_variants": [],
+    "detail": {
+      "images": [],
+      "longDescription": "Equipo nuevo. Consultá stock de colores y versiones.\n\nPrecios en USD referencia.",
+      "descriptionItems": [
+        "Equipo nuevo. Consultá stock de colores y versiones.",
+        "Precios en USD referencia."
+      ],
+      "specs": [],
+      "relatedIds": [],
+      "accessoryIds": [],
+      "reviews": []
+    },
+    "compare_at_price": null,
+    "discount_percent": null,
+    "published": true,
+    "sort_order": 5540,
+    "updated_at": "2026-04-23T18:55:54.663Z"
+  },
+  {
+    "id": "otras-smartphones-motorola-g55",
+    "name": "Motorola G55",
+    "short": "Consultá garantía · Precios referencia USD",
+    "category": "smartphones",
+    "brand": "Motorola",
+    "price": 280,
+    "stock_condition": "new",
+    "badge": "Nuevo",
+    "image": "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800&q=80",
+    "image_alt": "Motorola G55",
+    "variant_groups": [],
+    "sellable_variants": [],
+    "detail": {
+      "images": [],
+      "longDescription": "Equipo nuevo. Consultá stock de colores y versiones.\n\nPrecios en USD referencia.",
+      "descriptionItems": [
+        "Equipo nuevo. Consultá stock de colores y versiones.",
+        "Precios en USD referencia."
+      ],
+      "specs": [],
+      "relatedIds": [],
+      "accessoryIds": [],
+      "reviews": []
+    },
+    "compare_at_price": null,
+    "discount_percent": null,
+    "published": true,
+    "sort_order": 5541,
+    "updated_at": "2026-04-23T18:55:54.663Z"
+  },
+  {
+    "id": "otras-smartphones-motorola-g85",
+    "name": "Motorola G85",
+    "short": "Consultá garantía · Precios referencia USD",
+    "category": "smartphones",
+    "brand": "Motorola",
+    "price": 330,
+    "stock_condition": "new",
+    "badge": "Nuevo",
+    "image": "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800&q=80",
+    "image_alt": "Motorola G85",
+    "variant_groups": [],
+    "sellable_variants": [],
+    "detail": {
+      "images": [],
+      "longDescription": "Equipo nuevo. Consultá stock de colores y versiones.\n\nPrecios en USD referencia.",
+      "descriptionItems": [
+        "Equipo nuevo. Consultá stock de colores y versiones.",
+        "Precios en USD referencia."
+      ],
+      "specs": [],
+      "relatedIds": [],
+      "accessoryIds": [],
+      "reviews": []
+    },
+    "compare_at_price": null,
+    "discount_percent": null,
+    "published": true,
+    "sort_order": 5542,
+    "updated_at": "2026-04-23T18:55:54.663Z"
+  },
+  {
+    "id": "otras-smartphones-motorola-razr-50-ultra",
+    "name": "Motorola Razr 50 Ultra",
+    "short": "Consultá garantía · Precios referencia USD",
+    "category": "smartphones",
+    "brand": "Motorola",
+    "price": 810,
+    "stock_condition": "new",
+    "badge": "Nuevo",
+    "image": "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800&q=80",
+    "image_alt": "Motorola Razr 50 Ultra",
+    "variant_groups": [],
+    "sellable_variants": [],
+    "detail": {
+      "images": [],
+      "longDescription": "Equipo nuevo. Consultá stock de colores y versiones.\n\nPrecios en USD referencia.",
+      "descriptionItems": [
+        "Equipo nuevo. Consultá stock de colores y versiones.",
+        "Precios en USD referencia."
+      ],
+      "specs": [],
+      "relatedIds": [],
+      "accessoryIds": [],
+      "reviews": []
+    },
+    "compare_at_price": null,
+    "discount_percent": null,
+    "published": true,
+    "sort_order": 5545,
+    "updated_at": "2026-04-23T18:55:54.663Z"
+  },
+  {
+    "id": "otras-smartphones-note-13-pro-plus",
+    "name": "Note 13 Pro Plus",
+    "short": "Consultá garantía · Precios referencia USD",
+    "category": "smartphones",
+    "brand": "Xiaomi",
+    "price": 430,
+    "stock_condition": "new",
+    "badge": "Nuevo",
+    "image": "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800&q=80",
+    "image_alt": "Note 13 Pro Plus",
+    "variant_groups": [],
+    "sellable_variants": [],
+    "detail": {
+      "images": [],
+      "longDescription": "Equipo nuevo. Consultá stock de colores y versiones.\n\nPrecios en USD referencia.",
+      "descriptionItems": [
+        "Equipo nuevo. Consultá stock de colores y versiones.",
+        "Precios en USD referencia."
+      ],
+      "specs": [],
+      "relatedIds": [],
+      "accessoryIds": [],
+      "reviews": []
+    },
+    "compare_at_price": null,
+    "discount_percent": null,
+    "published": true,
+    "sort_order": 5537,
+    "updated_at": "2026-04-23T18:55:54.662Z"
+  },
+  {
+    "id": "otras-smartphones-note-14-pro-plus",
+    "name": "Note 14 Pro Plus",
+    "short": "Consultá garantía · Precios referencia USD",
+    "category": "smartphones",
+    "brand": "Xiaomi",
+    "price": 430,
+    "stock_condition": "new",
+    "badge": "Nuevo",
+    "image": "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800&q=80",
+    "image_alt": "Note 14 Pro Plus",
+    "variant_groups": [],
+    "sellable_variants": [],
+    "detail": {
+      "images": [],
+      "longDescription": "Equipo nuevo. Consultá stock de colores y versiones.\n\nPrecios en USD referencia.",
+      "descriptionItems": [
+        "Equipo nuevo. Consultá stock de colores y versiones.",
+        "Precios en USD referencia."
+      ],
+      "specs": [],
+      "relatedIds": [],
+      "accessoryIds": [],
+      "reviews": []
+    },
+    "compare_at_price": null,
+    "discount_percent": null,
+    "published": true,
+    "sort_order": 5538,
+    "updated_at": "2026-04-23T18:55:54.662Z"
+  },
+  {
+    "id": "otras-smartphones-poco-f6-pro",
+    "name": "Poco F6 Pro",
+    "short": "Consultá garantía · Precios referencia USD",
+    "category": "smartphones",
+    "brand": "Xiaomi",
+    "price": 550,
+    "stock_condition": "new",
+    "badge": "Nuevo",
+    "image": "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800&q=80",
+    "image_alt": "Poco F6 Pro",
+    "variant_groups": [],
+    "sellable_variants": [],
+    "detail": {
+      "images": [],
+      "longDescription": "Equipo nuevo. Consultá stock de colores y versiones.\n\nPrecios en USD referencia.",
+      "descriptionItems": [
+        "Equipo nuevo. Consultá stock de colores y versiones.",
+        "Precios en USD referencia."
+      ],
+      "specs": [],
+      "relatedIds": [],
+      "accessoryIds": [],
+      "reviews": []
+    },
+    "compare_at_price": null,
+    "discount_percent": null,
+    "published": true,
+    "sort_order": 5536,
+    "updated_at": "2026-04-23T18:55:54.662Z"
+  },
+  {
+    "id": "otras-smartphones-poco-x7-pro",
+    "name": "Poco X7 Pro",
+    "short": "Consultá garantía · Precios referencia USD",
+    "category": "smartphones",
+    "brand": "Xiaomi",
+    "price": 460,
+    "stock_condition": "new",
+    "badge": "Nuevo",
+    "image": "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800&q=80",
+    "image_alt": "Poco X7 Pro",
+    "variant_groups": [],
+    "sellable_variants": [],
+    "detail": {
+      "images": [],
+      "longDescription": "Equipo nuevo. Consultá stock de colores y versiones.\n\nPrecios en USD referencia.",
+      "descriptionItems": [
+        "Equipo nuevo. Consultá stock de colores y versiones.",
+        "Precios en USD referencia."
+      ],
+      "specs": [],
+      "relatedIds": [],
+      "accessoryIds": [],
+      "reviews": []
+    },
+    "compare_at_price": null,
+    "discount_percent": null,
+    "published": true,
+    "sort_order": 5539,
+    "updated_at": "2026-04-23T18:55:54.662Z"
+  },
+  {
+    "id": "otras-tablets-redmi-pad-se-1",
+    "name": "Redmi Pad SE 1",
+    "short": "Consultá garantía · Precios referencia USD",
+    "category": "tablets",
+    "brand": "Xiaomi",
+    "price": 280,
+    "stock_condition": "new",
+    "badge": "Nuevo",
+    "image": "https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=800&q=80",
+    "image_alt": "Redmi Pad SE 1",
+    "variant_groups": [],
+    "sellable_variants": [],
+    "detail": {
+      "images": [],
+      "longDescription": "Equipo nuevo. Consultá stock de colores y versiones.\n\nPrecios en USD referencia.",
+      "descriptionItems": [
+        "Equipo nuevo. Consultá stock de colores y versiones.",
+        "Precios en USD referencia."
+      ],
+      "specs": [],
+      "relatedIds": [],
+      "accessoryIds": [],
+      "reviews": []
+    },
+    "compare_at_price": null,
+    "discount_percent": null,
+    "published": true,
+    "sort_order": 5535,
+    "updated_at": "2026-04-23T18:55:54.662Z"
+  },
+  {
+    "id": "otras-smartphones-s-z-flip-7",
+    "name": "S Z FLIP 7",
+    "short": "Consultá garantía · Precios referencia USD",
+    "category": "smartphones",
+    "brand": "Samsung",
+    "price": 1080,
+    "stock_condition": "new",
+    "badge": "Nuevo",
+    "image": "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800&q=80",
+    "image_alt": "S Z FLIP 7",
+    "variant_groups": [],
+    "sellable_variants": [],
+    "detail": {
+      "images": [],
+      "longDescription": "Equipo nuevo. Consultá stock de colores y versiones.\n\nPrecios en USD referencia.",
+      "descriptionItems": [
+        "Equipo nuevo. Consultá stock de colores y versiones.",
+        "Precios en USD referencia."
+      ],
+      "specs": [],
+      "relatedIds": [],
+      "accessoryIds": [],
+      "reviews": []
+    },
+    "compare_at_price": null,
+    "discount_percent": null,
+    "published": true,
+    "sort_order": 5534,
+    "updated_at": "2026-04-23T18:55:54.662Z"
+  },
+  {
+    "id": "otras-smartphones-s24",
+    "name": "S24",
+    "short": "Consultá garantía · Precios referencia USD",
+    "category": "smartphones",
+    "brand": "Samsung",
+    "price": 660,
+    "stock_condition": "new",
+    "badge": "Nuevo",
+    "image": "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800&q=80",
+    "image_alt": "S24",
+    "variant_groups": [],
+    "sellable_variants": [],
+    "detail": {
+      "images": [],
+      "longDescription": "Equipo nuevo. Consultá stock de colores y versiones.\n\nPrecios en USD referencia.",
+      "descriptionItems": [
+        "Equipo nuevo. Consultá stock de colores y versiones.",
+        "Precios en USD referencia."
+      ],
+      "specs": [],
+      "relatedIds": [],
+      "accessoryIds": [],
+      "reviews": []
+    },
+    "compare_at_price": null,
+    "discount_percent": null,
+    "published": true,
+    "sort_order": 5529,
+    "updated_at": "2026-04-23T18:55:54.662Z"
+  },
+  {
+    "id": "otras-smartphones-s24-fe",
+    "name": "S24 FE",
+    "short": "Consultá garantía · Precios referencia USD",
+    "category": "smartphones",
+    "brand": "Samsung",
+    "price": 600,
+    "stock_condition": "new",
+    "badge": "Nuevo",
+    "image": "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800&q=80",
+    "image_alt": "S24 FE",
+    "variant_groups": [],
+    "sellable_variants": [],
+    "detail": {
+      "images": [],
+      "longDescription": "Equipo nuevo. Consultá stock de colores y versiones.\n\nPrecios en USD referencia.",
+      "descriptionItems": [
+        "Equipo nuevo. Consultá stock de colores y versiones.",
+        "Precios en USD referencia."
+      ],
+      "specs": [],
+      "relatedIds": [],
+      "accessoryIds": [],
+      "reviews": []
+    },
+    "compare_at_price": null,
+    "discount_percent": null,
+    "published": true,
+    "sort_order": 5528,
+    "updated_at": "2026-04-23T18:55:54.662Z"
+  },
+  {
+    "id": "otras-smartphones-s24-ultra",
+    "name": "S24 Ultra",
+    "short": "Consultá garantía · Precios referencia USD",
+    "category": "smartphones",
+    "brand": "Samsung",
+    "price": 890,
+    "stock_condition": "new",
+    "badge": "Nuevo",
+    "image": "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800&q=80",
+    "image_alt": "S24 Ultra",
+    "variant_groups": [],
+    "sellable_variants": [],
+    "detail": {
+      "images": [],
+      "longDescription": "Equipo nuevo. Consultá stock de colores y versiones.\n\nPrecios en USD referencia.",
+      "descriptionItems": [
+        "Equipo nuevo. Consultá stock de colores y versiones.",
+        "Precios en USD referencia."
+      ],
+      "specs": [],
+      "relatedIds": [],
+      "accessoryIds": [],
+      "reviews": []
+    },
+    "compare_at_price": null,
+    "discount_percent": null,
+    "published": true,
+    "sort_order": 5530,
+    "updated_at": "2026-04-23T18:55:54.662Z"
+  },
+  {
+    "id": "otras-smartphones-s25",
+    "name": "S25",
+    "short": "Consultá garantía · Precios referencia USD",
+    "category": "smartphones",
+    "brand": "Samsung",
+    "price": 820,
+    "stock_condition": "new",
+    "badge": "Nuevo",
+    "image": "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800&q=80",
+    "image_alt": "S25",
+    "variant_groups": [],
+    "sellable_variants": [],
+    "detail": {
+      "images": [],
+      "longDescription": "Equipo nuevo. Consultá stock de colores y versiones.\n\nPrecios en USD referencia.",
+      "descriptionItems": [
+        "Equipo nuevo. Consultá stock de colores y versiones.",
+        "Precios en USD referencia."
+      ],
+      "specs": [],
+      "relatedIds": [],
+      "accessoryIds": [],
+      "reviews": []
+    },
+    "compare_at_price": null,
+    "discount_percent": null,
+    "published": true,
+    "sort_order": 5532,
+    "updated_at": "2026-04-23T18:55:54.662Z"
+  },
+  {
+    "id": "otras-smartphones-s25-ds-ice-blue",
+    "name": "S25 DS Ice Blue",
+    "short": "Consultá garantía · Precios referencia USD",
+    "category": "smartphones",
+    "brand": "Samsung",
+    "price": 710,
+    "stock_condition": "new",
+    "badge": "Nuevo",
+    "image": "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800&q=80",
+    "image_alt": "S25 DS Ice Blue",
+    "variant_groups": [],
+    "sellable_variants": [],
+    "detail": {
+      "images": [],
+      "longDescription": "Equipo nuevo. Consultá stock de colores y versiones.\n\nPrecios en USD referencia.",
+      "descriptionItems": [
+        "Equipo nuevo. Consultá stock de colores y versiones.",
+        "Precios en USD referencia."
+      ],
+      "specs": [],
+      "relatedIds": [],
+      "accessoryIds": [],
+      "reviews": []
+    },
+    "compare_at_price": null,
+    "discount_percent": null,
+    "published": true,
+    "sort_order": 5531,
+    "updated_at": "2026-04-23T18:55:54.662Z"
+  },
+  {
+    "id": "otras-smartphones-s25-ultra-ds",
+    "name": "S25 Ultra DS",
+    "short": "Consultá garantía · Precios referencia USD",
+    "category": "smartphones",
+    "brand": "Samsung",
+    "price": 1040,
+    "stock_condition": "new",
+    "badge": "Nuevo",
+    "image": "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800&q=80",
+    "image_alt": "S25 Ultra DS",
+    "variant_groups": [
+      {
+        "id": "storage",
+        "kind": "storage",
+        "uiKind": "storage",
+        "label": "Capacidad",
+        "pricingMode": "delta",
+        "options": [
+          {
+            "id": "storage-256gb-0",
+            "label": "256GB",
+            "priceDelta": 0
+          },
+          {
+            "id": "storage-512gb-1",
+            "label": "512GB",
+            "priceDelta": 0
+          }
+        ]
+      },
+      {
+        "id": "color",
+        "kind": "color",
+        "uiKind": "color",
+        "label": "Color",
+        "pricingMode": "delta",
+        "options": [
+          {
+            "id": "color-black-blue-0",
+            "label": "Black, Blue",
+            "priceDelta": 0
+          },
+          {
+            "id": "color-blue-gray-green-pink-1",
+            "label": "Blue, Gray, Green, Pink",
+            "priceDelta": 0
+          }
+        ]
+      }
+    ],
+    "sellable_variants": [
+      {
+        "id": "sv-otras-s25-ultra-ds-0-256gb-blue-gray-green-pink",
+        "selections": {
+          "storage": "storage-256gb-0",
+          "color": "color-blue-gray-green-pink-1"
+        },
+        "price": 1040,
+        "label": null
+      },
+      {
+        "id": "sv-otras-s25-ultra-ds-1-512gb-black-blue",
+        "selections": {
+          "storage": "storage-512gb-1",
+          "color": "color-black-blue-0"
+        },
+        "price": 1150,
+        "label": null
+      }
+    ],
+    "detail": {
+      "images": [],
+      "longDescription": "Equipo nuevo. Consultá stock de colores y versiones.\n\nPrecios en USD referencia.",
+      "descriptionItems": [
+        "Equipo nuevo. Consultá stock de colores y versiones.",
+        "Precios en USD referencia."
+      ],
+      "specs": [],
+      "relatedIds": [],
+      "accessoryIds": [],
+      "reviews": []
+    },
+    "compare_at_price": null,
+    "discount_percent": null,
+    "published": true,
+    "sort_order": 5533,
+    "updated_at": "2026-04-23T18:55:54.662Z"
+  },
+  {
+    "id": "otras-consolas-sony-ps5-portal-remote-player",
+    "name": "SONY PS5 Portal Remote Player",
+    "short": "Consultá garantía · Precios referencia USD",
+    "category": "consolas",
+    "brand": "Sony",
+    "price": 400,
+    "stock_condition": "new",
+    "badge": "Nuevo",
+    "image": "https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?w=800&q=80",
+    "image_alt": "SONY PS5 Portal Remote Player",
+    "variant_groups": [],
+    "sellable_variants": [],
+    "detail": {
+      "images": [],
+      "longDescription": "Equipo nuevo. Consultá stock de colores y versiones.\n\nPrecios en USD referencia.",
+      "descriptionItems": [
+        "Equipo nuevo. Consultá stock de colores y versiones.",
+        "Precios en USD referencia."
+      ],
+      "specs": [],
+      "relatedIds": [],
+      "accessoryIds": [],
+      "reviews": []
+    },
+    "compare_at_price": null,
+    "discount_percent": null,
+    "published": true,
+    "sort_order": 5522,
+    "updated_at": "2026-04-23T18:55:54.662Z"
+  },
+  {
+    "id": "otras-consolas-sony-ps5-pro-digital-edition",
+    "name": "SONY PS5 PRO Digital Edition",
+    "short": "Consultá garantía · Precios referencia USD",
+    "category": "consolas",
+    "brand": "Sony",
+    "price": 1000,
+    "stock_condition": "new",
+    "badge": "Nuevo",
+    "image": "https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?w=800&q=80",
+    "image_alt": "SONY PS5 PRO Digital Edition",
+    "variant_groups": [],
+    "sellable_variants": [],
+    "detail": {
+      "images": [],
+      "longDescription": "Equipo nuevo. Consultá stock de colores y versiones.\n\nPrecios en USD referencia.",
+      "descriptionItems": [
+        "Equipo nuevo. Consultá stock de colores y versiones.",
+        "Precios en USD referencia."
+      ],
+      "specs": [],
+      "relatedIds": [],
+      "accessoryIds": [],
+      "reviews": []
+    },
+    "compare_at_price": null,
+    "discount_percent": null,
+    "published": true,
+    "sort_order": 5521,
+    "updated_at": "2026-04-23T18:55:54.662Z"
+  },
+  {
+    "id": "otras-consolas-sony-ps5-slim-digital-call-of-duty-black-ops-6-usa-specs-bundle",
+    "name": "SONY PS5 Slim Digital \"Call Of Duty: Black Ops 6 usa specs Bundle\"",
+    "short": "Consultá garantía · Precios referencia USD",
+    "category": "consolas",
+    "brand": "Sony",
+    "price": 615,
+    "stock_condition": "new",
+    "badge": "Nuevo",
+    "image": "https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?w=800&q=80",
+    "image_alt": "SONY PS5 Slim Digital \"Call Of Duty: Black Ops 6 usa specs Bundle\"",
+    "variant_groups": [],
+    "sellable_variants": [],
+    "detail": {
+      "images": [],
+      "longDescription": "Equipo nuevo. Consultá stock de colores y versiones.\n\nPrecios en USD referencia.",
+      "descriptionItems": [
+        "Equipo nuevo. Consultá stock de colores y versiones.",
+        "Precios en USD referencia."
+      ],
+      "specs": [],
+      "relatedIds": [],
+      "accessoryIds": [],
+      "reviews": []
+    },
+    "compare_at_price": null,
+    "discount_percent": null,
+    "published": true,
+    "sort_order": 5517,
+    "updated_at": "2026-04-23T18:55:54.662Z"
+  },
+  {
+    "id": "otras-consolas-sony-ps5-slim-digital-edition",
+    "name": "SONY PS5 Slim Digital Edition",
+    "short": "Consultá garantía · Precios referencia USD",
+    "category": "consolas",
+    "brand": "Sony",
+    "price": 600,
+    "stock_condition": "new",
+    "badge": "Nuevo",
+    "image": "https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?w=800&q=80",
+    "image_alt": "SONY PS5 Slim Digital Edition",
+    "variant_groups": [],
+    "sellable_variants": [],
+    "detail": {
+      "images": [],
+      "longDescription": "Equipo nuevo. Consultá stock de colores y versiones.\n\nPrecios en USD referencia.",
+      "descriptionItems": [
+        "Equipo nuevo. Consultá stock de colores y versiones.",
+        "Precios en USD referencia."
+      ],
+      "specs": [],
+      "relatedIds": [],
+      "accessoryIds": [],
+      "reviews": []
+    },
+    "compare_at_price": null,
+    "discount_percent": null,
+    "published": true,
+    "sort_order": 5515,
+    "updated_at": "2026-04-23T18:55:54.662Z"
+  },
+  {
+    "id": "otras-consolas-sony-ps5-slim-digital-edition-fortnite-cobalt-star-bundle",
+    "name": "SONY PS5 Slim Digital Edition \"Fortnite Cobalt Star Bundle\"",
+    "short": "Consultá garantía · Precios referencia USD",
+    "category": "consolas",
+    "brand": "Sony",
+    "price": 615,
+    "stock_condition": "new",
+    "badge": "Nuevo",
+    "image": "https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?w=800&q=80",
+    "image_alt": "SONY PS5 Slim Digital Edition \"Fortnite Cobalt Star Bundle\"",
+    "variant_groups": [],
+    "sellable_variants": [],
+    "detail": {
+      "images": [],
+      "longDescription": "Equipo nuevo. Consultá stock de colores y versiones.\n\nPrecios en USD referencia.",
+      "descriptionItems": [
+        "Equipo nuevo. Consultá stock de colores y versiones.",
+        "Precios en USD referencia."
+      ],
+      "specs": [],
+      "relatedIds": [],
+      "accessoryIds": [],
+      "reviews": []
+    },
+    "compare_at_price": null,
+    "discount_percent": null,
+    "published": true,
+    "sort_order": 5516,
+    "updated_at": "2026-04-23T18:55:54.662Z"
+  },
+  {
+    "id": "otras-consolas-sony-ps5-slim-lec-de-cd-ratcher-clan-rift-apart-returnal-bundle",
+    "name": "SONY PS5 Slim Lec. de CD \"Ratcher & Clan: Rift Apart + Returnal Bundle\"",
+    "short": "Consultá garantía · Precios referencia USD",
+    "category": "consolas",
+    "brand": "Sony",
+    "price": 730,
+    "stock_condition": "new",
+    "badge": "Nuevo",
+    "image": "https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?w=800&q=80",
+    "image_alt": "SONY PS5 Slim Lec. de CD \"Ratcher & Clan: Rift Apart + Returnal Bundle\"",
+    "variant_groups": [],
+    "sellable_variants": [],
+    "detail": {
+      "images": [],
+      "longDescription": "Equipo nuevo. Consultá stock de colores y versiones.\n\nPrecios en USD referencia.",
+      "descriptionItems": [
+        "Equipo nuevo. Consultá stock de colores y versiones.",
+        "Precios en USD referencia."
+      ],
+      "specs": [],
+      "relatedIds": [],
+      "accessoryIds": [],
+      "reviews": []
+    },
+    "compare_at_price": null,
+    "discount_percent": null,
+    "published": true,
+    "sort_order": 5520,
+    "updated_at": "2026-04-23T18:55:54.662Z"
+  },
+  {
+    "id": "otras-consolas-sony-ps5-slim-lectora-de-cd",
+    "name": "SONY PS5 Slim Lectora de CD",
+    "short": "Consultá garantía · Precios referencia USD",
+    "category": "consolas",
+    "brand": "Sony",
+    "price": 670,
+    "stock_condition": "new",
+    "badge": "Nuevo",
+    "image": "https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?w=800&q=80",
+    "image_alt": "SONY PS5 Slim Lectora de CD",
+    "variant_groups": [],
+    "sellable_variants": [],
+    "detail": {
+      "images": [],
+      "longDescription": "Equipo nuevo. Consultá stock de colores y versiones.\n\nPrecios en USD referencia.",
+      "descriptionItems": [
+        "Equipo nuevo. Consultá stock de colores y versiones.",
+        "Precios en USD referencia."
+      ],
+      "specs": [],
+      "relatedIds": [],
+      "accessoryIds": [],
+      "reviews": []
+    },
+    "compare_at_price": null,
+    "discount_percent": null,
+    "published": true,
+    "sort_order": 5518,
+    "updated_at": "2026-04-23T18:55:54.662Z"
+  },
+  {
+    "id": "otras-consolas-sony-ps5-slim-lectora-de-cd-juego-astro-bot-edition",
+    "name": "SONY PS5 Slim Lectora de CD + Juego Astro Bot Edition",
+    "short": "Consultá garantía · Precios referencia USD",
+    "category": "consolas",
+    "brand": "Sony",
+    "price": 690,
+    "stock_condition": "new",
+    "badge": "Nuevo",
+    "image": "https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?w=800&q=80",
+    "image_alt": "SONY PS5 Slim Lectora de CD + Juego Astro Bot Edition",
+    "variant_groups": [],
+    "sellable_variants": [],
+    "detail": {
+      "images": [],
+      "longDescription": "Equipo nuevo. Consultá stock de colores y versiones.\n\nPrecios en USD referencia.",
+      "descriptionItems": [
+        "Equipo nuevo. Consultá stock de colores y versiones.",
+        "Precios en USD referencia."
+      ],
+      "specs": [],
+      "relatedIds": [],
+      "accessoryIds": [],
+      "reviews": []
+    },
+    "compare_at_price": null,
+    "discount_percent": null,
+    "published": true,
+    "sort_order": 5519,
+    "updated_at": "2026-04-23T18:55:54.662Z"
+  },
+  {
+    "id": "otras-audio-sony-srs-xb13",
+    "name": "Sony SRS - XB13",
+    "short": "Consultá garantía · Precios referencia USD",
+    "category": "audio",
+    "brand": "Sony",
+    "price": 60,
+    "stock_condition": "new",
+    "badge": "Nuevo",
+    "image": "https://images.unsplash.com/photo-1606220945770-b2b6c2c2bfb0?w=800&q=80",
+    "image_alt": "Sony SRS - XB13",
+    "variant_groups": [
+      {
+        "id": "price_list",
+        "kind": "select",
+        "uiKind": "select",
+        "label": "Precio",
+        "pricingMode": "absolute",
+        "options": [
+          {
+            "id": "price-list-u-s-60-0",
+            "label": "U$S 60",
+            "price": 60
+          },
+          {
+            "id": "price-list-u-s-70-1",
+            "label": "U$S 70",
+            "price": 70
+          }
+        ]
+      }
+    ],
+    "sellable_variants": [],
+    "detail": {
+      "images": [],
+      "longDescription": "Equipo nuevo. Consultá stock de colores y versiones.\n\nPrecios en USD referencia.",
+      "descriptionItems": [
+        "Equipo nuevo. Consultá stock de colores y versiones.",
+        "Precios en USD referencia."
+      ],
+      "specs": [],
+      "relatedIds": [],
+      "accessoryIds": [],
+      "reviews": []
+    },
+    "compare_at_price": null,
+    "discount_percent": null,
+    "published": true,
+    "sort_order": 5500,
+    "updated_at": "2026-04-23T18:55:54.661Z"
+  }
+]

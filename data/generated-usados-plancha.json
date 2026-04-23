@@ -1,0 +1,586 @@
+[
+  {
+    "id": "usado-iphone-13-preventa",
+    "name": "iPhone 13 (PREVENTA)",
+    "short": "Estética A/A+ · Batería 100% · 1 MES, SE EXTIENDE POR 3 MESES ADQUIRIENDO EL CARGADOR ORIGINAL",
+    "category": "iphone",
+    "brand": "Apple",
+    "price": 330,
+    "stock_condition": "used",
+    "badge": "Usado",
+    "image": "https://images.unsplash.com/photo-1696446702183-cbd41c710f55?w=800&q=80",
+    "image_alt": "iPhone 13 (PREVENTA)",
+    "variant_groups": [],
+    "sellable_variants": [],
+    "detail": {
+      "images": [],
+      "longDescription": "Condición de publicación: usado (etiqueta «Usado» en catálogo y ficha).\n\nEquipo usado revisado; estado según calidad y batería indicadas en cada variante.\n\nGarantía: 1 MES, SE EXTIENDE POR 3 MESES ADQUIRIENDO EL CARGADOR ORIGINAL.\n\nPrecios en USD referencia; consultá cotización del día.",
+      "descriptionItems": [
+        "Condición de publicación: usado (etiqueta «Usado» en catálogo y ficha).",
+        "Equipo usado revisado; estado según calidad y batería indicadas en cada variante.",
+        "Garantía: 1 MES, SE EXTIENDE POR 3 MESES ADQUIRIENDO EL CARGADOR ORIGINAL.",
+        "Precios en USD referencia; consultá cotización del día."
+      ],
+      "warranty": "1 MES, SE EXTIENDE POR 3 MESES ADQUIRIENDO EL CARGADOR ORIGINAL",
+      "specs": [],
+      "relatedIds": [],
+      "accessoryIds": [],
+      "reviews": [],
+      "stock_condition": "used",
+      "badge": "Usado"
+    },
+    "compare_at_price": null,
+    "discount_percent": null,
+    "published": true,
+    "sort_order": 4000,
+    "updated_at": "2026-04-23T18:45:43.123Z"
+  },
+  {
+    "id": "usado-iphone-13-pro",
+    "name": "iPhone 13 PRO",
+    "short": "1 MES, SE EXTIENDE POR 3 MESES ADQUIRIENDO EL CARGADOR ORIGINAL · Varias capacidades / colores · USD referencia",
+    "category": "iphone",
+    "brand": "Apple",
+    "price": 430,
+    "stock_condition": "used",
+    "badge": "Usado",
+    "image": "https://images.unsplash.com/photo-1696446702183-cbd41c710f55?w=800&q=80",
+    "image_alt": "iPhone 13 PRO",
+    "variant_groups": [
+      {
+        "id": "storage",
+        "kind": "storage",
+        "uiKind": "storage",
+        "label": "Capacidad",
+        "pricingMode": "delta",
+        "options": [
+          {
+            "id": "storage-128gb-0",
+            "label": "128GB",
+            "priceDelta": 0
+          },
+          {
+            "id": "storage-256gb-1",
+            "label": "256GB",
+            "priceDelta": 0
+          }
+        ]
+      },
+      {
+        "id": "color",
+        "kind": "color",
+        "uiKind": "color",
+        "label": "Color",
+        "pricingMode": "delta",
+        "options": [
+          {
+            "id": "color-blue-0",
+            "label": "BLUE",
+            "priceDelta": 0
+          },
+          {
+            "id": "color-graphite-1",
+            "label": "GRAPHITE",
+            "priceDelta": 0
+          },
+          {
+            "id": "color-graphite-blue-green-2",
+            "label": "GRAPHITE, BLUE, GREEN",
+            "priceDelta": 0
+          }
+        ]
+      },
+      {
+        "id": "quality",
+        "kind": "select",
+        "uiKind": "select",
+        "label": "Calidad estética",
+        "pricingMode": "delta",
+        "options": [
+          {
+            "id": "quality-a-a-0",
+            "label": "A/A+",
+            "priceDelta": 0
+          },
+          {
+            "id": "quality-a-b-1",
+            "label": "A/B",
+            "priceDelta": 0
+          }
+        ]
+      }
+    ],
+    "sellable_variants": [
+      {
+        "id": "sv-usado-13-pro-0-128gb-graphite-a-b",
+        "selections": {
+          "storage": "storage-128gb-0",
+          "color": "color-graphite-1",
+          "quality": "quality-a-b-1"
+        },
+        "price": 430,
+        "label": null
+      },
+      {
+        "id": "sv-usado-13-pro-1-128gb-graphite-blue-green-a-a",
+        "selections": {
+          "storage": "storage-128gb-0",
+          "color": "color-graphite-blue-green-2",
+          "quality": "quality-a-a-0"
+        },
+        "price": 450,
+        "label": null
+      },
+      {
+        "id": "sv-usado-13-pro-2-256gb-blue-a-a",
+        "selections": {
+          "storage": "storage-256gb-1",
+          "color": "color-blue-0",
+          "quality": "quality-a-a-0"
+        },
+        "price": 470,
+        "label": null
+      }
+    ],
+    "detail": {
+      "images": [],
+      "longDescription": "Condición de publicación: usado (etiqueta «Usado» en catálogo y ficha).\n\nEquipo usado revisado; estado según calidad y batería indicadas en cada variante.\n\nGarantía: 1 MES, SE EXTIENDE POR 3 MESES ADQUIRIENDO EL CARGADOR ORIGINAL.\n\nPrecios en USD referencia; consultá cotización del día.",
+      "descriptionItems": [
+        "Condición de publicación: usado (etiqueta «Usado» en catálogo y ficha).",
+        "Equipo usado revisado; estado según calidad y batería indicadas en cada variante.",
+        "Garantía: 1 MES, SE EXTIENDE POR 3 MESES ADQUIRIENDO EL CARGADOR ORIGINAL.",
+        "Precios en USD referencia; consultá cotización del día."
+      ],
+      "warranty": "1 MES, SE EXTIENDE POR 3 MESES ADQUIRIENDO EL CARGADOR ORIGINAL",
+      "specs": [],
+      "relatedIds": [],
+      "accessoryIds": [],
+      "reviews": [],
+      "stock_condition": "used",
+      "badge": "Usado"
+    },
+    "compare_at_price": null,
+    "discount_percent": null,
+    "published": true,
+    "sort_order": 4001,
+    "updated_at": "2026-04-23T18:45:43.130Z"
+  },
+  {
+    "id": "usado-iphone-13-pro-max",
+    "name": "iPhone 13 PRO MAX",
+    "short": "Estética A/A+ · Batería 100% · 1 MES, SE EXTIENDE POR 3 MESES ADQUIRIENDO EL CARGADOR ORIGINAL",
+    "category": "iphone",
+    "brand": "Apple",
+    "price": 490,
+    "stock_condition": "used",
+    "badge": "Usado",
+    "image": "https://images.unsplash.com/photo-1696446702183-cbd41c710f55?w=800&q=80",
+    "image_alt": "iPhone 13 PRO MAX",
+    "variant_groups": [],
+    "sellable_variants": [],
+    "detail": {
+      "images": [],
+      "longDescription": "Condición de publicación: usado (etiqueta «Usado» en catálogo y ficha).\n\nEquipo usado revisado; estado según calidad y batería indicadas en cada variante.\n\nGarantía: 1 MES, SE EXTIENDE POR 3 MESES ADQUIRIENDO EL CARGADOR ORIGINAL.\n\nPrecios en USD referencia; consultá cotización del día.",
+      "descriptionItems": [
+        "Condición de publicación: usado (etiqueta «Usado» en catálogo y ficha).",
+        "Equipo usado revisado; estado según calidad y batería indicadas en cada variante.",
+        "Garantía: 1 MES, SE EXTIENDE POR 3 MESES ADQUIRIENDO EL CARGADOR ORIGINAL.",
+        "Precios en USD referencia; consultá cotización del día."
+      ],
+      "warranty": "1 MES, SE EXTIENDE POR 3 MESES ADQUIRIENDO EL CARGADOR ORIGINAL",
+      "specs": [],
+      "relatedIds": [],
+      "accessoryIds": [],
+      "reviews": [],
+      "stock_condition": "used",
+      "badge": "Usado"
+    },
+    "compare_at_price": null,
+    "discount_percent": null,
+    "published": true,
+    "sort_order": 4002,
+    "updated_at": "2026-04-23T18:45:43.130Z"
+  },
+  {
+    "id": "usado-iphone-14",
+    "name": "iPhone 14",
+    "short": "Estética A/A+ · Batería 100% · 1 MES, SE EXTIENDE POR 3 MESES ADQUIRIENDO EL CARGADOR ORIGINAL",
+    "category": "iphone",
+    "brand": "Apple",
+    "price": 375,
+    "stock_condition": "used",
+    "badge": "Usado",
+    "image": "https://images.unsplash.com/photo-1696446702183-cbd41c710f55?w=800&q=80",
+    "image_alt": "iPhone 14",
+    "variant_groups": [],
+    "sellable_variants": [],
+    "detail": {
+      "images": [],
+      "longDescription": "Condición de publicación: usado (etiqueta «Usado» en catálogo y ficha).\n\nEquipo usado revisado; estado según calidad y batería indicadas en cada variante.\n\nGarantía: 1 MES, SE EXTIENDE POR 3 MESES ADQUIRIENDO EL CARGADOR ORIGINAL.\n\nPrecios en USD referencia; consultá cotización del día.",
+      "descriptionItems": [
+        "Condición de publicación: usado (etiqueta «Usado» en catálogo y ficha).",
+        "Equipo usado revisado; estado según calidad y batería indicadas en cada variante.",
+        "Garantía: 1 MES, SE EXTIENDE POR 3 MESES ADQUIRIENDO EL CARGADOR ORIGINAL.",
+        "Precios en USD referencia; consultá cotización del día."
+      ],
+      "warranty": "1 MES, SE EXTIENDE POR 3 MESES ADQUIRIENDO EL CARGADOR ORIGINAL",
+      "specs": [],
+      "relatedIds": [],
+      "accessoryIds": [],
+      "reviews": [],
+      "stock_condition": "used",
+      "badge": "Usado"
+    },
+    "compare_at_price": null,
+    "discount_percent": null,
+    "published": true,
+    "sort_order": 4003,
+    "updated_at": "2026-04-23T18:45:43.130Z"
+  },
+  {
+    "id": "usado-iphone-14-pro",
+    "name": "iPhone 14 PRO",
+    "short": "Estética A/A+ · Batería 100% · 1 MES, SE EXTIENDE POR 3 MESES ADQUIRIENDO EL CARGADOR ORIGINAL",
+    "category": "iphone",
+    "brand": "Apple",
+    "price": 480,
+    "stock_condition": "used",
+    "badge": "Usado",
+    "image": "https://images.unsplash.com/photo-1696446702183-cbd41c710f55?w=800&q=80",
+    "image_alt": "iPhone 14 PRO",
+    "variant_groups": [],
+    "sellable_variants": [],
+    "detail": {
+      "images": [],
+      "longDescription": "Condición de publicación: usado (etiqueta «Usado» en catálogo y ficha).\n\nEquipo usado revisado; estado según calidad y batería indicadas en cada variante.\n\nGarantía: 1 MES, SE EXTIENDE POR 3 MESES ADQUIRIENDO EL CARGADOR ORIGINAL.\n\nPrecios en USD referencia; consultá cotización del día.",
+      "descriptionItems": [
+        "Condición de publicación: usado (etiqueta «Usado» en catálogo y ficha).",
+        "Equipo usado revisado; estado según calidad y batería indicadas en cada variante.",
+        "Garantía: 1 MES, SE EXTIENDE POR 3 MESES ADQUIRIENDO EL CARGADOR ORIGINAL.",
+        "Precios en USD referencia; consultá cotización del día."
+      ],
+      "warranty": "1 MES, SE EXTIENDE POR 3 MESES ADQUIRIENDO EL CARGADOR ORIGINAL",
+      "specs": [],
+      "relatedIds": [],
+      "accessoryIds": [],
+      "reviews": [],
+      "stock_condition": "used",
+      "badge": "Usado"
+    },
+    "compare_at_price": null,
+    "discount_percent": null,
+    "published": true,
+    "sort_order": 4004,
+    "updated_at": "2026-04-23T18:45:43.130Z"
+  },
+  {
+    "id": "usado-iphone-14-pro-max",
+    "name": "iPhone 14 PRO MAX",
+    "short": "1 MES, SE EXTIENDE POR 3 MESES ADQUIRIENDO EL CARGADOR ORIGINAL · Varias capacidades / colores · USD referencia",
+    "category": "iphone",
+    "brand": "Apple",
+    "price": 540,
+    "stock_condition": "used",
+    "badge": "Usado",
+    "image": "https://images.unsplash.com/photo-1696446702183-cbd41c710f55?w=800&q=80",
+    "image_alt": "iPhone 14 PRO MAX",
+    "variant_groups": [
+      {
+        "id": "storage",
+        "kind": "storage",
+        "uiKind": "storage",
+        "label": "Capacidad",
+        "pricingMode": "delta",
+        "options": [
+          {
+            "id": "storage-128gb-0",
+            "label": "128GB",
+            "priceDelta": 0
+          },
+          {
+            "id": "storage-256gb-1",
+            "label": "256GB",
+            "priceDelta": 0
+          }
+        ]
+      },
+      {
+        "id": "color",
+        "kind": "color",
+        "uiKind": "color",
+        "label": "Color",
+        "pricingMode": "delta",
+        "options": [
+          {
+            "id": "color-black-purple-0",
+            "label": "BLACK, PURPLE",
+            "priceDelta": 0
+          },
+          {
+            "id": "color-purple-gold-1",
+            "label": "PURPLE, GOLD",
+            "priceDelta": 0
+          }
+        ]
+      }
+    ],
+    "sellable_variants": [
+      {
+        "id": "sv-usado-14-pro-max-0-128gb-purple-gold",
+        "selections": {
+          "storage": "storage-128gb-0",
+          "color": "color-purple-gold-1"
+        },
+        "price": 540,
+        "label": null
+      },
+      {
+        "id": "sv-usado-14-pro-max-1-256gb-black-purple",
+        "selections": {
+          "storage": "storage-256gb-1",
+          "color": "color-black-purple-0"
+        },
+        "price": 580,
+        "label": null
+      }
+    ],
+    "detail": {
+      "images": [],
+      "longDescription": "Condición de publicación: usado (etiqueta «Usado» en catálogo y ficha).\n\nEquipo usado revisado; estado según calidad y batería indicadas en cada variante.\n\nGarantía: 1 MES, SE EXTIENDE POR 3 MESES ADQUIRIENDO EL CARGADOR ORIGINAL.\n\nPrecios en USD referencia; consultá cotización del día.",
+      "descriptionItems": [
+        "Condición de publicación: usado (etiqueta «Usado» en catálogo y ficha).",
+        "Equipo usado revisado; estado según calidad y batería indicadas en cada variante.",
+        "Garantía: 1 MES, SE EXTIENDE POR 3 MESES ADQUIRIENDO EL CARGADOR ORIGINAL.",
+        "Precios en USD referencia; consultá cotización del día."
+      ],
+      "warranty": "1 MES, SE EXTIENDE POR 3 MESES ADQUIRIENDO EL CARGADOR ORIGINAL",
+      "specs": [],
+      "relatedIds": [],
+      "accessoryIds": [],
+      "reviews": [],
+      "stock_condition": "used",
+      "badge": "Usado"
+    },
+    "compare_at_price": null,
+    "discount_percent": null,
+    "published": true,
+    "sort_order": 4005,
+    "updated_at": "2026-04-23T18:45:43.130Z"
+  },
+  {
+    "id": "usado-iphone-15",
+    "name": "iPhone 15",
+    "short": "Estética A/A+ · Batería 100% · 1 MES, SE EXTIENDE POR 3 MESES ADQUIRIENDO EL CARGADOR ORIGINAL",
+    "category": "iphone",
+    "brand": "Apple",
+    "price": 490,
+    "stock_condition": "used",
+    "badge": "Usado",
+    "image": "https://images.unsplash.com/photo-1696446702183-cbd41c710f55?w=800&q=80",
+    "image_alt": "iPhone 15",
+    "variant_groups": [],
+    "sellable_variants": [],
+    "detail": {
+      "images": [],
+      "longDescription": "Condición de publicación: usado (etiqueta «Usado» en catálogo y ficha).\n\nEquipo usado revisado; estado según calidad y batería indicadas en cada variante.\n\nGarantía: 1 MES, SE EXTIENDE POR 3 MESES ADQUIRIENDO EL CARGADOR ORIGINAL.\n\nPrecios en USD referencia; consultá cotización del día.",
+      "descriptionItems": [
+        "Condición de publicación: usado (etiqueta «Usado» en catálogo y ficha).",
+        "Equipo usado revisado; estado según calidad y batería indicadas en cada variante.",
+        "Garantía: 1 MES, SE EXTIENDE POR 3 MESES ADQUIRIENDO EL CARGADOR ORIGINAL.",
+        "Precios en USD referencia; consultá cotización del día."
+      ],
+      "warranty": "1 MES, SE EXTIENDE POR 3 MESES ADQUIRIENDO EL CARGADOR ORIGINAL",
+      "specs": [],
+      "relatedIds": [],
+      "accessoryIds": [],
+      "reviews": [],
+      "stock_condition": "used",
+      "badge": "Usado"
+    },
+    "compare_at_price": null,
+    "discount_percent": null,
+    "published": true,
+    "sort_order": 4006,
+    "updated_at": "2026-04-23T18:45:43.130Z"
+  },
+  {
+    "id": "usado-iphone-15-preventa",
+    "name": "iPhone 15 (PREVENTA)",
+    "short": "Estética A/A+ · Batería 100% · 1 MES, SE EXTIENDE POR 3 MESES ADQUIRIENDO EL CARGADOR ORIGINAL",
+    "category": "iphone",
+    "brand": "Apple",
+    "price": 465,
+    "stock_condition": "used",
+    "badge": "Usado",
+    "image": "https://images.unsplash.com/photo-1696446702183-cbd41c710f55?w=800&q=80",
+    "image_alt": "iPhone 15 (PREVENTA)",
+    "variant_groups": [],
+    "sellable_variants": [],
+    "detail": {
+      "images": [],
+      "longDescription": "Condición de publicación: usado (etiqueta «Usado» en catálogo y ficha).\n\nEquipo usado revisado; estado según calidad y batería indicadas en cada variante.\n\nGarantía: 1 MES, SE EXTIENDE POR 3 MESES ADQUIRIENDO EL CARGADOR ORIGINAL.\n\nPrecios en USD referencia; consultá cotización del día.",
+      "descriptionItems": [
+        "Condición de publicación: usado (etiqueta «Usado» en catálogo y ficha).",
+        "Equipo usado revisado; estado según calidad y batería indicadas en cada variante.",
+        "Garantía: 1 MES, SE EXTIENDE POR 3 MESES ADQUIRIENDO EL CARGADOR ORIGINAL.",
+        "Precios en USD referencia; consultá cotización del día."
+      ],
+      "warranty": "1 MES, SE EXTIENDE POR 3 MESES ADQUIRIENDO EL CARGADOR ORIGINAL",
+      "specs": [],
+      "relatedIds": [],
+      "accessoryIds": [],
+      "reviews": [],
+      "stock_condition": "used",
+      "badge": "Usado"
+    },
+    "compare_at_price": null,
+    "discount_percent": null,
+    "published": true,
+    "sort_order": 4007,
+    "updated_at": "2026-04-23T18:45:43.130Z"
+  },
+  {
+    "id": "usado-iphone-15-pro",
+    "name": "iPhone 15 PRO",
+    "short": "Estética A/A+ · Batería 100% · 1 MES, SE EXTIENDE POR 3 MESES ADQUIRIENDO EL CARGADOR ORIGINAL",
+    "category": "iphone",
+    "brand": "Apple",
+    "price": 570,
+    "stock_condition": "used",
+    "badge": "Usado",
+    "image": "https://images.unsplash.com/photo-1696446702183-cbd41c710f55?w=800&q=80",
+    "image_alt": "iPhone 15 PRO",
+    "variant_groups": [],
+    "sellable_variants": [],
+    "detail": {
+      "images": [],
+      "longDescription": "Condición de publicación: usado (etiqueta «Usado» en catálogo y ficha).\n\nEquipo usado revisado; estado según calidad y batería indicadas en cada variante.\n\nGarantía: 1 MES, SE EXTIENDE POR 3 MESES ADQUIRIENDO EL CARGADOR ORIGINAL.\n\nPrecios en USD referencia; consultá cotización del día.",
+      "descriptionItems": [
+        "Condición de publicación: usado (etiqueta «Usado» en catálogo y ficha).",
+        "Equipo usado revisado; estado según calidad y batería indicadas en cada variante.",
+        "Garantía: 1 MES, SE EXTIENDE POR 3 MESES ADQUIRIENDO EL CARGADOR ORIGINAL.",
+        "Precios en USD referencia; consultá cotización del día."
+      ],
+      "warranty": "1 MES, SE EXTIENDE POR 3 MESES ADQUIRIENDO EL CARGADOR ORIGINAL",
+      "specs": [],
+      "relatedIds": [],
+      "accessoryIds": [],
+      "reviews": [],
+      "stock_condition": "used",
+      "badge": "Usado"
+    },
+    "compare_at_price": null,
+    "discount_percent": null,
+    "published": true,
+    "sort_order": 4008,
+    "updated_at": "2026-04-23T18:45:43.130Z"
+  },
+  {
+    "id": "usado-iphone-15-pro-max",
+    "name": "iPhone 15 PRO MAX",
+    "short": "Estética A/A+ · Batería 100% · 1 MES, SE EXTIENDE POR 3 MESES ADQUIRIENDO EL CARGADOR ORIGINAL",
+    "category": "iphone",
+    "brand": "Apple",
+    "price": 690,
+    "stock_condition": "used",
+    "badge": "Usado",
+    "image": "https://images.unsplash.com/photo-1696446702183-cbd41c710f55?w=800&q=80",
+    "image_alt": "iPhone 15 PRO MAX",
+    "variant_groups": [],
+    "sellable_variants": [],
+    "detail": {
+      "images": [],
+      "longDescription": "Condición de publicación: usado (etiqueta «Usado» en catálogo y ficha).\n\nEquipo usado revisado; estado según calidad y batería indicadas en cada variante.\n\nGarantía: 1 MES, SE EXTIENDE POR 3 MESES ADQUIRIENDO EL CARGADOR ORIGINAL.\n\nPrecios en USD referencia; consultá cotización del día.",
+      "descriptionItems": [
+        "Condición de publicación: usado (etiqueta «Usado» en catálogo y ficha).",
+        "Equipo usado revisado; estado según calidad y batería indicadas en cada variante.",
+        "Garantía: 1 MES, SE EXTIENDE POR 3 MESES ADQUIRIENDO EL CARGADOR ORIGINAL.",
+        "Precios en USD referencia; consultá cotización del día."
+      ],
+      "warranty": "1 MES, SE EXTIENDE POR 3 MESES ADQUIRIENDO EL CARGADOR ORIGINAL",
+      "specs": [],
+      "relatedIds": [],
+      "accessoryIds": [],
+      "reviews": [],
+      "stock_condition": "used",
+      "badge": "Usado"
+    },
+    "compare_at_price": null,
+    "discount_percent": null,
+    "published": true,
+    "sort_order": 4009,
+    "updated_at": "2026-04-23T18:45:43.130Z"
+  },
+  {
+    "id": "usado-iphone-16-pro-preventa",
+    "name": "iPhone 16 PRO (PREVENTA)",
+    "short": "Estética A/A+ · Batería 90% o mas · 1 MES, SE EXTIENDE POR 3 MESES ADQUIRIENDO EL CARGADOR ORIGINAL",
+    "category": "iphone",
+    "brand": "Apple",
+    "price": 740,
+    "stock_condition": "used",
+    "badge": "Usado",
+    "image": "https://images.unsplash.com/photo-1696446702183-cbd41c710f55?w=800&q=80",
+    "image_alt": "iPhone 16 PRO (PREVENTA)",
+    "variant_groups": [],
+    "sellable_variants": [],
+    "detail": {
+      "images": [],
+      "longDescription": "Condición de publicación: usado (etiqueta «Usado» en catálogo y ficha).\n\nEquipo usado revisado; estado según calidad y batería indicadas en cada variante.\n\nGarantía: 1 MES, SE EXTIENDE POR 3 MESES ADQUIRIENDO EL CARGADOR ORIGINAL.\n\nPrecios en USD referencia; consultá cotización del día.",
+      "descriptionItems": [
+        "Condición de publicación: usado (etiqueta «Usado» en catálogo y ficha).",
+        "Equipo usado revisado; estado según calidad y batería indicadas en cada variante.",
+        "Garantía: 1 MES, SE EXTIENDE POR 3 MESES ADQUIRIENDO EL CARGADOR ORIGINAL.",
+        "Precios en USD referencia; consultá cotización del día."
+      ],
+      "warranty": "1 MES, SE EXTIENDE POR 3 MESES ADQUIRIENDO EL CARGADOR ORIGINAL",
+      "specs": [],
+      "relatedIds": [],
+      "accessoryIds": [],
+      "reviews": [],
+      "stock_condition": "used",
+      "badge": "Usado"
+    },
+    "compare_at_price": null,
+    "discount_percent": null,
+    "published": true,
+    "sort_order": 4010,
+    "updated_at": "2026-04-23T18:45:43.130Z"
+  },
+  {
+    "id": "usado-iphone-16-pro-max",
+    "name": "iPhone 16 PRO MAX",
+    "short": "Estética A/A+ · Batería 95% o mas · 1 MES, SE EXTIENDE POR 3 MESES ADQUIRIENDO EL CARGADOR ORIGINAL",
+    "category": "iphone",
+    "brand": "Apple",
+    "price": 900,
+    "stock_condition": "used",
+    "badge": "Usado",
+    "image": "https://images.unsplash.com/photo-1696446702183-cbd41c710f55?w=800&q=80",
+    "image_alt": "iPhone 16 PRO MAX",
+    "variant_groups": [],
+    "sellable_variants": [],
+    "detail": {
+      "images": [],
+      "longDescription": "Condición de publicación: usado (etiqueta «Usado» en catálogo y ficha).\n\nEquipo usado revisado; estado según calidad y batería indicadas en cada variante.\n\nGarantía: 1 MES, SE EXTIENDE POR 3 MESES ADQUIRIENDO EL CARGADOR ORIGINAL.\n\nPrecios en USD referencia; consultá cotización del día.",
+      "descriptionItems": [
+        "Condición de publicación: usado (etiqueta «Usado» en catálogo y ficha).",
+        "Equipo usado revisado; estado según calidad y batería indicadas en cada variante.",
+        "Garantía: 1 MES, SE EXTIENDE POR 3 MESES ADQUIRIENDO EL CARGADOR ORIGINAL.",
+        "Precios en USD referencia; consultá cotización del día."
+      ],
+      "warranty": "1 MES, SE EXTIENDE POR 3 MESES ADQUIRIENDO EL CARGADOR ORIGINAL",
+      "specs": [],
+      "relatedIds": [],
+      "accessoryIds": [],
+      "reviews": [],
+      "stock_condition": "used",
+      "badge": "Usado"
+    },
+    "compare_at_price": null,
+    "discount_percent": null,
+    "published": true,
+    "sort_order": 4011,
+    "updated_at": "2026-04-23T18:45:43.130Z"
+  }
+]

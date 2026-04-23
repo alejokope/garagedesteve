@@ -142,6 +142,9 @@ const categoryLabels: Record<CategoryId, string> = {
   desktop: "IMAC",
   servicio: "SERVICIO",
   otros: "ACCESORIOS",
+  consolas: "CONSOLAS",
+  smartphones: "CELULARES",
+  tablets: "TABLETS",
 };
 
 /** Etiqueta para filtros / UI cuando el id no está en el mapa fijo. */
@@ -159,12 +162,14 @@ export function categoryLabelForProduct(category: string): string {
 export function shopTipoFromCategory(c: string): ShopTipo {
   switch (c) {
     case "iphone":
+    case "smartphones":
       return "smartphones";
     case "watch":
       return "smartwatch";
     case "audio":
       return "audio";
     case "ipad":
+    case "tablets":
       return "tablet";
     case "mac":
       return "mac";
@@ -174,6 +179,8 @@ export function shopTipoFromCategory(c: string): ShopTipo {
       return "servicio";
     case "otros":
       return "accessories";
+    case "consolas":
+      return "otro";
     default:
       return "otro";
   }

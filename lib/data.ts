@@ -9,7 +9,10 @@ export type CategoryId =
   | "audio"
   | "desktop"
   | "servicio"
-  | "otros";
+  | "otros"
+  | "consolas"
+  | "smartphones"
+  | "tablets";
 
 /** Condición de publicación: equipo nuevo o usado (servicios / sin clasificar: omitir). */
 export type ProductStockCondition = "new" | "used";
@@ -54,10 +57,13 @@ export const categories: { id: CategoryId | "all"; label: string }[] = [
   { id: "ipad", label: "iPad" },
   { id: "iphone", label: "iPhone" },
   { id: "watch", label: "Apple Watch" },
-  { id: "audio", label: "AirPods" },
+  { id: "audio", label: "Audio" },
   { id: "desktop", label: "iMac" },
   { id: "servicio", label: "Servicio técnico" },
   { id: "otros", label: "Otros" },
+  { id: "consolas", label: "Consolas y gaming" },
+  { id: "smartphones", label: "Celulares" },
+  { id: "tablets", label: "Tablets" },
 ];
 
 /** Catálogo solo desde Supabase; sin datos de respaldo en código. */

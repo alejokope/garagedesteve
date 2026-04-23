@@ -626,7 +626,7 @@ export function CatalogView() {
         <p className="text-[11px] font-bold uppercase tracking-wider text-neutral-500">Marca</p>
         <div className="mt-2 flex flex-wrap gap-2">
           {brandFilterOptions.length === 0 ? (
-            <span className="text-xs text-neutral-400">No hay marcas en el catálogo.</span>
+            <span className="text-xs uppercase text-neutral-400">No hay marcas en el catálogo.</span>
           ) : (
             brandFilterOptions.map((m) => {
               const on = marcas.includes(m.id);
@@ -635,7 +635,7 @@ export function CatalogView() {
                   key={m.id}
                   type="button"
                   onClick={() => toggleMarcas(m.id)}
-                  className={`rounded-lg border px-3 py-2 text-xs font-medium transition ${
+                  className={`rounded-lg border px-3 py-2 text-xs font-medium uppercase transition ${
                     on
                       ? "border-[var(--brand-from)] bg-[var(--brand-from)]/10 text-[var(--brand-from)]"
                       : "border-neutral-200 bg-neutral-50 text-neutral-600 hover:border-neutral-300"
@@ -653,7 +653,7 @@ export function CatalogView() {
         <p className="text-[11px] font-bold uppercase tracking-wider text-neutral-500">Categoría</p>
         <div className="mt-2 flex flex-col gap-2">
           {catalogCategoryOptions.length === 0 ? (
-            <span className="text-xs text-neutral-400">No hay categorías en el catálogo cargado.</span>
+            <span className="text-xs uppercase text-neutral-400">No hay categorías en el catálogo cargado.</span>
           ) : (
             catalogCategoryOptions.map((t) => {
               const on = categorias.includes(t.id);
@@ -662,7 +662,7 @@ export function CatalogView() {
                   key={t.id}
                   type="button"
                   onClick={() => toggleCategoria(t.id)}
-                  className={`rounded-lg border px-3 py-2 text-left text-xs font-medium transition ${
+                  className={`rounded-lg border px-3 py-2 text-left text-xs font-medium uppercase transition ${
                     on
                       ? "border-[var(--brand-from)] bg-[var(--brand-from)]/10 text-[var(--brand-from)]"
                       : "border-neutral-200 bg-neutral-50 text-neutral-600 hover:border-neutral-300"
@@ -695,7 +695,7 @@ export function CatalogView() {
             aria-valuemax={maxCatalogPrice}
             aria-valuenow={clampedPrecioMax}
           />
-          <div className="mt-2 flex justify-between gap-2 text-xs text-neutral-500">
+          <div className="mt-2 flex justify-between gap-2 text-xs uppercase text-neutral-500">
             <span className="min-w-0 shrink truncate">{formatMoneyUsd(minCatalogPrice)}</span>
             <span className="shrink-0 text-center font-semibold text-neutral-800">
               Hasta {formatMoneyUsd(clampedPrecioMax)}
@@ -709,7 +709,7 @@ export function CatalogView() {
         <p className="text-[11px] font-bold uppercase tracking-wider text-neutral-500">Condición</p>
         <div className="mt-2 flex flex-wrap gap-2">
           {stockFilterOptions.length === 0 ? (
-            <span className="text-xs text-neutral-400">Sin opciones para este catálogo.</span>
+            <span className="text-xs uppercase text-neutral-400">Sin opciones para este catálogo.</span>
           ) : (
             stockFilterOptions.map((c) => {
               const on = stockConditions.includes(c.id);
@@ -718,7 +718,7 @@ export function CatalogView() {
                   key={c.id}
                   type="button"
                   onClick={() => toggleStockCondition(c.id)}
-                  className={`rounded-lg border px-3 py-2 text-xs font-medium transition ${
+                  className={`rounded-lg border px-3 py-2 text-xs font-medium uppercase transition ${
                     on
                       ? "border-[var(--brand-from)] bg-[var(--brand-from)]/10 text-[var(--brand-from)]"
                       : "border-neutral-200 bg-neutral-50 text-neutral-600 hover:border-neutral-300"
@@ -734,12 +734,12 @@ export function CatalogView() {
 
       <div>
         <p className="text-[11px] font-bold uppercase tracking-wider text-neutral-500">Etiqueta</p>
-        <p className="mt-1 text-[11px] text-neutral-400">
+        <p className="mt-1 text-[11px] uppercase text-neutral-400">
           Destacados en catálogo (oferta, más vendido, etc.)
         </p>
         <div className="mt-2 flex flex-wrap gap-2">
           {estadoFilterOptions.length === 0 ? (
-            <span className="text-xs text-neutral-400">Sin etiquetas en el catálogo cargado.</span>
+            <span className="text-xs uppercase text-neutral-400">Sin etiquetas en el catálogo cargado.</span>
           ) : (
             estadoFilterOptions.map((e) => {
               const on = estados.includes(e.id);
@@ -748,7 +748,7 @@ export function CatalogView() {
                   key={e.id}
                   type="button"
                   onClick={() => toggleEstados(e.id)}
-                  className={`rounded-lg border px-3 py-2 text-xs font-medium transition ${
+                  className={`rounded-lg border px-3 py-2 text-xs font-medium uppercase transition ${
                     on
                       ? "border-[var(--brand-from)] bg-[var(--brand-from)]/10 text-[var(--brand-from)]"
                       : "border-neutral-200 bg-neutral-50 text-neutral-600 hover:border-neutral-300"
@@ -805,7 +805,7 @@ export function CatalogView() {
                     setSort(key === "relevancia" ? "relevancia" : key);
                     setPage(1);
                   }}
-                  className={`rounded-xl px-4 py-2.5 text-xs font-semibold transition sm:text-sm ${
+                  className={`rounded-xl px-4 py-2.5 text-xs font-semibold uppercase transition sm:text-sm ${
                     active
                       ? "bg-neutral-950 text-white shadow-sm"
                       : "border border-neutral-200 bg-white text-neutral-600 hover:border-neutral-300"
@@ -848,7 +848,7 @@ export function CatalogView() {
                   <span className="block text-[10px] font-semibold uppercase tracking-[0.14em] text-neutral-400">
                     Ordenar
                   </span>
-                  <span className="line-clamp-1 font-display text-[15px] font-semibold leading-tight tracking-tight text-neutral-900">
+                  <span className="line-clamp-1 font-display text-[15px] font-semibold uppercase leading-tight tracking-tight text-neutral-900">
                     {currentSortLabel}
                   </span>
                 </span>
@@ -1044,7 +1044,7 @@ export function CatalogView() {
                       setPage(1);
                       sortSheetAnim.requestClose();
                     }}
-                    className={`flex w-full items-center justify-between gap-3 rounded-xl px-3 py-3.5 text-left text-sm font-medium transition ${
+                    className={`flex w-full items-center justify-between gap-3 rounded-xl px-3 py-3.5 text-left text-sm font-medium uppercase transition ${
                       selected
                         ? "bg-neutral-950 text-white"
                         : "bg-neutral-50 text-neutral-800 hover:bg-neutral-100"
