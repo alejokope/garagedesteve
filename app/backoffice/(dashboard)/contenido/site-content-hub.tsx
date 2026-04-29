@@ -25,6 +25,7 @@ import type {
 import type { HomeContentAdminKey, HomeContentKey } from "@/lib/home-public-content";
 
 import { HomeCategoryTileImageUpload } from "./home-category-tile-image-upload";
+import { HomeContentImageUpload } from "./home-content-image-upload";
 import { saveHomeSection } from "./home-section-actions";
 
 const inputClass =
@@ -413,6 +414,12 @@ export function SiteContentHub({
                     placeholder="/home-hero.png"
                   />
                 </label>
+                <HomeContentImageUpload
+                  section="hero"
+                  labelClass={labelClass}
+                  inputClass={inputClass}
+                  onUploaded={(url) => setHero({ ...hero, imageSrc: url })}
+                />
                 <label className="block sm:col-span-2">
                   <span className={labelClass}>Descripción de la imagen (accesibilidad)</span>
                   <input className={inputClass} value={hero.imageAlt} onChange={(e) => setHero({ ...hero, imageAlt: e.target.value })} />
@@ -670,11 +677,17 @@ export function SiteContentHub({
                   <span className={labelClass}>Párrafo introductorio</span>
                   <textarea className={`${inputClass} min-h-[88px] resize-y`} value={serviceTech.intro} onChange={(e) => setServiceTech({ ...serviceTech, intro: e.target.value })} />
                 </label>
-                <label className="block">
-                  <span className={labelClass}>URL de la imagen</span>
+                <label className="block sm:col-span-2">
+                  <span className={labelClass}>Imagen — URL o ruta en el sitio</span>
                   <input className={inputClass} value={serviceTech.imageUrl} onChange={(e) => setServiceTech({ ...serviceTech, imageUrl: e.target.value })} />
                 </label>
-                <label className="block">
+                <HomeContentImageUpload
+                  section="service_tech"
+                  labelClass={labelClass}
+                  inputClass={inputClass}
+                  onUploaded={(url) => setServiceTech({ ...serviceTech, imageUrl: url })}
+                />
+                <label className="block sm:col-span-2">
                   <span className={labelClass}>Descripción de la imagen</span>
                   <input className={inputClass} value={serviceTech.imageAlt} onChange={(e) => setServiceTech({ ...serviceTech, imageAlt: e.target.value })} />
                 </label>

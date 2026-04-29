@@ -660,46 +660,6 @@ export function RepairPricingEditor({
                     className="mt-1 w-full rounded-lg border border-white/[0.08] bg-black/40 px-2 py-1.5 text-sm text-white"
                   />
                 </label>
-                <div className="block sm:col-span-2">
-                  <span className="text-xs text-slate-500">
-                    Dispositivos aplicables a esta categoría
-                  </span>
-                  <p className="mt-0.5 text-[11px] text-slate-500">
-                    Sin marcar ninguno = la categoría se muestra para todos los modelos al filtrar en la
-                    web.
-                  </p>
-                  <div className="mt-2 flex max-h-36 flex-wrap gap-x-4 gap-y-2 overflow-y-auto rounded-lg border border-white/[0.08] bg-black/30 px-3 py-2">
-                    {data.devices.length === 0 ? (
-                      <span className="text-xs text-slate-500">Agregá dispositivos arriba.</span>
-                    ) : (
-                      sortedEditorDevices.map((dev) => (
-                        <label
-                          key={dev.id}
-                          className="flex cursor-pointer items-center gap-2 text-xs text-slate-200"
-                        >
-                          <input
-                            type="checkbox"
-                            checked={cat.deviceFilterIds.includes(dev.id)}
-                            onChange={(e) => {
-                              const on = e.target.checked;
-                              setData((d) => {
-                                const c = [...d.categories];
-                                const cur = c[ci]!;
-                                const nextIds = on
-                                  ? [...new Set([...cur.deviceFilterIds, dev.id])]
-                                  : cur.deviceFilterIds.filter((id) => id !== dev.id);
-                                c[ci] = { ...cur, deviceFilterIds: nextIds };
-                                return { ...d, categories: c };
-                              });
-                            }}
-                            className="rounded border-white/20 bg-black/40"
-                          />
-                          {dev.label}
-                        </label>
-                      ))
-                    )}
-                  </div>
-                </div>
                 <label className="block sm:col-span-2">
                   <span className="text-xs text-slate-500">Layout</span>
                   <select

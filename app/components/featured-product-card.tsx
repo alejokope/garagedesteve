@@ -26,7 +26,7 @@ export function FeaturedProductCard({ product }: { product: Product }) {
     <article
       suppressHydrationWarning
       data-featured-product-card
-      className="group relative flex h-full w-full min-h-0 min-w-0 flex-col overflow-hidden rounded-2xl border border-[var(--border)] bg-white shadow-[0_1px_0_rgba(15,23,42,0.04)] transition hover:-translate-y-0.5 hover:shadow-[var(--glow)]"
+      className="group relative flex h-full w-full min-h-0 min-w-0 flex-col rounded-2xl border border-[var(--border)] bg-white shadow-[0_1px_0_rgba(15,23,42,0.04)] transition hover:-translate-y-0.5 hover:shadow-[var(--glow)]"
     >
       <div className="absolute left-2 top-2 z-10 sm:left-3 sm:top-3">
         <ProductFavoriteButton
@@ -35,13 +35,16 @@ export function FeaturedProductCard({ product }: { product: Product }) {
           iconClass="h-[18px] w-[18px] sm:h-5 sm:w-5"
         />
       </div>
-      <Link href={`/tienda/${product.id}`} className="relative block aspect-[5/4] bg-neutral-50 sm:aspect-square">
+      <Link
+        href={`/tienda/${product.id}`}
+        className="relative block aspect-square overflow-hidden rounded-t-2xl bg-neutral-50 p-3 sm:p-4"
+      >
         <StoreRemoteImage
           src={catalogProductPreviewImage(product)}
           alt={product.imageAlt}
           fill
           sizes="(max-width: 639px) min(92vw, 20rem), (max-width: 1023px) 50vw, 25vw"
-          className="object-contain object-center p-2 transition duration-500 group-hover:scale-[1.02]"
+          className="object-contain object-center"
         />
         {product.condition === "used" ? (
           <span className="absolute right-3 top-3 rounded-md bg-amber-600 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-white shadow-sm">
@@ -53,7 +56,7 @@ export function FeaturedProductCard({ product }: { product: Product }) {
           </span>
         ) : null}
       </Link>
-      <div className="flex min-h-0 flex-1 flex-col p-4 pt-3 sm:p-5 sm:pt-4">
+      <div className="flex min-h-0 flex-1 flex-col rounded-b-2xl p-4 pt-3 sm:p-5 sm:pt-4">
         {product.brand?.trim() ? (
           <p className="text-[10px] font-bold uppercase tracking-wide text-neutral-500">{product.brand.trim()}</p>
         ) : null}

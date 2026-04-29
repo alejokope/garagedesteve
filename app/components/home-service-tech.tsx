@@ -43,7 +43,7 @@ export function HomeServiceTech({ data }: { data: HomeServiceTechData }) {
       className="scroll-mt-24 border-b border-[var(--border)] bg-[#fafafa] py-12 sm:py-20 lg:py-24"
     >
       <div className="mx-auto max-w-6xl px-5 sm:px-8">
-        <div className="grid items-center gap-8 lg:grid-cols-2 lg:gap-16">
+        <div className="grid items-start gap-8 lg:grid-cols-2 lg:gap-16">
           <div className="order-2 lg:order-1">
             <h2 className="font-display text-[1.375rem] font-semibold leading-snug tracking-tight text-neutral-950 sm:text-3xl">
               {data.title}
@@ -76,16 +76,20 @@ export function HomeServiceTech({ data }: { data: HomeServiceTechData }) {
             </Link>
           </div>
 
-          <div className="order-1 lg:order-2">
-            <div className="relative overflow-hidden rounded-xl bg-neutral-200 shadow-[var(--glow-lg)] ring-1 ring-black/[0.04] sm:rounded-2xl">
-              <div className="relative aspect-[16/11] sm:aspect-[4/3] lg:aspect-[5/4]">
-                <Image
-                  src={data.imageUrl}
-                  alt={data.imageAlt}
-                  fill
-                  className="object-cover"
-                  sizes="(max-width: 1024px) 100vw, 50vw"
-                />
+          <div className="order-1 flex justify-center lg:order-2 lg:justify-end">
+            <div className="relative w-full max-w-sm overflow-hidden rounded-xl bg-neutral-100 shadow-[var(--glow-lg)] ring-1 ring-black/[0.04] sm:max-w-md sm:rounded-2xl lg:max-w-lg">
+              <div className="relative aspect-[3/4] w-full">
+                <div className="absolute inset-0 p-3 sm:p-4 lg:p-5">
+                  <div className="relative h-full w-full">
+                    <Image
+                      src={data.imageUrl}
+                      alt={data.imageAlt}
+                      fill
+                      className="object-contain object-center"
+                      sizes="(max-width: 1024px) 100vw, 28rem"
+                    />
+                  </div>
+                </div>
               </div>
             </div>
           </div>

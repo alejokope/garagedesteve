@@ -159,7 +159,7 @@ function CatalogCard({ p }: { p: EnrichedProduct }) {
   const badgeUsado = p.condition === "used";
 
   return (
-    <article className="group relative flex flex-col overflow-hidden rounded-2xl border border-[var(--border)] bg-white shadow-[0_1px_3px_rgba(15,23,42,0.06)] transition hover:-translate-y-0.5 hover:shadow-[var(--glow)]">
+    <article className="group relative flex flex-col rounded-2xl border border-[var(--border)] bg-white shadow-[0_1px_3px_rgba(15,23,42,0.06)] transition hover:-translate-y-0.5 hover:shadow-[var(--glow)]">
       <div className="absolute left-2 top-2 z-10">
         <ProductFavoriteButton
           product={p}
@@ -167,13 +167,16 @@ function CatalogCard({ p }: { p: EnrichedProduct }) {
           iconClass="h-[18px] w-[18px]"
         />
       </div>
-      <Link href={`/tienda/${p.id}`} className="relative block aspect-[4/3] bg-neutral-50">
+      <Link
+        href={`/tienda/${p.id}`}
+        className="relative block aspect-square overflow-hidden rounded-t-2xl bg-neutral-50 p-3 sm:p-4"
+      >
         <StoreRemoteImage
           src={catalogProductPreviewImage(p)}
           alt={p.imageAlt}
           fill
           sizes="(max-width: 639px) 100vw, (max-width: 1279px) 50vw, 34vw"
-          className="object-contain object-center p-2 transition duration-500 group-hover:scale-[1.02]"
+          className="object-contain object-center"
         />
         <div className="absolute right-2 top-2 flex flex-col items-end gap-1.5">
           {showDiscount ? (
@@ -198,7 +201,7 @@ function CatalogCard({ p }: { p: EnrichedProduct }) {
           ) : null}
         </div>
       </Link>
-      <div className="flex flex-1 flex-col p-4 sm:p-5">
+      <div className="flex flex-1 flex-col rounded-b-2xl p-4 sm:p-5">
         <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
           {p.brand?.trim() ? (
             <p className="text-[11px] font-bold uppercase tracking-wide text-neutral-600">

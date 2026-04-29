@@ -45,7 +45,8 @@ export async function saveProduct(
   const categoryRaw = String(formData.get("category") ?? "").trim();
   const imageFile = formData.get("image_file");
   let image = String(formData.get("image") ?? "").trim();
-  const image_alt = String(formData.get("image_alt") ?? "").trim();
+  /** Siempre igual al ID del producto (accesibilidad / trazabilidad sin texto libre). */
+  const image_alt = id;
 
   const galleryRaw = String(formData.get("gallery_images") ?? "").trim();
   let gallery_images: string[] = [];
@@ -73,15 +74,24 @@ export async function saveProduct(
     }
   }
 
-  const mainTrim = image.trim();
-  gallery_images = gallery_images.filter((u) => u && u !== mainTrim);
+  let mainTrim = image.trim();
+  /** Sin archivo principal: la primera del carrusel cuenta como imagen de grilla/ficha hasta que elijas otra en variantes. */
+  if (!mainTrim && gallery_images.length > 0) {
+    mainTrim = gallery_images[0]!;
+    gallery_images = gallery_images.slice(1);
+  }
+  image = mainTrim;
+  gallery_images = gallery_images.filter((u) => u && u !== image.trim());
 
-  if (!name || !short || !image_alt) {
-    return { error: "Completá nombre, resumen y texto alternativo de la imagen" };
+  if (!name || !short) {
+    return { error: "Completá nombre y resumen" };
   }
 
   if (!image) {
-    return { error: "Subí una imagen principal (archivo) o editá un producto que ya tenga foto." };
+    return {
+      error:
+        "Subí al menos una foto: podés usar solo el carrusel (la primera se usa en la grilla) o una imagen principal aparte.",
+    };
   }
   if (isEphemeralImageUrl(image)) {
     return {

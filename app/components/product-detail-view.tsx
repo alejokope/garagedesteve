@@ -335,7 +335,7 @@ export function ProductDetailView({
                         alt=""
                         fill
                         sizes="64px"
-                        className="object-cover object-center"
+                        className="object-contain object-center p-0.5"
                       />
                     </button>
                   ))}
@@ -382,7 +382,7 @@ export function ProductDetailView({
                   <button
                     type="button"
                     onClick={() => setLightboxOpen(true)}
-                    className="group relative aspect-square w-full cursor-zoom-in overflow-hidden rounded-2xl border border-[var(--border)] bg-white text-left shadow-sm transition hover:brightness-[1.02] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-from)] focus-visible:ring-offset-2"
+                    className="group relative aspect-square w-full cursor-zoom-in overflow-hidden rounded-2xl border border-[var(--border)] bg-neutral-50 text-left shadow-sm transition hover:brightness-[1.02] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-from)] focus-visible:ring-offset-2"
                     aria-label={`Ver imagen ampliada: ${product.name}`}
                   >
                     <StoreRemoteImage
@@ -390,7 +390,7 @@ export function ProductDetailView({
                       alt={product.imageAlt}
                       fill
                       priority
-                      className="object-cover object-center transition duration-300 group-hover:scale-[1.02]"
+                      className="object-contain object-center p-3 sm:p-5"
                       sizes="(max-width: 1024px) 100vw, 50vw"
                     />
                     <span className="pointer-events-none absolute bottom-3 right-3 rounded-lg bg-black/60 px-2.5 py-1 text-[11px] font-semibold tracking-wide text-white opacity-0 shadow-sm backdrop-blur-sm transition group-hover:opacity-100">

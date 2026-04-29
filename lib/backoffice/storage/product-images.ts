@@ -81,6 +81,40 @@ export async function uploadHomeCategoryImage(file: File): Promise<string> {
   return uploadImageBytes(path, buf, file.type);
 }
 
+/** Imagen del encabezado principal de la home (`content_entries` → `home.hero`). */
+export async function uploadHomeHeroImage(file: File): Promise<string> {
+  if (file.size > MAX_BYTES) {
+    throw new Error("La imagen no puede superar 5 MB");
+  }
+  if (!file.type.startsWith("image/")) {
+    throw new Error("Subí un archivo de imagen (JPG, PNG, WebP o GIF)");
+  }
+
+  const uid = crypto.randomUUID();
+  const ext = extFromFile(file);
+  const path = `home/hero/${uid}.${ext}`;
+  const buf = Buffer.from(await file.arrayBuffer());
+
+  return uploadImageBytes(path, buf, file.type);
+}
+
+/** Imagen de la sección servicio técnico en la home (`content_entries` → `home.service_tech`). */
+export async function uploadHomeServiceTechImage(file: File): Promise<string> {
+  if (file.size > MAX_BYTES) {
+    throw new Error("La imagen no puede superar 5 MB");
+  }
+  if (!file.type.startsWith("image/")) {
+    throw new Error("Subí un archivo de imagen (JPG, PNG, WebP o GIF)");
+  }
+
+  const uid = crypto.randomUUID();
+  const ext = extFromFile(file);
+  const path = `home/service-tech/${uid}.${ext}`;
+  const buf = Buffer.from(await file.arrayBuffer());
+
+  return uploadImageBytes(path, buf, file.type);
+}
+
 function safeCategoryPathSegment(categoryId: string): string {
   return categoryId.replace(/[^a-zA-Z0-9-_]/g, "-").slice(0, 120) || "categoria";
 }

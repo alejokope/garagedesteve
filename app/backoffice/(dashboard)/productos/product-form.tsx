@@ -295,12 +295,9 @@ export function ProductForm({
   const imageBlock = (
     <ProductMediaBlock
       key={productMediaBlockKey}
-      mode={mode}
       productId={productIdForUploads}
       initialImage={initial?.image}
-      initialAlt={initial?.image_alt}
       initialGalleryExtras={initialGalleryList}
-      skipNativeValidation={false}
       onCarouselThumbsChange={setCarouselThumbs}
       onMarkDirty={markFormDirty}
     />
