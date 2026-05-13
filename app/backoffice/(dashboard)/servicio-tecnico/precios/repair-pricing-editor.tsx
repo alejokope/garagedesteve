@@ -942,6 +942,9 @@ export function RepairPricingEditor({
 
       <section className={boEditorSection}>
         <h2 className={boEditorH2}>Barra lateral (garantía)</h2>
+        <p className="mb-3 text-xs text-slate-500">
+          Título y viñetas del recuadro oscuro al costado. Ya no se muestra botón de enlace en esa tarjeta.
+        </p>
         <div className="mt-4 grid gap-3">
           <input
             value={data.sidebarWarranty.title}
@@ -967,33 +970,6 @@ export function RepairPricingEditor({
             rows={4}
             className="rounded-xl border border-white/[0.1] bg-black/30 px-3 py-2 text-sm text-white"
           />
-          <div className="grid gap-2 sm:grid-cols-2">
-            <input
-              placeholder="Texto botón"
-              value={data.sidebarWarranty.buttonLabel}
-              onChange={(e) =>
-                setData((d) => ({
-                  ...d,
-                  sidebarWarranty: { ...d.sidebarWarranty, buttonLabel: e.target.value },
-                }))
-              }
-              className="rounded-xl border border-white/[0.1] bg-black/30 px-3 py-2 text-sm text-white"
-            />
-            <input
-              placeholder="URL botón (opcional)"
-              value={data.sidebarWarranty.buttonHref ?? ""}
-              onChange={(e) =>
-                setData((d) => ({
-                  ...d,
-                  sidebarWarranty: {
-                    ...d.sidebarWarranty,
-                    buttonHref: e.target.value || undefined,
-                  },
-                }))
-              }
-              className="rounded-xl border border-white/[0.1] bg-black/30 px-3 py-2 text-sm text-white"
-            />
-          </div>
         </div>
       </section>
 

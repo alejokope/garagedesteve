@@ -438,18 +438,6 @@ export function RepairPricingView({
                       </li>
                     ))}
                   </ul>
-                  {config.sidebarWarranty.buttonHref ? (
-                    <Link
-                      href={config.sidebarWarranty.buttonHref}
-                      className="mt-5 inline-flex rounded-xl border border-white/40 bg-white/10 px-4 py-2 text-sm font-semibold text-white hover:bg-white/15"
-                    >
-                      {config.sidebarWarranty.buttonLabel}
-                    </Link>
-                  ) : (
-                    <span className="mt-5 inline-block rounded-xl border border-white/30 px-4 py-2 text-sm font-semibold text-white/90">
-                      {config.sidebarWarranty.buttonLabel}
-                    </span>
-                  )}
                 </div>
               </div>
             </div>

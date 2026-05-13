@@ -409,9 +409,7 @@ export function CartPageView() {
                 <p className="mt-2 text-sm text-neutral-600">
                   Los precios de la tienda están en <span className="font-medium text-neutral-800">USD</span>. Las
                   formas de pago y el tipo de cambio (si pagás en otra moneda) las coordinamos por{" "}
-                  <span className="font-medium text-[#25D366]">WhatsApp</span>. También podés usar{" "}
-                  <span className="font-medium text-[#25D366]">Mercado Pago</span> u otros medios según lo que
-                  acordemos. En la web no cobramos ni tomamos tarjeta.
+                  <span className="font-medium text-[#25D366]">WhatsApp</span>.
                 </p>
               </section>
             </div>
