@@ -1,29 +1,9 @@
-import { siteConfig } from "@/lib/site-config";
-import { whatsappUrl } from "@/lib/whatsapp";
+import { computeFloatingContactPublicFromDefaults } from "@/lib/floating-contact-resolve";
+import { whatsappUrl } from "@/lib/whatsapp-url";
 
-export function buildSellDeviceWhatsAppMessage(businessName?: string) {
-  const name =
-    businessName?.trim() ||
-    process.env.NEXT_PUBLIC_WHATSAPP_BUSINESS_NAME ||
-    siteConfig.brandName;
-  return [
-    `Hola ${name}, quiero vender mi equipo.`,
-    "",
-    "Te dejo los datos (completá lo que puedas):",
-    "· Modelo exacto:",
-    "· Capacidad de almacenamiento:",
-    "· Estado de la pantalla y marcos:",
-    "· Salud de la batería (%) si es iPhone:",
-    "· ¿Está liberado? ¿Sin cuenta de iCloud?",
-    "· ¿Tenés caja y accesorios originales?",
-    "",
-    "Quiero que me pasen una cotización. ¡Gracias!",
-  ].join("\n");
-}
-
+/** Respaldo sin layout React: mismo mensaje que en servidor con valores por defecto. */
 export function getSellDeviceWhatsAppHref(): string | null {
-  const phone = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER?.replace(/\D/g, "") ?? "";
-  if (!phone) return null;
-  const text = buildSellDeviceWhatsAppMessage();
-  return whatsappUrl(phone, text);
+  const pub = computeFloatingContactPublicFromDefaults();
+  if (!pub.phoneDigits) return null;
+  return whatsappUrl(pub.phoneDigits, pub.planCanjeMessage);
 }

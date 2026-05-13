@@ -134,6 +134,7 @@ export function computeFloatingContactPublic(
     payload.servicioTecnicoMessageTemplate,
     vars,
   );
+  const planCanjeMessage = interpolateFabTemplate(payload.planCanjeMessageTemplate, vars);
 
   const whatsappFabHref =
     payload.showWhatsappFab && phoneDigits
@@ -149,6 +150,7 @@ export function computeFloatingContactPublic(
     showWhatsappFab: payload.showWhatsappFab,
     cartMessageTemplate: payload.cartMessageTemplate,
     servicioTecnicoMessage,
+    planCanjeMessage,
     messageTemplateVars: vars,
     cartFreeShippingEnabled: cartFreeShipping.enabled,
     cartFreeShippingMinUsd: cartFreeShipping.minUsd,

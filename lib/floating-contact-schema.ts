@@ -38,6 +38,19 @@ Retiro en oficina: {{retiro}}
 
 ¡Gracias! ✨`;
 
+/** Plan canje (/vende-tu-equipo): botones que abren WhatsApp con este texto (mismas variables que el flotante, sin {{pedido}}/{{nota}}). */
+export const DEFAULT_PLAN_CANJE_MESSAGE_TEMPLATE = `Hola {{marca}}, quiero vender mi equipo.
+
+Te dejo los datos (completá lo que puedas):
+· Modelo exacto:
+· Capacidad de almacenamiento:
+· Estado de la pantalla y marcos:
+· Salud de la batería (%) si es iPhone:
+· ¿Está liberado? ¿Sin cuenta de iCloud?
+· ¿Tenés caja y accesorios originales?
+
+Quiero que me pasen una cotización. ¡Gracias!`;
+
 export const floatingContactPayloadSchema = z.object({
   /** URL completa del perfil de Instagram (https://…). Vacío = usar el del sitio en código. */
   instagramUrl: z.string().max(500).default(""),
@@ -56,6 +69,12 @@ export const floatingContactPayloadSchema = z.object({
     .min(1)
     .max(4000)
     .default(DEFAULT_SERVICIO_TECNICO_MESSAGE_TEMPLATE),
+  /** Plan canje: enlaces “Consultar por WhatsApp” en /vende-tu-equipo (sin {{pedido}} / {{nota}}). */
+  planCanjeMessageTemplate: z
+    .string()
+    .min(1)
+    .max(4000)
+    .default(DEFAULT_PLAN_CANJE_MESSAGE_TEMPLATE),
   /** Nombre con el que te saludan en el mensaje y en otras pantallas del sitio. */
   brandName: z.string().max(120).default(""),
   showInstagramFab: z.boolean().default(true),
@@ -91,6 +110,8 @@ export type FloatingContactPublic = {
   cartMessageTemplate: string;
   /** Texto ya interpolado para WhatsApp de servicio técnico (tabla de precios, seguimiento, intro del formulario). */
   servicioTecnicoMessage: string;
+  /** Texto ya interpolado para enlaces de plan canje (/vende-tu-equipo). */
+  planCanjeMessage: string;
   messageTemplateVars: FloatingMessageTemplateVars;
   /** Desde `site.cart_free_shipping` (o legado en `site.floating_contact`). */
   cartFreeShippingEnabled: boolean;
@@ -104,6 +125,7 @@ export function defaultFloatingContactPayload(): FloatingContactPayload {
     fabMessageTemplate: DEFAULT_FAB_MESSAGE_TEMPLATE,
     cartMessageTemplate: DEFAULT_CART_MESSAGE_TEMPLATE,
     servicioTecnicoMessageTemplate: DEFAULT_SERVICIO_TECNICO_MESSAGE_TEMPLATE,
+    planCanjeMessageTemplate: DEFAULT_PLAN_CANJE_MESSAGE_TEMPLATE,
     brandName: siteConfig.brandName,
     showInstagramFab: true,
     showWhatsappFab: true,
@@ -128,6 +150,10 @@ export function mergeFloatingContactDefaults(partial: unknown): FloatingContactP
         typeof o.servicioTecnicoMessageTemplate === "string"
           ? o.servicioTecnicoMessageTemplate
           : base.servicioTecnicoMessageTemplate,
+      planCanjeMessageTemplate:
+        typeof o.planCanjeMessageTemplate === "string"
+          ? o.planCanjeMessageTemplate
+          : base.planCanjeMessageTemplate,
       brandName: typeof o.brandName === "string" ? o.brandName : base.brandName,
       showInstagramFab: typeof o.showInstagramFab === "boolean" ? o.showInstagramFab : base.showInstagramFab,
       showWhatsappFab: typeof o.showWhatsappFab === "boolean" ? o.showWhatsappFab : base.showWhatsappFab,
