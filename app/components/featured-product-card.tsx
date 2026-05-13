@@ -3,24 +3,23 @@
 import { catalogProductPreviewImage } from "@/lib/catalog";
 import type { Product } from "@/lib/data";
 import { formatMoneyUsd } from "@/lib/format";
+import { stockConditionLabel, stockConditionRibbonTone } from "@/lib/stock-condition";
 import Link from "next/link";
 import { ProductFavoriteButton } from "@/app/components/product-favorite-button";
 import { StoreRemoteImage } from "@/app/components/store-remote-image";
 import { useCart } from "@/app/context/cart-context";
 import { useAckFlash } from "@/app/hooks/use-ack-flash";
 
-function productBadgeLabel(badge: string | undefined) {
-  if (!badge) return null;
-  const u = badge.toUpperCase();
-  if (u.includes("NUEVO")) return "NUEVO";
-  if (u.includes("PREMIUM") || u.includes("USADO")) return "DESTACADO";
-  return u.slice(0, 12);
+function ribbonToneClass(tone: ReturnType<typeof stockConditionRibbonTone>): string {
+  if (tone === "used") return "bg-amber-600";
+  if (tone === "new") return "bg-emerald-500";
+  return "bg-violet-600";
 }
 
 export function FeaturedProductCard({ product }: { product: Product }) {
   const { add } = useCart();
   const { on: addAck, trigger: triggerAddAck } = useAckFlash();
-  const badge = productBadgeLabel(product.badge);
+  const customBadge = product.badge?.trim();
 
   return (
     <article
@@ -46,13 +45,15 @@ export function FeaturedProductCard({ product }: { product: Product }) {
           sizes="(max-width: 639px) min(92vw, 20rem), (max-width: 1023px) 50vw, 25vw"
           className="object-contain object-center"
         />
-        {product.condition === "used" ? (
-          <span className="absolute right-3 top-3 rounded-md bg-amber-600 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-white shadow-sm">
-            Usado
+        {customBadge ? (
+          <span className="absolute right-3 top-3 max-w-[10rem] truncate rounded-md bg-[var(--brand-from)] px-2.5 py-1 text-center text-[10px] font-bold uppercase tracking-wide text-white shadow-sm">
+            {customBadge}
           </span>
-        ) : badge ? (
-          <span className="absolute right-3 top-3 rounded-md bg-[var(--brand-from)] px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-white shadow-sm">
-            {badge}
+        ) : product.condition ? (
+          <span
+            className={`absolute right-3 top-3 rounded-md px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-white shadow-sm ${ribbonToneClass(stockConditionRibbonTone(product.condition))}`}
+          >
+            {stockConditionLabel(product.condition)}
           </span>
         ) : null}
       </Link>

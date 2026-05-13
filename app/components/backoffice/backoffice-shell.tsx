@@ -60,7 +60,7 @@ const nav = [
   { href: "/backoffice/productos", label: "Productos", icon: BoxIcon },
   { href: "/backoffice/reparaciones", label: "Reparaciones", icon: ClipboardIcon },
   { href: "/backoffice/servicio-tecnico/precios", label: "Servicio — Precios", icon: WrenchIcon },
-  { href: "/backoffice/vende-tu-equipo/precios", label: "Vendé — Simulador", icon: BanknoteIcon },
+  { href: "/backoffice/vende-tu-equipo/precios", label: "Plan canje — Simulador", icon: BanknoteIcon },
   { href: "/backoffice/listas/categorias", label: "Listas", icon: ListIcon },
 ] as const;
 

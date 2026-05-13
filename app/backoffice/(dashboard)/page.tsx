@@ -23,7 +23,7 @@ const cards = [
     tag: "Reparaciones",
   },
   {
-    title: "Vendé tu equipo — Simulador",
+    title: "Plan canje — Simulador",
     description:
       "Precios de recompra por modelo, memoria y batería: lo que ves en la web se edita fila a fila, sin código.",
     href: "/backoffice/vende-tu-equipo/precios",

@@ -13,6 +13,7 @@ import { requireBackofficeSession } from "@/lib/backoffice/session";
 import { uploadProductMainImage } from "@/lib/backoffice/storage/product-images";
 import type { ProductVariantGroup } from "@/lib/product-variants";
 import { normalizeSellableRows, validateSellableMatrix } from "@/lib/sellable-variants";
+import { isAllowedStockConditionId, normalizeStockConditionSlug } from "@/lib/stock-condition";
 
 function isEphemeralImageUrl(u: string): boolean {
   const t = u.trim();
@@ -113,8 +114,9 @@ export async function saveProduct(
   }
 
   const stockRaw = String(formData.get("stock_condition") ?? "").trim();
+  const normalized = normalizeStockConditionSlug(stockRaw);
   const stock_condition =
-    stockRaw === "new" || stockRaw === "used" ? stockRaw : null;
+    normalized && isAllowedStockConditionId(normalized) ? normalized : null;
 
   const badgeRaw = String(formData.get("badge") ?? "").trim();
   const compareRaw = String(formData.get("compare_at_price") ?? "").trim();

@@ -14,8 +14,8 @@ export type CategoryId =
   | "smartphones"
   | "tablets";
 
-/** Condición de publicación: equipo nuevo o usado (servicios / sin clasificar: omitir). */
-export type ProductStockCondition = "new" | "used";
+/** Slug en `stock_condition` (ej. new, used, refurb); opcional. */
+export type ProductStockCondition = string;
 
 export type Product = {
   id: string;

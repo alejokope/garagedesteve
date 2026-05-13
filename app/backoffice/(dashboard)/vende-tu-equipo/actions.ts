@@ -11,7 +11,7 @@ export async function saveSellPricingAction(payload: unknown) {
   const parsed = sellPricingPayloadSchema.parse(payload);
   await upsertContentEntryAdmin({
     key: SELL_PRICING_KEY,
-    label: "Vendé tu equipo — Simulador de precios",
+    label: "Plan canje — Simulador de precios",
     payload: parsed,
   });
   revalidatePath("/vende-tu-equipo");

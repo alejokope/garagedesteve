@@ -8,9 +8,9 @@ import { getSiteContact } from "@/lib/site-contact-server";
 import { siteConfig } from "@/lib/site-config";
 
 export const metadata: Metadata = {
-  title: `Vendé tu equipo · ${siteConfig.brandName}`,
+  title: `Plan canje · ${siteConfig.brandName}`,
   description:
-    "Cotización por WhatsApp según modelo, capacidad y estado de tu iPhone, iPad o Apple. Te pasamos un valor orientativo y coordinamos el cierre.",
+    "Plan canje: valor orientativo según modelo, capacidad y estado de tu iPhone, iPad o Apple. Coordinamos por WhatsApp los pasos del canje.",
 };
 
 export default async function VendeTuEquipoPage() {

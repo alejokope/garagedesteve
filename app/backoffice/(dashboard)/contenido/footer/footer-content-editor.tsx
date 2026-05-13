@@ -143,7 +143,7 @@ export function FooterContentEditor({
       </section>
 
       <section className={boEditorSection}>
-        <h2 className={boEditorH2}>Bloque vendé tu equipo (#vende)</h2>
+        <h2 className={boEditorH2}>Bloque plan canje (#vende)</h2>
         <div className="mt-4 grid gap-4 sm:grid-cols-2">
           <label className="block">
             <span className={labelClass}>Título</span>

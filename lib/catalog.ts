@@ -10,6 +10,7 @@ import {
   defaultSelectionsWithSellable,
   parseSellableVariants,
 } from "@/lib/sellable-variants";
+import { isStockConditionUsed, stockConditionLabel } from "@/lib/stock-condition";
 
 export type { ProductStockCondition };
 
@@ -218,9 +219,9 @@ export function enrichProduct(p: Product): EnrichedProduct {
     compareAtPrice = cmp;
     discountPercent = pct;
     estado = "oferta";
-  } else if (badgeLower.includes("nuevo") && p.condition !== "used") {
+  } else if (badgeLower.includes("nuevo") && !isStockConditionUsed(p.condition)) {
     estado = "nuevo";
-  } else if (seed % 7 === 0 && p.category !== "servicio") {
+  } else if (seed % 7 === 0 && p.category !== "servicio" && !isStockConditionUsed(p.condition)) {
     estado = "mas-vendido";
   } else {
     estado = "nuevo";
@@ -247,7 +248,7 @@ export const shopTipos: { id: ShopTipo; label: string }[] = [
   { id: "mac", label: "Mac" },
   { id: "tablet", label: "Tablet" },
   { id: "desktop", label: "Escritorio" },
-  { id: "servicio", label: "Servicio" },
+  { id: "servicio", label: "Servicio técnico" },
   { id: "otro", label: "Otros" },
 ];
 
@@ -303,10 +304,23 @@ export const shopEstados: { id: CatalogEstado; label: string }[] = [
   { id: "mas-vendido", label: "Más vendido" },
 ];
 
-export const shopStockConditions: { id: ProductStockCondition; label: string }[] = [
-  { id: "new", label: "Nuevo" },
-  { id: "used", label: "Usado" },
-];
+/**
+ * Condiciones de stock presentes en el catálogo cargado (slug + etiqueta).
+ * Los slugs permitidos en BO están en {@link STOCK_CONDITION_OPTIONS}.
+ */
+export function stockFilterOptionsFromProducts(products: Product[]): { id: string; label: string }[] {
+  const ids = new Set<string>();
+  for (const p of products) {
+    const c = p.condition?.trim();
+    if (c) ids.add(c);
+  }
+  if (ids.size === 0) return [];
+  return [...ids]
+    .sort((a, b) =>
+      stockConditionLabel(a).localeCompare(stockConditionLabel(b), "es", { sensitivity: "base" }),
+    )
+    .map((id) => ({ id, label: stockConditionLabel(id) }));
+}
 
 /**
  * Categorías que tienen al menos un producto en el listado; la etiqueta viene del diccionario
@@ -330,19 +344,6 @@ export function categoryFilterOptionsFromProducts(
     id,
     label: dictLabel.get(id) ?? categoryLabelForProduct(id),
   }));
-}
-
-/** Condición de stock solo si hay al menos un producto en ese estado. */
-export function stockFilterOptionsFromProducts(
-  products: Product[],
-): { id: ProductStockCondition; label: string }[] {
-  let hasListedNew = false;
-  let hasUsed = false;
-  for (const p of products) {
-    if (p.condition === "used") hasUsed = true;
-    else hasListedNew = true;
-  }
-  return shopStockConditions.filter((c) => (c.id === "used" ? hasUsed : hasListedNew));
 }
 
 /** Etiquetas de catálogo (nuevo / oferta / más vendido) presentes en el listado enriquecido. */
@@ -380,21 +381,14 @@ export function filterEnriched(
     if (opts.categorias.length > 0 && !opts.categorias.includes(p.category)) return false;
     if (opts.estados.length) {
       const matchEstado = opts.estados.some((e) => {
-        if (e === "nuevo") return p.estado === "nuevo" && p.condition !== "used";
+        if (e === "nuevo") return p.estado === "nuevo" && !isStockConditionUsed(p.condition);
         return p.estado === e;
       });
       if (!matchEstado) return false;
     }
     if (opts.stockConditions.length) {
       const c = p.condition;
-      const matchesNew = c !== "used";
-      const matchesUsed = c === "used";
-      const wantNew = opts.stockConditions.includes("new");
-      const wantUsed = opts.stockConditions.includes("used");
-      let ok = false;
-      if (wantNew && matchesNew) ok = true;
-      if (wantUsed && matchesUsed) ok = true;
-      if (!ok) return false;
+      if (!c || !opts.stockConditions.includes(c)) return false;
     }
     if (p.price > opts.precioMax) return false;
     return true;
@@ -409,4 +403,78 @@ export function sortEnriched(list: EnrichedProduct[], sort: SortKey): EnrichedPr
     copy.reverse();
   }
   return copy;
+}
+
+/** Estado de filtros tal como se refleja en `/tienda?…` (compartir / copiar enlace). */
+export type CatalogUrlState = {
+  q: string;
+  sort: SortKey;
+  /** Página mostrada (1-based), ya acotada al total de páginas. */
+  page: number;
+  marcas: ShopBrandFilterId[];
+  categorias: string[];
+  estados: CatalogEstado[];
+  stockConditions: ProductStockCondition[];
+  clampedPrecioMax: number;
+  minCatalogPrice: number;
+  maxCatalogPrice: number;
+};
+
+/**
+ * Query string para `/tienda` (sin `?` ni hash). Orden de claves estable.
+ * `marcas`: {@link SIN_MARCA_BUCKET_ID} se serializa como `Otras` (misma convención que {@link parseBrandFilterKeysFromUrlParam}).
+ */
+export function buildCatalogUrlSearchString(opts: CatalogUrlState): string {
+  const u = new URLSearchParams();
+  const q = opts.q.trim();
+  if (q) u.set("q", q);
+  if (opts.sort !== "relevancia") u.set("sort", opts.sort);
+  if (opts.page > 1) u.set("page", String(opts.page));
+  if (opts.categorias.length) {
+    u.set("cat", [...opts.categorias].sort().join(","));
+  }
+  if (opts.marcas.length) {
+    u.set(
+      "marcas",
+      [...opts.marcas]
+        .map((id) => (id === SIN_MARCA_BUCKET_ID ? "Otras" : id))
+        .sort()
+        .join(","),
+    );
+  }
+  if (opts.estados.length) {
+    u.set("estados", [...opts.estados].sort().join(","));
+  }
+  if (opts.stockConditions.length) {
+    u.set("condicion", [...opts.stockConditions].sort().join(","));
+  }
+  if (opts.maxCatalogPrice > opts.minCatalogPrice && opts.clampedPrecioMax < opts.maxCatalogPrice) {
+    u.set("max", String(Math.round(opts.clampedPrecioMax)));
+  }
+  return u.toString();
+}
+
+/**
+ * Clave estable para remontar el catálogo al cambiar filtros “por enlace” (home, etc.).
+ * Omite `q` y `max` para no perder foco al buscar ni al arrastrar el tope de precio.
+ */
+export function catalogFilterLayoutKeyFromSearchParams(sp: {
+  get: (key: string) => string | null;
+}): string {
+  const u = new URLSearchParams();
+  const sort = sp.get("sort");
+  if (sort && sort !== "relevancia") u.set("sort", sort);
+  const page = sp.get("page");
+  if (page && page !== "1") u.set("page", page);
+  const cat = sp.get("cat");
+  if (cat?.trim()) u.set("cat", cat.trim().toLowerCase());
+  const tipos = sp.get("tipos");
+  if (tipos?.trim()) u.set("tipos", tipos.trim());
+  const marcas = sp.get("marcas");
+  if (marcas?.trim()) u.set("marcas", marcas.trim());
+  const estados = sp.get("estados");
+  if (estados?.trim()) u.set("estados", estados.trim());
+  const condicion = sp.get("condicion");
+  if (condicion?.trim()) u.set("condicion", condicion.trim());
+  return u.toString();
 }

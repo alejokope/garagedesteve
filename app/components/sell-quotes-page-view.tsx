@@ -28,9 +28,9 @@ export function SellQuotesPageView() {
           Mis cotizaciones
         </h1>
         <p className="mt-2 max-w-xl text-sm leading-relaxed text-neutral-600 sm:text-base">
-          Acá quedan las referencias que guardaste desde la experiencia de{" "}
+          Acá quedan las referencias que guardaste desde el{" "}
           <Link href="/vende-tu-equipo" className="font-medium text-neutral-900 underline underline-offset-2">
-            vendé tu equipo
+            plan canje
           </Link>
           . Podés usar una en el carrito como parte de pago del checkout.
         </p>
@@ -44,7 +44,7 @@ export function SellQuotesPageView() {
               href="/vende-tu-equipo"
               className="mt-6 inline-flex min-h-[48px] items-center justify-center rounded-xl bg-[var(--brand-from)] px-6 text-sm font-semibold text-white transition hover:opacity-95"
             >
-              Cotizar un iPhone
+              Abrir plan canje
             </Link>
           </div>
         ) : (

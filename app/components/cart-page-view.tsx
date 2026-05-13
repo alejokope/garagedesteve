@@ -296,9 +296,9 @@ export function CartPageView() {
                         Tu celu en parte de pago
                       </h2>
                       <p className="mt-1 text-xs leading-relaxed text-zinc-400 sm:text-sm">
-                        Si venís desde el simulador de{" "}
+                        Si venís desde el simulador del{" "}
                         <Link href="/vende-tu-equipo" className="font-medium text-emerald-400 underline-offset-2 hover:underline">
-                          vendé tu equipo
+                          plan canje
                         </Link>
                         , podés marcar acá que lo dejás a cuenta. El total del mensaje se ajusta en{" "}
                         <span className="font-medium text-white">USD</span> cuando la referencia del

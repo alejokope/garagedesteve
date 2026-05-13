@@ -27,10 +27,10 @@ export const siteConfig = {
       id: "service",
       href: "/servicio-tecnico",
       label: "Servicio técnico",
-      shortLabel: "Servicio",
+      shortLabel: "Servicio técnico",
     },
     { id: "sedes", href: "/#sedes", label: "Nuestras sedes", shortLabel: "Sedes" },
-    { id: "sell", href: "/vende-tu-equipo", label: "Vende tu equipo", shortLabel: "Vendé" },
+    { id: "sell", href: "/vende-tu-equipo", label: "Plan canje", shortLabel: "Plan canje" },
     { id: "faq", href: "/#faq", label: "FAQ", shortLabel: "FAQ" },
   ] as const,
   contact: {
@@ -48,7 +48,7 @@ export const siteConfig = {
         links: [
           { href: "/#sedes", label: "Sobre nosotros" },
           { href: "/#sedes", label: "Nuestras sedes" },
-          { href: "/vende-tu-equipo", label: "Vende tu equipo" },
+          { href: "/vende-tu-equipo", label: "Plan canje" },
         ],
       },
       {
@@ -61,7 +61,7 @@ export const siteConfig = {
         ],
       },
       {
-        title: "Servicio",
+        title: "Servicio técnico",
         links: [
           { href: "/servicio-tecnico", label: "Servicio técnico" },
           { href: "/#faq", label: "Consultas" },

@@ -36,7 +36,7 @@ type Dim = (typeof DIM_ORDER)[number];
 
 const DIM_META: Record<
   Dim,
-  { id: string; label: string; kind: string; uiKind: "storage" | "select"; pricingMode: "absolute" | "delta" }
+  { id: string; label: string; kind: string; uiKind: "storage" | "select" | "color"; pricingMode: "absolute" | "delta" }
 > = {
   storage: { id: "storage", label: "Capacidad", kind: "storage", uiKind: "storage", pricingMode: "delta" },
   ram: { id: "ram", label: "RAM", kind: "select", uiKind: "select", pricingMode: "delta" },

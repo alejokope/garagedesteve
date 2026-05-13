@@ -30,6 +30,10 @@ import {
   type VariantSelections,
 } from "@/lib/product-variants";
 import {
+  stockConditionLabel,
+  stockConditionRibbonTone,
+} from "@/lib/stock-condition";
+import {
   allowedOptionIdsForGroupIndex,
   cascadeSelectionsFromIndex,
   defaultSelectionsWithSellable,
@@ -414,13 +418,21 @@ export function ProductDetailView({
                   {product.brand.trim()}
                 </span>
               ) : null}
-              {product.condition === "used" ? (
-                <span className="rounded-md bg-amber-600 px-2.5 py-1 text-[11px] font-bold uppercase text-white">
-                  Usado
+              {product.badge?.trim() ? (
+                <span className="rounded-md bg-[var(--brand-from)] px-2.5 py-1 text-[11px] font-bold uppercase text-white">
+                  {product.badge.trim()}
                 </span>
-              ) : product.condition === "new" ? (
-                <span className="rounded-md bg-emerald-500 px-2.5 py-1 text-[11px] font-bold uppercase text-white">
-                  Nuevo
+              ) : product.condition ? (
+                <span
+                  className={`rounded-md px-2.5 py-1 text-[11px] font-bold uppercase text-white ${
+                    stockConditionRibbonTone(product.condition) === "used"
+                      ? "bg-amber-600"
+                      : stockConditionRibbonTone(product.condition) === "new"
+                        ? "bg-emerald-500"
+                        : "bg-violet-600"
+                  }`}
+                >
+                  {stockConditionLabel(product.condition)}
                 </span>
               ) : null}
             </div>

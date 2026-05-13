@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { CatalogView } from "@/app/components/catalog/catalog-view";
+import { CatalogViewWrapper } from "@/app/components/catalog/catalog-view-wrapper";
 import { SiteRouteLoading } from "@/app/components/site/site-route-loading";
 import { SiteFooter } from "@/app/components/site-footer";
 import type { Metadata } from "next";
@@ -33,7 +33,7 @@ export default function Page() {
         </div>
       </section>
       <Suspense fallback={<CatalogSectionFallback />}>
-        <CatalogView />
+        <CatalogViewWrapper />
       </Suspense>
       <SiteFooter />
     </main>

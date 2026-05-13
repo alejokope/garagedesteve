@@ -175,6 +175,68 @@ export function SellPricingEditor({
       </section>
 
       <section className={boEditorSection}>
+        <h2 className={boEditorH2}>Qué evaluamos (plan canje)</h2>
+        <p className="mb-4 text-xs text-slate-500">
+          Bloque con viñetas debajo de “Cómo funciona” en la página pública{" "}
+          <span className="text-slate-400">/vende-tu-equipo</span>.
+        </p>
+        <div className="grid gap-4 sm:grid-cols-2">
+          <label className="block sm:col-span-2">
+            <span className="text-xs font-medium text-slate-500">Título de la sección</span>
+            <input
+              className={boEditorInput}
+              value={data.evaluationTitle}
+              onChange={(e) => setData((d) => ({ ...d, evaluationTitle: e.target.value }))}
+            />
+          </label>
+          <label className="block sm:col-span-2">
+            <span className="text-xs font-medium text-slate-500">Párrafo introductorio</span>
+            <textarea
+              className={`${boEditorInput} min-h-[4.5rem]`}
+              value={data.evaluationIntro}
+              onChange={(e) => setData((d) => ({ ...d, evaluationIntro: e.target.value }))}
+            />
+          </label>
+        </div>
+        <p className="mt-4 text-xs font-medium text-slate-500">Criterios (una viñeta por fila)</p>
+        <ul className="mt-2 space-y-2">
+          {data.evaluationCriteria.map((line, idx) => (
+            <li key={idx} className="flex flex-wrap items-start gap-2">
+              <input
+                className={`${boEditorInput} min-w-0 flex-1`}
+                value={line}
+                onChange={(e) => {
+                  const next = [...data.evaluationCriteria];
+                  next[idx] = e.target.value;
+                  setData((d) => ({ ...d, evaluationCriteria: next }));
+                }}
+                placeholder="Texto del criterio"
+              />
+              <button
+                type="button"
+                className="shrink-0 rounded-lg border border-white/15 px-3 py-2 text-xs font-semibold text-red-300/90 hover:bg-red-500/15"
+                onClick={() =>
+                  setData((d) => ({
+                    ...d,
+                    evaluationCriteria: d.evaluationCriteria.filter((_, j) => j !== idx),
+                  }))
+                }
+              >
+                Quitar
+              </button>
+            </li>
+          ))}
+        </ul>
+        <button
+          type="button"
+          className="mt-3 inline-flex h-9 items-center rounded-lg border border-white/15 bg-white/5 px-3 text-xs font-semibold text-slate-200 hover:bg-white/10"
+          onClick={() => setData((d) => ({ ...d, evaluationCriteria: [...d.evaluationCriteria, ""] }))}
+        >
+          + Agregar criterio
+        </button>
+      </section>
+
+      <section className={boEditorSection}>
         <div className="mb-4 flex flex-col gap-3 border-b border-white/[0.08] pb-4 sm:flex-row sm:items-center sm:justify-between">
           <h2 className="font-display text-base font-semibold tracking-tight text-white sm:text-lg">
             Filas de precios

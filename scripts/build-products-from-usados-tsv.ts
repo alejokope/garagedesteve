@@ -32,7 +32,7 @@ type UsedDim = (typeof USED_DIM_ORDER)[number];
 
 const USED_DIM_META: Record<
   UsedDim,
-  { id: string; label: string; kind: string; uiKind: "storage" | "select"; pricingMode: "absolute" | "delta" }
+  { id: string; label: string; kind: string; uiKind: "storage" | "select" | "color"; pricingMode: "absolute" | "delta" }
 > = {
   storage: { id: "storage", label: "Capacidad", kind: "storage", uiKind: "storage", pricingMode: "delta" },
   color: { id: "color", label: "Color", kind: "color", uiKind: "color", pricingMode: "delta" },

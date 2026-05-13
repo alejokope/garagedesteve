@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useMemo, useState } from "react";
 
 import { formatMoneyUsd } from "@/lib/format";
+import { STOCK_CONDITION_OPTIONS, stockConditionLabel } from "@/lib/stock-condition";
 
 import { deleteProductAdminAction } from "./actions";
 import { ProductPublishedToggle } from "./product-published-toggle";
@@ -25,15 +26,15 @@ function matchesQuery(row: ProductListRow, q: string): boolean {
   return blob.includes(t);
 }
 
-type ConditionFilter = "all" | "new" | "used" | "unset";
-type PublishedFilter = "all" | "yes" | "no";
+type ConditionFilter = "all" | "unset" | (typeof STOCK_CONDITION_OPTIONS)[number]["id"];
 
 function matchesCondition(row: ProductListRow, f: ConditionFilter): boolean {
   if (f === "all") return true;
-  if (f === "new") return row.stock_condition === "new";
-  if (f === "used") return row.stock_condition === "used";
-  return row.stock_condition !== "new" && row.stock_condition !== "used";
+  if (f === "unset") return !row.stock_condition?.trim();
+  return row.stock_condition === f;
 }
+
+type PublishedFilter = "all" | "yes" | "no";
 
 function matchesPublished(row: ProductListRow, f: PublishedFilter): boolean {
   if (f === "all") return true;
@@ -141,8 +142,11 @@ export function ProductsAdminTable({ rows }: { rows: ProductListRow[] }) {
               className={selectClass}
             >
               <option value="all">Todas</option>
-              <option value="new">Nuevo</option>
-              <option value="used">Usado</option>
+              {STOCK_CONDITION_OPTIONS.map((o) => (
+                <option key={o.id} value={o.id}>
+                  {o.label}
+                </option>
+              ))}
               <option value="unset">Sin definir</option>
             </select>
           </label>
@@ -223,11 +227,9 @@ export function ProductsAdminTable({ rows }: { rows: ProductListRow[] }) {
                   </td>
                   <td className="px-4 py-3 text-slate-400">{p.category}</td>
                   <td className="px-4 py-3 text-slate-400">
-                    {p.stock_condition === "new"
-                      ? "Nuevo"
-                      : p.stock_condition === "used"
-                        ? "Usado"
-                        : "—"}
+                    {p.stock_condition?.trim()
+                      ? stockConditionLabel(p.stock_condition)
+                      : "—"}
                   </td>
                   <td className="max-w-[160px] px-4 py-3">
                     <ProductPublishedToggle productId={p.id} published={p.published} />

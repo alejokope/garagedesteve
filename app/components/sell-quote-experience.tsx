@@ -87,13 +87,13 @@ export function SellQuoteExperience(props: Props) {
         >
           <span className="flex min-w-0 flex-1 flex-col gap-1">
             <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-emerald-700">
-              Cotización guiada
+              Plan canje
             </span>
             <span className="font-display text-lg font-semibold text-neutral-950">
-              Cotizá tu iPhone
+              Simulador guiado
             </span>
             <span className="text-sm leading-snug text-neutral-600">
-              Tres preguntas rápidas · referencia · guardá o usá en el carrito
+              Tres preguntas rápidas · referencia de canje · guardá o usá en el carrito
             </span>
           </span>
           <span
@@ -133,7 +133,7 @@ export function SellQuoteExperience(props: Props) {
               <div className="mx-auto mb-2 h-1 w-11 rounded-full bg-neutral-300" aria-hidden />
               <div className="flex items-center justify-between gap-3">
                 <p id="sell-quote-sheet-title" className="font-display text-base font-semibold text-neutral-950">
-                  Cotizar iPhone
+                  Plan canje — iPhone
                 </p>
                 <button
                   type="button"

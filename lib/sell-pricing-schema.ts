@@ -23,6 +23,19 @@ export const sellPricingRowSchema = z.object({
 
 export type SellPricingRow = z.infer<typeof sellPricingRowSchema>;
 
+/** Textos de la sección “Qué evaluamos” en /vende-tu-equipo (editables en BO). */
+export const DEFAULT_SELL_EVALUATION_TITLE = "Qué evaluamos para el plan" as const;
+export const DEFAULT_SELL_EVALUATION_INTRO =
+  "Cuanto más preciso sea el dato, más ajustada puede ser la referencia de canje. Si al ver el equipo hay diferencias, lo charlamos por el mismo canal." as const;
+export const DEFAULT_SELL_EVALUATION_CRITERIA: readonly string[] = [
+  "Modelo y generación del dispositivo",
+  "Capacidad (128 GB, 256 GB, etc.)",
+  "Estado de pantalla, marcos y carcasa",
+  "Batería y rendimiento (cuando aplica)",
+  "Si está liberado de operador y sin bloqueo de iCloud",
+  "Caja original, cargador y accesorios",
+] as const;
+
 export const sellPricingPayloadSchema = z.object({
   badge: z.string(),
   title: z.string(),
@@ -31,6 +44,9 @@ export const sellPricingPayloadSchema = z.object({
   /** Texto legal / aclaración bajo el simulador. */
   legalNote: z.string(),
   rows: z.array(sellPricingRowSchema).default([]),
+  evaluationTitle: z.string(),
+  evaluationIntro: z.string(),
+  evaluationCriteria: z.array(z.string()),
 });
 
 export type SellPricingPayload = z.infer<typeof sellPricingPayloadSchema>;
@@ -113,7 +129,7 @@ function seedRowsFromCompact(): SellPricingRow[] {
 
 export function defaultSellPricingPayload(): SellPricingPayload {
   return sellPricingPayloadSchema.parse({
-    badge: "Compra de usados",
+    badge: "Plan canje",
     title: "Simulador de valor",
     subtitle:
       "Elegí modelo, memoria y rango de batería. Es una referencia para equipos en condición impecable; el precio final lo cerramos al revisar el equipo.",
@@ -121,6 +137,9 @@ export function defaultSellPricingPayload(): SellPricingPayload {
     legalNote:
       "Valores orientativos para iPhone en excelente estado según la tabla cargada. No incluye negociaciones por operador, iCloud o accesorios. La oferta definitiva puede variar al inspeccionar el dispositivo.",
     rows: seedRowsFromCompact(),
+    evaluationTitle: DEFAULT_SELL_EVALUATION_TITLE,
+    evaluationIntro: DEFAULT_SELL_EVALUATION_INTRO,
+    evaluationCriteria: [...DEFAULT_SELL_EVALUATION_CRITERIA],
   });
 }
 
@@ -171,6 +190,21 @@ export function mergeSellPricingDefaults(partial: unknown): SellPricingPayload {
         currency,
       });
     });
+    const evaluationTitle =
+      typeof o.evaluationTitle === "string" && o.evaluationTitle.trim()
+        ? o.evaluationTitle.trim()
+        : base.evaluationTitle;
+    const evaluationIntro =
+      typeof o.evaluationIntro === "string" ? o.evaluationIntro : base.evaluationIntro;
+    let evaluationCriteria = base.evaluationCriteria;
+    if (Array.isArray(o.evaluationCriteria)) {
+      const next = o.evaluationCriteria
+        .filter((x): x is string => typeof x === "string")
+        .map((s) => s.trim())
+        .filter(Boolean);
+      if (next.length > 0) evaluationCriteria = next;
+    }
+
     return sellPricingPayloadSchema.parse({
       ...base,
       ...o,
@@ -180,6 +214,9 @@ export function mergeSellPricingDefaults(partial: unknown): SellPricingPayload {
           : base.defaultCurrency,
       legalNote: typeof o.legalNote === "string" ? o.legalNote : base.legalNote,
       rows: rows.length > 0 ? rows : base.rows,
+      evaluationTitle,
+      evaluationIntro,
+      evaluationCriteria,
     });
   } catch {
     return base;

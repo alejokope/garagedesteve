@@ -4,6 +4,7 @@
 import type { Product } from "@/lib/data";
 import type { ProductVariantGroup } from "@/lib/product-variants";
 import { parseSellableVariants } from "@/lib/sellable-variants";
+import { normalizeStockConditionSlug } from "@/lib/stock-condition";
 
 export function parseGalleryImagesColumn(raw: unknown): string[] {
   if (!Array.isArray(raw)) return [];
@@ -45,10 +46,10 @@ export type ProductRow = {
 
 /** Para la tienda pública: fila → tipo `Product` del sitio. */
 export function productRowToProduct(row: ProductRow): Product {
-  const condition =
-    row.stock_condition === "new" || row.stock_condition === "used"
-      ? row.stock_condition
-      : undefined;
+  const conditionRaw = normalizeStockConditionSlug(
+    row.stock_condition != null ? String(row.stock_condition) : undefined,
+  );
+  const condition = conditionRaw ?? undefined;
   const sellableVariants = parseSellableVariants(row.sellable_variants);
   return {
     id: row.id,

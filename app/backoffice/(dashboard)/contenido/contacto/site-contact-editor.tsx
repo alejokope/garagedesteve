@@ -87,7 +87,7 @@ export function SiteContactEditor({
     <div className="min-w-0 space-y-6 pb-28 sm:space-y-8 sm:pb-10 lg:pb-8">
       <p className="rounded-xl border border-violet-500/20 bg-violet-950/20 px-4 py-3 text-sm text-slate-300">
         Estos datos son la <strong className="text-white">fuente única</strong> para el bloque de contacto del footer,
-        textos del carrito que mencionan retiro y la página &quot;Vendé tu equipo&quot; (email y teléfono de respaldo).
+        textos del carrito que mencionan retiro y la página del plan canje (email y teléfono de respaldo).
         Los cambios son borrador hasta que pulses <strong className="text-white">Guardar cambios</strong> en la barra
         inferior.
       </p>

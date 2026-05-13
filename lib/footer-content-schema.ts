@@ -61,9 +61,9 @@ export function defaultFooterContentPayload(): FooterContentPayload {
     sedesTitle: "Nuestras sedes",
     sedesBody:
       "Coordinamos retiro y envíos. Consultá horarios y disponibilidad por WhatsApp.",
-    vendeTitle: "Vendé tu equipo",
-    vendeBody: "Cotización por WhatsApp según modelo, capacidad y estado. Sin vueltas.",
-    vendeLinkLabel: "Ver cómo funciona",
+    vendeTitle: "Plan canje",
+    vendeBody: "Valor orientativo según modelo, capacidad y estado. Coordinamos el canje por WhatsApp.",
+    vendeLinkLabel: "Ver plan canje",
     vendeLinkHref: "/vende-tu-equipo",
     social: cloneSocialFromSiteConfig(),
     columns: cloneColumnsFromSiteConfig(),

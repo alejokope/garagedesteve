@@ -11,7 +11,7 @@ import { siteConfig } from "@/lib/site-config";
 export const metadata: Metadata = {
   title: `Servicio técnico · ${siteConfig.brandName}`,
   description:
-    "Seguimiento de reparaciones con código, coordinación por WhatsApp y precios orientativos.",
+    "Servicio técnico: seguimiento de reparaciones con código, coordinación por WhatsApp y precios orientativos.",
 };
 
 export default async function ServicioTecnicoPage() {
@@ -32,8 +32,8 @@ export default async function ServicioTecnicoPage() {
           Servicio técnico
         </h1>
         <p className="mt-3 max-w-2xl text-[15px] leading-relaxed text-neutral-600 sm:text-base">
-          Coordiná el trámite por WhatsApp, consultá el estado con tu código de seguimiento y revisá
-          precios orientativos más abajo.
+          En el servicio técnico coordinamos el trámite por WhatsApp, podés consultar el estado con tu
+          código de seguimiento y revisar precios orientativos más abajo.
         </p>
 
         <ServicioTecnicoSubnav />

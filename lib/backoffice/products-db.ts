@@ -20,9 +20,10 @@ export function productRowFromRecord(r: Record<string, unknown>): ProductRow {
   return mapRow(r);
 }
 
+import { normalizeStockConditionSlug } from "@/lib/stock-condition";
+
 function parseStockCondition(v: unknown): string | null {
-  if (v !== "new" && v !== "used") return null;
-  return v;
+  return normalizeStockConditionSlug(v != null ? String(v) : undefined);
 }
 
 function mapRow(r: Record<string, unknown>): ProductRow {

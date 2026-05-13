@@ -482,24 +482,30 @@ export function SiteContentHub({
                       <label className="block sm:col-span-1">
                         <span className={labelClass}>Título</span>
                         <input className={inputClass} value={tile.title} onChange={(e) => {
-                          const t = [...categories.tiles];
-                          (t[i] as { title: string }).title = e.target.value;
+                          const t = [...categories.tiles] as HomeCategoryTile[];
+                          const cur = t[i];
+                          if (!cur) return;
+                          t[i] = { ...cur, title: e.target.value };
                           setCategories({ ...categories, tiles: t });
                         }} />
                       </label>
                       <label className="block sm:col-span-1">
                         <span className={labelClass}>Enlace (página a la que lleva)</span>
                         <input className={inputClass} value={tile.href} onChange={(e) => {
-                          const t = [...categories.tiles];
-                          (t[i] as { href: string }).href = e.target.value;
+                          const t = [...categories.tiles] as HomeCategoryTile[];
+                          const cur = t[i];
+                          if (!cur) return;
+                          t[i] = { ...cur, href: e.target.value };
                           setCategories({ ...categories, tiles: t });
                         }} />
                       </label>
                       <label className="block sm:col-span-2">
                         <span className={labelClass}>Descripción corta</span>
                         <textarea className={`${inputClass} min-h-[64px] resize-y`} value={tile.description} onChange={(e) => {
-                          const t = [...categories.tiles];
-                          (t[i] as { description: string }).description = e.target.value;
+                          const t = [...categories.tiles] as HomeCategoryTile[];
+                          const cur = t[i];
+                          if (!cur) return;
+                          t[i] = { ...cur, description: e.target.value };
                           setCategories({ ...categories, tiles: t });
                         }} />
                       </label>

@@ -10,6 +10,7 @@ import type { ProductRow } from "@/lib/backoffice/product-row-shared";
 import { parseGalleryImagesColumn, productRowToProduct } from "@/lib/backoffice/product-row-shared";
 import { productCarouselUrls } from "@/lib/product-carousel";
 import type { VariantKindDefinitionRow, VariantPricingModeLabelRow } from "@/lib/catalog-dictionary-types";
+import { STOCK_CONDITION_OPTIONS } from "@/lib/stock-condition";
 
 import { saveProduct } from "./actions";
 import { ProductDetailEditor } from "./product-detail-editor";
@@ -241,25 +242,31 @@ export function ProductForm({
           />
         </label>
         <label className="block">
-          <span className="mb-1.5 block text-xs font-medium text-slate-400">Condición</span>
+          <span className="mb-1.5 block text-xs font-medium text-slate-400">Condición de stock</span>
           <select
             name="stock_condition"
             defaultValue={initial?.stock_condition ?? ""}
             className="w-full rounded-xl border border-white/[0.1] bg-black/30 px-3 py-2.5 text-sm text-white outline-none focus:ring-2 focus:ring-violet-500/40"
           >
-            <option value="">Sin etiqueta</option>
-            <option value="new">Nuevo</option>
-            <option value="used">Usado</option>
+            <option value="">Sin clasificar</option>
+            {STOCK_CONDITION_OPTIONS.map((o) => (
+              <option key={o.id} value={o.id}>
+                {o.label}
+              </option>
+            ))}
           </select>
         </label>
         <label className="block">
-          <span className="mb-1.5 block text-xs font-medium text-slate-400">Badge opcional</span>
+          <span className="mb-1.5 block text-xs font-medium text-slate-400">Etiqueta en tienda (opcional)</span>
           <input
             name="badge"
             defaultValue={initial?.badge ?? ""}
             className="w-full rounded-xl border border-white/[0.1] bg-black/30 px-3 py-2.5 text-sm text-white outline-none focus:ring-2 focus:ring-violet-500/40"
-            placeholder="Ej. Nuevo sellado"
+            placeholder="Ej. Nuevo sellado — reemplaza la pill de condición en grilla/ficha"
           />
+          <span className="mt-1 block text-[11px] text-slate-500">
+            Si lo dejás vacío, en la web se muestra la condición de stock (Nuevo, Usado, etc.).
+          </span>
         </label>
         <label className="block sm:col-span-2">
           <span className="mb-1.5 block text-xs font-medium text-slate-400">Orden en listados</span>

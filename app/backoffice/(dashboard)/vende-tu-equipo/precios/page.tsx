@@ -17,8 +17,8 @@ export default async function BackofficeSellPreciosPage() {
   return (
     <div className="min-w-0 space-y-8">
       <BoServicioPageHeader
-        kicker="Vendé tu equipo"
-        title="Simulador de precios (compra de usados)"
+        kicker="Plan canje"
+        title="Simulador del plan canje"
         description={
           <>
             Editá textos, moneda por defecto y cada fila de la tabla. Clave en Supabase:{" "}

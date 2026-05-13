@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+import type { TransitionEvent } from "react";
 import {
   startTransition,
   useCallback,
@@ -11,7 +12,6 @@ import {
   useRef,
   useState,
 } from "react";
-import type { TransitionEvent } from "react";
 import { ProductFavoriteButton } from "@/app/components/product-favorite-button";
 import { StoreRemoteImage } from "@/app/components/store-remote-image";
 import { useCart } from "@/app/context/cart-context";
@@ -29,12 +29,14 @@ import {
   type ProductStockCondition,
   type ShopBrandFilterId,
   type SortKey,
+  buildCatalogUrlSearchString,
   catalogProductPreviewImage,
   enrichProduct,
   filterEnriched,
   sortEnriched,
   stockFilterOptionsFromProducts,
 } from "@/lib/catalog";
+import { isStockConditionUsed, stockConditionLabel, stockConditionRibbonTone } from "@/lib/stock-condition";
 import { useCatalogProducts } from "@/app/context/catalog-products-context";
 import { SiteRouteLoading } from "@/app/components/site/site-route-loading";
 import { formatMoneyUsd } from "@/lib/format";
@@ -149,15 +151,27 @@ function priceSliderStep(min: number, max: number): number {
   return Math.max(pow, Math.round(rough / pow) * pow);
 }
 
+function catalogRibbonToneClass(tone: ReturnType<typeof stockConditionRibbonTone>): string {
+  if (tone === "used") return "bg-amber-600";
+  if (tone === "new") return "bg-emerald-500";
+  return "bg-violet-600";
+}
+
 function CatalogCard({ p }: { p: EnrichedProduct }) {
   const { add } = useCart();
   const { on: addAck, trigger: triggerAddAck } = useAckFlash();
 
   const showDiscount = p.discountPercent != null && p.compareAtPrice != null;
-  const badgeNuevo = p.estado === "nuevo" && !showDiscount && p.condition !== "used";
-  const badgeMasVendido = p.estado === "mas-vendido" && !showDiscount && p.condition !== "used";
-  const badgeUsado = p.condition === "used";
-
+  const customBadge = p.badge?.trim();
+  const showMasVendido =
+    p.estado === "mas-vendido" && !showDiscount && !isStockConditionUsed(p.condition);
+  /** No duplicar “Nuevo” si el slug de stock ya es `new` (misma pill verde arriba). */
+  const showEstadoNuevo =
+    p.estado === "nuevo" &&
+    !showDiscount &&
+    !isStockConditionUsed(p.condition) &&
+    !customBadge &&
+    p.condition !== "new";
   return (
     <article className="group relative flex flex-col rounded-2xl border border-[var(--border)] bg-white shadow-[0_1px_3px_rgba(15,23,42,0.06)] transition hover:-translate-y-0.5 hover:shadow-[var(--glow)]">
       <div className="absolute left-2 top-2 z-10">
@@ -178,25 +192,31 @@ function CatalogCard({ p }: { p: EnrichedProduct }) {
           sizes="(max-width: 639px) 100vw, (max-width: 1279px) 50vw, 34vw"
           className="object-contain object-center"
         />
-        <div className="absolute right-2 top-2 flex flex-col items-end gap-1.5">
+        <div className="absolute right-2 top-2 flex max-w-[min(12rem,calc(100%-3rem))] flex-col items-end gap-1.5">
           {showDiscount ? (
             <span className="rounded-md bg-red-500 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white shadow-sm">
               -{p.discountPercent}%
             </span>
           ) : null}
-          {badgeUsado ? (
-            <span className="rounded-md bg-amber-600 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white shadow-sm">
-              Usado
+          {customBadge ? (
+            <span className="line-clamp-2 rounded-md bg-[var(--brand-from)] px-2 py-0.5 text-center text-[10px] font-bold uppercase leading-tight tracking-wide text-white shadow-sm">
+              {customBadge}
+            </span>
+          ) : p.condition ? (
+            <span
+              className={`rounded-md px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white shadow-sm ${catalogRibbonToneClass(stockConditionRibbonTone(p.condition))}`}
+            >
+              {stockConditionLabel(p.condition)}
             </span>
           ) : null}
-          {badgeNuevo ? (
-            <span className="rounded-md bg-emerald-500 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white shadow-sm">
-              Nuevo
-            </span>
-          ) : null}
-          {badgeMasVendido ? (
+          {showMasVendido ? (
             <span className="rounded-md bg-[var(--brand-from)] px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white shadow-sm">
               Más vendido
+            </span>
+          ) : null}
+          {showEstadoNuevo ? (
+            <span className="rounded-md bg-emerald-500 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white shadow-sm">
+              Nuevo
             </span>
           ) : null}
         </div>
@@ -328,6 +348,7 @@ function PaginationNav({
 }
 
 export function CatalogView() {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const { products: catalogProducts, categoryFilterOptions, status, error, reload } =
     useCatalogProducts();
@@ -357,7 +378,7 @@ export function CatalogView() {
     [enriched],
   );
 
-  /** Filtros solo en memoria: no usar router (evita navegaciones /tienda en cada tecla). */
+  /** Filtros en estado local; la URL se sincroniza con `useLayoutEffect` para poder copiar/compartir. */
   const [q, setQ] = useState(() => searchParams.get("q") ?? "");
   const [sort, setSort] = useState<SortKey>(
     () => (searchParams.get("sort") ?? "relevancia") as SortKey,
@@ -497,6 +518,39 @@ export function CatalogView() {
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
   const currentPage = Math.min(page, totalPages);
+
+  useLayoutEffect(() => {
+    if (status !== "ready") return;
+    const built = buildCatalogUrlSearchString({
+      q,
+      sort,
+      page: currentPage,
+      marcas: effectiveMarcas,
+      categorias: effectiveCategorias,
+      estados,
+      stockConditions,
+      clampedPrecioMax,
+      minCatalogPrice,
+      maxCatalogPrice,
+    });
+    if (built === searchParams.toString()) return;
+    router.replace(`/tienda?${built}#catalogo`, { scroll: false });
+  }, [
+    status,
+    router,
+    searchParams,
+    q,
+    sort,
+    currentPage,
+    effectiveMarcas,
+    effectiveCategorias,
+    estados,
+    stockConditions,
+    clampedPrecioMax,
+    minCatalogPrice,
+    maxCatalogPrice,
+  ]);
+
   const slice = filtered.slice(
     (currentPage - 1) * PAGE_SIZE,
     currentPage * PAGE_SIZE,
