@@ -1,15 +1,6 @@
 import { z } from "zod";
 
-const categoryIdSchema = z.enum([
-  "mac",
-  "ipad",
-  "iphone",
-  "watch",
-  "audio",
-  "desktop",
-  "servicio",
-  "otros",
-]);
+const categoryIdSchema = z.string().min(1, "La categoría es obligatoria");
 
 const serviceIconSchema = z.enum(["shield", "badge", "puzzle", "clock"]);
 

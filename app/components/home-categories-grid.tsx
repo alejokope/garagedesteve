@@ -28,6 +28,10 @@ function productCategoryHref(tile: HomeCategoryTile & { kind: "product" }): stri
   return `/tienda?cat=${encodeURIComponent(tile.category)}#catalogo`;
 }
 
+function productTileHref(tile: HomeCategoryTile & { kind: "product" }): string {
+  return tile.href.trim() || productCategoryHref(tile);
+}
+
 function tileImage(tile: HomeCategoryTile): { src: string; alt: string } {
   if (tile.kind === "product") {
     return {
@@ -44,7 +48,7 @@ function tileImage(tile: HomeCategoryTile): { src: string; alt: string } {
 function HomeCategoryTileCard({ tile }: { tile: HomeCategoryTile }) {
   const { src, alt } = tileImage(tile);
   const isService = tile.kind === "service";
-  const href = isService ? tile.href : productCategoryHref(tile);
+  const href = isService ? tile.href : productTileHref(tile);
   const ctaLabel = isService ? "Saber más" : "Ver productos";
 
   return (
