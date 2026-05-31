@@ -10,11 +10,13 @@ import {
   resolvePriceWithSellableMatrix,
   type SellableVariant,
 } from "@/lib/sellable-variants";
-import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { createSupabaseServiceClient } from "@/lib/supabase/service";
 
 /** Ítem de catálogo expuesto en la API (solo campos con valor). */
 export type FlatDeviceItem = {
   precio_final: number;
+  /** `products.name` — “Nombre en la tienda” del backoffice. */
+  nombre?: string;
   modelo?: string;
   capacidad?: string;
   color?: string;
@@ -31,6 +33,7 @@ export type FlatDeviceItem = {
 export type FlatDeviceCatalog = Record<string, FlatDeviceItem[]>;
 
 type FlatDeviceRowDraft = {
+  nombre: string;
   modelo: string;
   capacidad: string;
   color: string;
@@ -181,6 +184,7 @@ function flatRowFromSelections(
     colorLabel && !/^a\s+confirmar\b/i.test(colorLabel) ? colorLabel : DEFAULT_COLOR;
 
   return {
+    nombre: product.name.trim(),
     modelo,
     capacidad: trimOrEmpty(labels.storage),
     color,
@@ -199,6 +203,7 @@ function flatRowFromSelections(
 export function compactDeviceItem(row: FlatDeviceRowDraft): FlatDeviceItem {
   const item: FlatDeviceItem = { precio_final: row.precio_final };
 
+  if (row.nombre.trim()) item.nombre = row.nombre.trim();
   if (row.modelo.trim()) item.modelo = row.modelo.trim();
   if (row.capacidad.trim()) item.capacidad = row.capacidad.trim();
   if (row.color.trim()) item.color = row.color.trim();
@@ -294,14 +299,128 @@ export function buildFlatDeviceCatalog(products: Product[]): FlatDeviceCatalog {
   return catalog;
 }
 
+function normalizeProductSearchText(value: string): string {
+  return value
+    .trim()
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/\p{M}/gu, "")
+    .replace(/[\s_-]+/g, " ");
+}
+
+function buildCategoryAliasMap(catalog: FlatDeviceCatalog): Map<string, string> {
+  const map = new Map<string, string>();
+  for (const key of Object.keys(catalog)) {
+    map.set(normalizeProductSearchText(key), key);
+  }
+  for (const [slug, producto] of Object.entries(CATEGORY_TO_PRODUCTO)) {
+    if (!catalog[producto]) continue;
+    map.set(normalizeProductSearchText(slug), producto);
+    map.set(normalizeProductSearchText(producto), producto);
+  }
+  for (const [producto, prefix] of Object.entries(PRODUCTO_PREFIX)) {
+    if (!catalog[producto]) continue;
+    map.set(normalizeProductSearchText(prefix), producto);
+  }
+  return map;
+}
+
+function itemMatchesProductQuery(
+  item: FlatDeviceItem,
+  categoryKey: string,
+  query: string,
+): boolean {
+  const haystacks = [categoryKey, item.nombre, item.modelo, item.product_id]
+    .filter((v): v is string => typeof v === "string" && v.trim() !== "")
+    .map(normalizeProductSearchText);
+
+  return haystacks.some((h) => h.includes(query) || h === query);
+}
+
+export type FlatDeviceStateFilter = "new" | "used";
+
+/** `state=usado|used` o `state=nuevo|new|no usado`. Valor inválido → `null` (sin filtrar). */
+export function parseFlatDeviceStateFilter(stateQuery: string): FlatDeviceStateFilter | null {
+  const q = normalizeProductSearchText(stateQuery);
+  if (!q) return null;
+  if (q === "usado" || q === "used") return "used";
+  if (q === "nuevo" || q === "new" || q === "no usado") return "new";
+  return null;
+}
+
+function itemMatchesStateFilter(item: FlatDeviceItem, state: FlatDeviceStateFilter): boolean {
+  const condicion = normalizeProductSearchText(item.condicion ?? "new");
+  return condicion === state;
+}
+
+function filterFlatDeviceCatalogByState(
+  catalog: FlatDeviceCatalog,
+  state: FlatDeviceStateFilter,
+): FlatDeviceCatalog {
+  const filtered: FlatDeviceCatalog = {};
+  for (const [key, items] of Object.entries(catalog)) {
+    const matched = items.filter((item) => itemMatchesStateFilter(item, state));
+    if (matched.length > 0) filtered[key] = matched;
+  }
+  return filtered;
+}
+
+export type FlatDeviceFilterOptions = {
+  product?: string;
+  state?: FlatDeviceStateFilter;
+};
+
+/** Aplica filtros opcionales de `product` y/o `state` sobre el catálogo agrupado. */
+export function applyFlatDeviceFilters(
+  catalog: FlatDeviceCatalog,
+  options: FlatDeviceFilterOptions,
+): FlatDeviceCatalog {
+  let result = catalog;
+  if (options.product?.trim()) {
+    result = filterFlatDeviceCatalog(result, options.product);
+  }
+  if (options.state) {
+    result = filterFlatDeviceCatalogByState(result, options.state);
+  }
+  return result;
+}
+
+/**
+ * Filtra el catálogo por `product`: categoría (IPHONE, iphone, …), nombre en tienda, modelo o product_id.
+ * Coincidencia parcial, case-insensitive.
+ */
+export function filterFlatDeviceCatalog(
+  catalog: FlatDeviceCatalog,
+  productQuery: string,
+): FlatDeviceCatalog {
+  const query = normalizeProductSearchText(productQuery);
+  if (!query) return catalog;
+
+  const categoryKey = buildCategoryAliasMap(catalog).get(query);
+  if (categoryKey && catalog[categoryKey]) {
+    return { [categoryKey]: catalog[categoryKey] };
+  }
+
+  const filtered: FlatDeviceCatalog = {};
+  for (const [key, items] of Object.entries(catalog)) {
+    const matched = items.filter((item) => itemMatchesProductQuery(item, key, query));
+    if (matched.length > 0) filtered[key] = matched;
+  }
+  return filtered;
+}
+
+/** Misma lógica que {@link filterFlatDeviceCatalog}, pero devuelve ítems sueltos (sin agrupar por categoría). */
+export function filterFlatDeviceItems(
+  catalog: FlatDeviceCatalog,
+  options: FlatDeviceFilterOptions = {},
+): FlatDeviceItem[] {
+  return Object.values(applyFlatDeviceFilters(catalog, options)).flat();
+}
+
 /** Solo productos activos en el BO (`published = true`, visible en tienda). */
 async function loadActiveProductsForFlatCatalog(): Promise<Product[]> {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-  if (!url || !key) return [];
-
   try {
-    const supabase = await createSupabaseServerClient();
+    const supabase = createSupabaseServiceClient();
     const { data, error } = await supabase
       .from("products")
       .select(FLAT_CATALOG_COLUMNS)

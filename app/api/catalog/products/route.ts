@@ -1,33 +1,27 @@
 import { NextResponse } from "next/server";
 
-import { listProductCategoriesPublic } from "@/lib/backoffice/catalog-dictionaries-db";
-import { loadPublishedProductsForSite } from "@/lib/site-products";
+import type { Product } from "@/lib/data";
+import {
+  getCachedCatalogProductsApi,
+  PUBLISHED_CATALOG_REVALIDATE_SECONDS,
+} from "@/lib/published-catalog-cache";
 
-/** Evita respuestas cacheadas (CDN/navegador) con datos viejos al recargar o volver a la tienda. */
-export const dynamic = "force-dynamic";
-
-const NO_STORE = {
-  "Cache-Control": "private, no-store, max-age=0, must-revalidate",
-  Expires: "0",
-  Pragma: "no-cache",
+const CACHE_HEADERS = {
+  "Cache-Control": `public, max-age=0, s-maxage=${PUBLISHED_CATALOG_REVALIDATE_SECONDS}, stale-while-revalidate=600`,
 } as const;
 
 export type CatalogProductsApiBody = {
-  products: Awaited<ReturnType<typeof loadPublishedProductsForSite>>;
+  products: Product[];
   categoryFilterOptions: { id: string; label: string }[];
 };
 
 /** Catálogo + categorías activas para filtros (misma fuente que Listas → Categorías). */
 export async function GET() {
   try {
-    const [products, categoryFilterOptions] = await Promise.all([
-      loadPublishedProductsForSite(),
-      listProductCategoriesPublic().catch(() => [] as { id: string; label: string }[]),
-    ]);
-    const body: CatalogProductsApiBody = { products, categoryFilterOptions };
-    return NextResponse.json(body, { headers: NO_STORE });
+    const body = await getCachedCatalogProductsApi();
+    return NextResponse.json(body satisfies CatalogProductsApiBody, { headers: CACHE_HEADERS });
   } catch (e) {
     const message = e instanceof Error ? e.message : "Error al cargar el catálogo";
-    return NextResponse.json({ error: message }, { status: 500, headers: NO_STORE });
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }

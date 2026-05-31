@@ -54,15 +54,7 @@ function fetchCatalogOnce(forceNew: boolean): Promise<CatalogFetchResult> {
   if (forceNew) catalogInflight = null;
   if (catalogInflight) return catalogInflight;
 
-  // Cada carga nueva = URL distinta → el navegador no puede servir un GET cacheado (F5, volver a la tienda).
-  const url = `/api/catalog/products?_=${Date.now()}`;
-  const p = fetch(url, {
-    cache: "no-store",
-    headers: {
-      "Cache-Control": "no-cache",
-      Pragma: "no-cache",
-    },
-  })
+  const p = fetch("/api/catalog/products")
     .then(async (r) => {
       if (!r.ok) {
         const body = (await r.json().catch(() => ({}))) as { error?: string };

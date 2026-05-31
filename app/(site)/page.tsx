@@ -10,8 +10,8 @@ import { ScrollReveal } from "@/app/components/scroll-reveal";
 import { SiteFooter } from "@/app/components/site-footer";
 import { getHomePageData } from "@/lib/home-content-server";
 
-/** Sin ISR (caché fija en dev con `revalidate` > 0). Literal exigido por Next. */
-export const revalidate = 0;
+/** ISR: home con contenido de Supabase; 2 min alinea con caché del catálogo. */
+export const revalidate = 120;
 
 export default async function HomePage() {
   const home = await getHomePageData();

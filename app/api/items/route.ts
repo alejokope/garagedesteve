@@ -1,36 +1,41 @@
 import { NextResponse } from "next/server";
 
-import { loadFlatDeviceCatalog, type FlatDeviceCatalog } from "@/lib/bot/flat-device-catalog";
+import {
+  applyFlatDeviceFilters,
+  filterFlatDeviceItems,
+  parseFlatDeviceStateFilter,
+  type FlatDeviceCatalog,
+  type FlatDeviceItem,
+} from "@/lib/bot/flat-device-catalog";
+import {
+  getCachedFlatDeviceCatalog,
+  FLAT_DEVICE_CATALOG_REVALIDATE_SECONDS,
+} from "@/lib/published-catalog-cache";
 
-export const dynamic = "force-dynamic";
-
-const NO_STORE = {
-  "Cache-Control": "private, no-store, max-age=0, must-revalidate",
-  Expires: "0",
-  Pragma: "no-cache",
+const CACHE_HEADERS = {
+  "Cache-Control": `private, max-age=0, s-maxage=${FLAT_DEVICE_CATALOG_REVALIDATE_SECONDS}`,
 } as const;
 
 export type ItemsApiBody = FlatDeviceCatalog;
-
-function isAuthorized(request: Request): boolean {
-  const expected = process.env.PROMETHEO_API_KEY?.trim();
-  if (!expected) return true;
-  const header = request.headers.get("authorization")?.trim() ?? "";
-  const token = header.startsWith("Bearer ") ? header.slice(7).trim() : "";
-  return token === expected;
-}
+export type ItemsApiFilteredBody = FlatDeviceItem[];
 
 /** Catálogo plano por categoría. Solo productos activos (`published` en el backoffice). */
 export async function GET(request: Request) {
-  if (!isAuthorized(request)) {
-    return NextResponse.json({ error: "unauthorized" }, { status: 401, headers: NO_STORE });
-  }
-
   try {
-    const body = await loadFlatDeviceCatalog();
-    return NextResponse.json(body satisfies ItemsApiBody, { headers: NO_STORE });
+    const params = new URL(request.url).searchParams;
+    const product = params.get("product")?.trim() ?? "";
+    const state = parseFlatDeviceStateFilter(params.get("state")?.trim() ?? "");
+    const catalog = await getCachedFlatDeviceCatalog();
+
+    if (product) {
+      const items = filterFlatDeviceItems(catalog, { product, state: state ?? undefined });
+      return NextResponse.json(items satisfies ItemsApiFilteredBody, { headers: CACHE_HEADERS });
+    }
+
+    const body = applyFlatDeviceFilters(catalog, { state: state ?? undefined });
+    return NextResponse.json(body satisfies ItemsApiBody, { headers: CACHE_HEADERS });
   } catch (e) {
     const message = e instanceof Error ? e.message : "Error al cargar items";
-    return NextResponse.json({ error: message }, { status: 500, headers: NO_STORE });
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }

@@ -11,6 +11,7 @@ import {
 } from "@/lib/backoffice/products-db";
 import { requireBackofficeSession } from "@/lib/backoffice/session";
 import { uploadProductMainImage } from "@/lib/backoffice/storage/product-images";
+import { revalidatePublishedCatalogCache } from "@/lib/published-catalog-cache";
 import type { ProductVariantGroup } from "@/lib/product-variants";
 import { normalizeSellableRows, validateSellableMatrix } from "@/lib/sellable-variants";
 import { isAllowedStockConditionId, normalizeStockConditionSlug } from "@/lib/stock-condition";
@@ -192,6 +193,7 @@ export async function saveProduct(
   revalidatePath("/tienda");
   revalidatePath(`/tienda/${id}`);
   revalidatePath("/");
+  revalidatePublishedCatalogCache();
 
   if (mode === "create") {
     redirect(`/backoffice/productos/${encodeURIComponent(id)}`);
@@ -218,6 +220,7 @@ export async function toggleProductPublished(
   revalidatePath("/tienda");
   revalidatePath(`/tienda/${encodeURIComponent(trimmed)}`);
   revalidatePath("/");
+  revalidatePublishedCatalogCache();
   return { ok: true };
 }
 
@@ -230,5 +233,6 @@ export async function deleteProductAdminAction(formData: FormData) {
 
   revalidatePath("/backoffice/productos");
   revalidatePath("/tienda");
+  revalidatePublishedCatalogCache();
   redirect("/backoffice/productos");
 }

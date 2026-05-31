@@ -6,7 +6,7 @@ import { productRowFromRecord, productRowToProduct } from "@/lib/backoffice/prod
 import type { Product } from "@/lib/data";
 import type { CategoryImageDefault } from "@/lib/product-image-fallback";
 import { applyProductCategoryImageFallback } from "@/lib/product-image-fallback";
-import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { createSupabasePublicReadClient } from "@/lib/supabase/public";
 
 function hasSupabaseEnv(): boolean {
   return Boolean(
@@ -24,7 +24,7 @@ export const PUBLISHED_CATALOG_LIST_COLUMNS =
 async function fetchCategoryImageDefaultsMap(): Promise<Map<string, CategoryImageDefault>> {
   if (!hasSupabaseEnv()) return new Map();
   try {
-    const supabase = await createSupabaseServerClient();
+    const supabase = createSupabasePublicReadClient();
     const { data, error } = await supabase
       .from("product_categories")
       .select("id, label, default_image, default_image_alt")
@@ -56,7 +56,7 @@ export async function loadPublishedProductsForSite(): Promise<Product[]> {
   if (!hasSupabaseEnv()) return [];
 
   try {
-    const supabase = await createSupabaseServerClient();
+    const supabase = createSupabasePublicReadClient();
     const [productsRes, catMap] = await Promise.all([
       supabase
         .from("products")
@@ -92,7 +92,7 @@ export async function getPublishedProductForSite(id: string): Promise<Product | 
   if (!hasSupabaseEnv()) return undefined;
 
   try {
-    const supabase = await createSupabaseServerClient();
+    const supabase = createSupabasePublicReadClient();
     const [productRes, catMap] = await Promise.all([
       supabase.from("products").select("*").eq("id", id).eq("published", true).maybeSingle(),
       categoryImageDefaultsForRequest(),
@@ -115,7 +115,7 @@ export async function listPublishedProductIdsForSite(): Promise<string[]> {
   if (!hasSupabaseEnv()) return [];
 
   try {
-    const supabase = await createSupabaseServerClient();
+    const supabase = createSupabasePublicReadClient();
     const { data, error } = await supabase
       .from("products")
       .select("id")
